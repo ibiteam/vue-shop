@@ -26,7 +26,7 @@ UI库采用vant4版本 [https://vant-ui.github.io/vant/#/zh-CN/home](https://van
   --red-color: #f71111; // 红色主色
   --color-text: #333; // 常规字体颜色
   --color-text-desc: #999; // 描述性字体颜色
-  --base-font-size: 0.24rem; // 基本字体大小，本项目以750设计图分辨率
+  --base-font-size: 0.24rem; // 基本字体大小，本项目以750设计图分辨率,即 750像素设计图中24px在这用0.24rem转化
 }
 
 // 如：
