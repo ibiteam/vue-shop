@@ -11,6 +11,8 @@ import $dialog from '@/utils/dialog'
 import App from './App.vue'
 import router from './router'
 import VueCookies from 'vue-cookies'
+// 公用组件
+import CommonHeader from '@/components/layout/Navbar'
 
 const app = createApp(App)
 
@@ -22,4 +24,5 @@ app.config.globalProperties.$bus = mitt()
 app.config.globalProperties.$public = $public
 app.config.globalProperties.$http = $http
 app.config.globalProperties.$dialog = $dialog
+app.component('CommonHeader', CommonHeader)
 app.mount('#app')
