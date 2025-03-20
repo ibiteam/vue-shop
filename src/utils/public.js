@@ -1,5 +1,8 @@
 import $env from './env'
 import $http from './http'
+import { useConfigStore } from "@/stores/index.js"
+import { Toast } from "vant";
+
 function openVConsole() {
     if (($env.isTest() || $env.isDev())) {
         const script = document.createElement('script')
@@ -40,38 +43,6 @@ function isPassWord (value) {
     return status
 }
 
-/** 易盾时间戳 **/
-function getTimestamp(msec) {
-    msec = !msec && msec !== 0 ? msec : 1
-    return parseInt((new Date()).valueOf() / msec, 10)
-}
-
-/** 加载易盾js **/
-function ydCodeUrl() {
-    return new Promise((resolve, reject) => {
-        var src = 'https://cstaticdun.126.net/load.min.js' + '?t=' + getTimestamp(1 * 60 * 1000)
-        var head = document.head || document.getElementsByTagName('head')[0]
-        var script = document.createElement('script')
-
-        script.type = 'text/javascript'
-        script.src = src
-
-        if (!('onload' in script)) {
-            script.onreadystatechange = function () {
-                if (this.readyState !== 'complete' && this.readyState !== 'loaded') return
-                this.onreadystatechange = null
-                resolve('load')
-            }
-        }
-
-        script.onload = function () {
-            this.onload = null
-            resolve('load')
-        }
-
-        head.appendChild(script)
-    })
-}
 /**
  * 获取缓存数据
  * @param key  缓存的名称
@@ -182,33 +153,6 @@ const formatCurrency = (price, num) => {
     return minus + t.split('').reverse().join('') + '.' + r
 }
 
-const dateFormatter = (time, type) => {
-    let year = time.getFullYear()
-    let month = timeStamp(time.getMonth() + 1);
-    let day = timeStamp(time.getDate());
-    let hour = timeStamp(time.getHours());
-    let minute = timeStamp(time.getMinutes());
-    let second = timeStamp(time.getSeconds());
-    let format = ''
-    switch (type) {
-        case 1:
-            format = `${year}-${month}-${day}`
-            break;
-        case 0:
-            format = `${year}-${month}`
-            break;
-        default:
-            format = `${year}-${month}-${day} ${hour}:${minute}:${second}`
-            break;
-    }
-    return format
-}
-
-
-const timeStamp = (num) => {
-    return num < 10 ? ('0' + num) : num
-}
-
 function isEmail(value) {
     let email = /^([a-zA-Z\d])((\w|-)+\.?)+@([a-zA-Z\d]+\.)+[a-zA-Z]{2,6}$/
     if (!email.test(value)) {
@@ -216,18 +160,6 @@ function isEmail(value) {
     } else {
         return true
     }
-}
-
-
-const computedSubNumberMultiple = (numbers) => {
-    let [leftNum, rightNum] = numbers
-    let resultNum = computedSubNumber(leftNum, rightNum)
-    numbers.splice(0, 1)
-    let list = numbers[Symbol.iterator]()
-    while (!list.next().done) {
-        resultNum = computedSubNumber((resultNum * 1), list.next().value)
-    }
-    return resultNum
 }
 
 /**
@@ -242,46 +174,65 @@ const getPrivacyPhone = (phone)=>{
 
 /** 获取页面配置信息 */
 const getShopConfig = () => {
-    const session_name = 'shop_config_new'
+    const session_name = 'shop-config'
     return new Promise(resolve => {
-        $http.doGet('v4/common_config').then(res => {
-            if (res.code == 200) {
-                if (sessionStorage.getItem(session_name)) {
-                    sessionStorage.removeItem(session_name)
-                }
-                const shop_config = res.data
-                shop_config.expires_time = Math.round(new Date() / 1000)
-                sessionStorage.setItem(session_name, JSON.stringify(shop_config))
-                resolve(res.data)
-            } else {
-                Toast(res.message)
-                resolve('')
-            }
-        })
+        // $http.doGet('v4/common_config').then(res => {
+        //     if (res.code == 200) {
+        //         if (sessionStorage.getItem(session_name)) {
+        //             sessionStorage.removeItem(session_name)
+        //         }
+        //         const shopConfig = res.data
+        //         shopConfig.expires_time = data.expires_time
+        //         sessionStorage.setItem(session_name, JSON.stringify(shopConfig))
+        //         resolve(res.data)
+        //     } else {
+        //         Toast(res.message)
+        //         resolve('')
+        //     }
+        // })
+        let data = {
+            "privacy_policy": "52585",
+            "shop_color": "#1050A9",
+            "shop_desc": "多多22",
+            "shop_logo": "",
+            "shop_name": "涂多多",
+            "user_agree": "78248",
+            "wap_logo": "",
+            "wap_logo_color": "",
+            "platform_id": "toodudu",
+            "expires_time": 1742486399
+        }
+        if (sessionStorage.getItem(session_name)) {
+            sessionStorage.removeItem(session_name)
+        }
+        const shopConfig = data
+        shopConfig.expires_time = data.expires_time
+        sessionStorage.setItem(session_name, JSON.stringify(shopConfig))
+        resolve(data)
     })
 }
 
-const checkHasShopConfig = () => {
-    const session_name = 'shop_config_new'
+const initShopConfig = () => {
+    const session_name = 'shop-config'
     return new Promise(async resolve => {
-        let shop_config = {}
+        let shopConfig = {}
         if (sessionStorage.getItem(session_name)) {
             //  判断当 shop_config 缓存时间大于等于1天，则清除重新获取
-            shop_config = JSON.parse(sessionStorage.getItem(session_name))
+            shopConfig = JSON.parse(sessionStorage.getItem(session_name))
             const now_time = Math.round(new Date() / 1000)
-            if (((now_time - shop_config.expires_time) / 3600 / 24) >= 1) {
+            if (((now_time - shopConfig.expires_time) / 3600 / 24) >= 1) {
                 sessionStorage.removeItem(session_name)
-                shop_config = await getShopConfig()
+                shopConfig = await getShopConfig()
             }
         } else {
-            shop_config = await getShopConfig()
+            shopConfig = await getShopConfig()
         }
-        localStorage.setItem('sign_verify_type',shop_config.sign_verify_type?shop_config.sign_verify_type:'1')
         let root = document.querySelector(":root")
-        root.style.setProperty("--main-color", shop_config.shop_color)
-        root.style.setProperty("--main-color-30", shop_config.shop_color+'30')
-        root.style.setProperty("--main-color-90", shop_config.shop_color+'90')
-        resolve(shop_config)
+        root.style.setProperty("--main-color", shopConfig.shop_color)
+        root.style.setProperty("--main-color-30", shopConfig.shop_color+'30')
+        root.style.setProperty("--main-color-90", shopConfig.shop_color+'90')
+        useConfigStore().setShopConfig(shopConfig)
+        resolve(shopConfig)
     })
 }
 /** 校验用户是否登录 **/
@@ -300,17 +251,21 @@ async function checkUserLogin() {
     let is_login = await requestLogin()
     return is_login
 }
+
+function filterWhitespace(str){
+    let newStr = str.replace(/\s*/g,"")
+    return newStr;
+}
 export default {
     openVConsole,
     isTelPhone,
     isPassWord,
-    ydCodeUrl,
     cache,
     decimal,
     formatCurrency,
-    dateFormatter,
     isEmail,
     getShopConfig,
-    checkHasShopConfig,
-    checkUserLogin
+    initShopConfig,
+    checkUserLogin,
+    filterWhitespace
 }

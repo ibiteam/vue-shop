@@ -85,7 +85,24 @@ textarea, select, input {
   border-color: transparent;
   background-color: transparent;
 }
+/* 通用 */
+::-webkit-input-placeholder {
+  color: #999;
+}
 
+::-moz-placeholder {
+  color: #999;
+}
+
+/* firefox 19+ */
+:-ms-input-placeholder {
+  color: #999;
+}
+
+/* ie */
+input:-moz-placeholder {
+  color: #999;
+}
 /*flex布局*/
 .flex {
   display: -webkit-box;
