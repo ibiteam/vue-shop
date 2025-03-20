@@ -3,7 +3,7 @@
         v-model="active"
         placeholder
         safe-area-inset-bottom
-        active-color="#f71111"
+        active-color="var(--main-color)"
         inactive-color="#333"
         route
         :before-change="handleBeforChange">
@@ -30,4 +30,7 @@ const handleBeforChange = (name) => {
 </script>
 
 <style lang='scss' scoped>
+:deep(.van-badge) {
+    background-color: var(--main-color);
+}
 </style>
