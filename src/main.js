@@ -8,6 +8,7 @@ import vant from 'vant'
 import $http from '@/utils/http'
 import $public from '@/utils/public'
 import $dialog from '@/utils/dialog'
+import { toast } from '@/utils/toast'
 import App from './App.vue'
 import router from './router'
 import VueCookies from 'vue-cookies'
@@ -25,6 +26,7 @@ app.config.globalProperties.$bus = mitt()
 app.config.globalProperties.$public = $public
 app.config.globalProperties.$http = $http
 app.config.globalProperties.$dialog = $dialog
+app.config.globalProperties.$toast = toast
 app.config.globalProperties.appRoute = appRoute
 app.component('CommonHeader', CommonHeader)
 app.mount('#app')
