@@ -1,6 +1,6 @@
 import '@/assets/css/base.css'
 import '@/assets/css/iconfont.css'
-
+import 'vant/lib/index.css';
 import { createApp } from 'vue'
 import pinia from '@/stores/index'
 import mitt from 'mitt'
