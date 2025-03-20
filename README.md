@@ -2,6 +2,8 @@
 
 项目地址：[https://github.com/ibiteam/vue-shop](https://github.com/ibiteam/vue-shop "https://github.com/ibiteam/vue-shop")
 
+演示地址：[https://vue-shop.ptdmeta.cn/](https://vue-shop.ptdmeta.cn/ "https://vue-shop.ptdmeta.cn/")
+
 ### 2.开发说明
 
 #### 项目架构
