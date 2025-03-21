@@ -13,7 +13,6 @@ const props = defineProps({
     src: {
         type: String,
         default: 'https://cdn.toodudu.com/2019/01/09/nk0mSH9IIlnDjq0BzUpr9Rf0zVRoDMmTvLfVVZCa.jpeg?imageView2/1/w/350/h/350',
-        required: true
     },
     width: {
         type: String,

@@ -8,7 +8,7 @@
                 <div class="item-info">
                     <van-text-ellipsis class="title" :content="item.goods_name" rows="2"/>
                     <van-text-ellipsis class="subtitle" :content="item.goods_subtitle" rows="1"/>
-                    <div class="s-flex jc-bt" style="align-items: flex-end;">
+                    <div class="s-flex jc-bt ai-ct">
                         <goods-price v-bind="{price: item.shop_price, unit: item.unit}"></goods-price>
                         <span class="sold-out">已售10+</span>
                     </div>
