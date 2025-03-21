@@ -4,14 +4,14 @@ import 'vant/lib/index.css';
 import { createApp } from 'vue'
 import pinia from '@/stores/index'
 import mitt from 'mitt'
-import vant from 'vant'
+import Vant from 'vant'
 import $http from '@/utils/http'
 import $public from '@/utils/public'
 import $dialog from '@/utils/dialog'
 import { toast } from '@/utils/toast'
 import App from './App.vue'
 import router from './router'
-import VueCookies from 'vue-cookies'
+import VueCookies from 'vue3-cookies'
 import { appRoute } from "@/router/appRoute";
 // 公用组件
 import CommonHeader from '@/components/layout/Navbar'
@@ -20,8 +20,8 @@ const app = createApp(App)
 
 app.use(pinia)
 app.use(router)
-app.use(vant)
-app.config.globalProperties.$cookies = VueCookies
+app.use(Vant)
+app.use(VueCookies)
 app.config.globalProperties.$bus = mitt()
 app.config.globalProperties.$public = $public
 app.config.globalProperties.$http = $http

@@ -1,13 +1,14 @@
 import axios from 'axios'
-import VueCookies from 'vue-cookies'
+import { useCookies } from 'vue3-cookies'
 import request from './request'
 import router from '@/router'
-import {JSEncrypt} from 'encryptlong'
 import { useConfigStore } from '@/stores'
 import md5 from 'js-md5'
 import dialog from "./dialog";
 import publics from "./public";
 import Loading from './loading'
+
+const { cookies } = useCookies()
 
 function generateUUID() {
     var d = new Date().getTime()
@@ -22,11 +23,8 @@ function generateUUID() {
 if (!localStorage.getItem('visitorId')) {
     localStorage.setItem('visitorId', generateUUID())
 }
-let encrypt = new JSEncrypt()
 // 请求超时时间
 axios.defaults.timeout = 15000
-
-const lang = localStorage.getItem('locale')
 
 // 如果用的JSONP，可以配置此参数带上cookie凭证，如果是代理和CORS不用设置
 axios.defaults.withCredentials = true
@@ -54,7 +52,7 @@ axios.interceptors.request.use(
         if (config.loading) {
             Loading.start()
         }
-        let token = VueCookies.get('access_token')
+        let token = cookies.get('m-token')
         let visitorId = ''
         if (localStorage.getItem('visitorId')) {
             visitorId = localStorage.getItem('visitorId')
@@ -84,7 +82,7 @@ axios.interceptors.response.use(
         Loading.close()
         if (response.status === 200) {
             if (response.data.code === 403) {
-                VueCookies.remove('app_token')
+                cookies.remove('m-token')
             } else if (response.data.code === 405) {
                 dialog.alert({
                     message: '您没有权限访问'
@@ -158,7 +156,6 @@ function doPost(url, param) {
  */
 function getNotLoading(url, param) {
     let params = param || {}
-
     return new Promise((resolve, reject) => {
         axios.get(url, {
             params: request.sign(params),
@@ -168,7 +165,7 @@ function getNotLoading(url, param) {
                 resolve(res.data)
             })
             .catch(err => {
-                reject(err.data)
+                reject(err)
             })
     })
 
