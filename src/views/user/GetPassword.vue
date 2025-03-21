@@ -235,7 +235,7 @@
 			position: relative;
 			span {
 				font-size: 0.28rem;
-				color: #999;
+				color: var(--color-text-desc);
 				line-height: 0.4rem;
 			}
 			&::after{
@@ -252,7 +252,7 @@
 		}
 		:deep(.van-field .van-button--primary) {
 			span {
-				color: #333;
+				color: var(--color-text);
 			}
 		}
 	}

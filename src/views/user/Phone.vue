@@ -146,15 +146,18 @@ router.beforeEach((to, from, next) => {
 	.login-form {
 		p {
 			padding: 0.5rem 0.3rem;
-
+			color: var(--color-text-desc);
 			span {
-				color: #656565;
+				color: var(--color-text-desc);
 				font-size: 0.24rem;
 			}
 		}
 
 		p.clicked {
-			color: #000;
+			span{
+				color: var(--color-text);
+			}
+			color: var(--color-text);
 		}
 	}
 
