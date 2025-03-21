@@ -31,9 +31,9 @@
                     </template>
                 </van-field>
                 <van-field v-model="password" type="password" label="" placeholder="请输入新密码"
-                           name="password"/>
+                           name="new_password"/>
                 <van-field v-model="password_confirmation" type="password" label="" placeholder="请再次输入密码"
-                           name="password_confirmation"/>
+                           name="new_password_confirmation"/>
                 <div style="margin: 1.3rem 0.4rem 0.3rem;">
                     <van-button round block type="info" native-type="submit">
                         提 交
@@ -100,25 +100,25 @@
                     cns.$toast('请输入短信验证码')
                     return
                 }
-                if (values.password == '') {
+                if (values.new_password == '') {
                     cns.$toast('请输入新密码')
                     return
                 }
-                if(values.password.length < minNumber.value || values.password.length > maxNumber.value){
+                if(values.new_password.length < minNumber.value || values.new_password.length > maxNumber.value){
                     let textNumber = '长度只能在' + minNumber.value + '-' + maxNumber.value + '个字符之间';
                     cns.$toast(textNumber)
                     return;
                 }
-                if (values.password_confirmation == '') {
+                if (values.new_password_confirmation == '') {
                     cns.$toast('请再次输入密码')
                     return
                 }
-                if (values.password_confirmation !== values.password) {
+                if (values.new_password_confirmation !== values.new_password) {
                     cns.$toast('您两次输入的密码不同，请重试')
                     return
                 }
-                values.password = md5(values.password)
-                values.password_confirmation = md5(values.password_confirmation)
+                values.new_password = md5(values.new_password)
+                values.new_password_confirmation = md5(values.new_password_confirmation)
                 values.phone = route.query.phone ? route.query.phone : phone.value
 	            updatePassword(values, passwordType.value).then(res => {
                     if (res.code == 200) {
