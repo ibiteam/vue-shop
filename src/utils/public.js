@@ -244,6 +244,8 @@ function requestLogin() {
             } else {
                 resolve(false)
             }
+        }).catch(()=>{
+            resolve(false)
         })
     })
 }
@@ -251,7 +253,15 @@ async function checkUserLogin() {
     let is_login = await requestLogin()
     return is_login
 }
-
+function isLogin() {
+    $http.getNotLoading('v3/user/checkLogin').then(res=>{
+        let is_login = false
+        if (res.data && res.data.is_login) {
+            is_login = res.data.is_login
+        }
+        return is_login
+    })
+}
 function filterWhitespace(str){
     let newStr = str.replace(/\s*/g,"")
     return newStr;
@@ -267,5 +277,7 @@ export default {
     getShopConfig,
     initShopConfig,
     checkUserLogin,
-    filterWhitespace
+    filterWhitespace,
+    getPrivacyPhone,
+    isLogin
 }

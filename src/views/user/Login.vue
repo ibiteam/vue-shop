@@ -53,9 +53,10 @@
 					</van-button>
 				</div>
 			</van-form>
-			<p><span @click="appRoute('register')">新用户注册</span><span
-				@click="loginType=!loginType">{{ loginType ? '短信验证码登录' : '账号密码登录' }}</span><span
-				class="no-password" @click="appRoute('getPassword',{type:4},{type:4})" v-if="loginType">忘记密码</span>
+			<p>
+				<span @click="appRoute('register')">新用户注册</span>
+				<span @click="loginType=!loginType">{{ loginType ? '短信验证码登录' : '账号密码登录' }}</span>
+				<span class="no-password" @click="appRoute('getPassword',{type:4},{type:4})" v-if="loginType">忘记密码</span>
 			</p>
 		</div>
 	</div>
@@ -163,7 +164,7 @@ const goToPhone = () => {
 	} else {
 		redirect = 'ucenter'
 	}
-	cns.appRoute('phone', {phone: phone.value, type: '9', redirect: redirect, queryO: query, is_registered: isRegistered.value}, 'replace')
+	cns.appRoute('phone', {phone: phone.value, type: '9', redirect: redirect, query_page: query, is_registered: isRegistered.value}, 'replace')
 }
 
 onMounted(() => {
@@ -176,196 +177,5 @@ router.beforeEach((to, from, next) => {
 </script>
 
 <style scoped lang="scss">
-
-.login-wrap {
-	height: 100vh;
-	background: #fff url("@/assets/images/user/bj.png") no-repeat top center;
-	background-size: 100% 5.2rem;
-
-	.login-header {
-		height: 0.8rem;
-		line-height: 0.8rem;
-
-		.iconfont {
-			font-size: 0.4rem;
-		}
-
-		padding-left: 0.2rem;
-	}
-
-	.login-company {
-		padding-top: 0.4rem;
-		text-align: center;
-		padding-bottom: 0.3rem;
-
-		img {
-			width: auto;
-			height: 1.51rem;
-		}
-
-		h4 {
-			width: 1.1rem;
-			height: 1.1rem;
-			border-radius: 50%;
-			background: #eee;
-			display: inline-block;
-		}
-
-		p {
-			line-height: 3;
-			font-size: 0.24rem;
-			color: #333;
-		}
-	}
-
-	.login-form {
-		padding: 0 0.3rem;
-
-		:deep(.van-field__left-icon) {
-			margin-right: 0.25rem;
-		}
-
-		:deep(.van-icon.van-icon-arrow::before) {
-			font-weight: bold;
-			color: #333;
-			font-size: 0.38rem !important;
-		}
-
-		:deep(.van-field__right-icon em) {
-			color: #333;
-			font-size: 0.36rem;
-		}
-
-		.van-field {
-			margin-bottom: 0.3rem;
-			padding: 0.30rem 0.40rem;
-		}
-
-		:deep(.van-field__body) {
-			align-items: unset;
-		}
-
-		:deep(.van-icon-friends-o:before) {
-			content: '';
-			width: 0.4rem;
-			height: 0.4rem;
-			background: url("@/assets/images/user/user.png") no-repeat center;
-			background-size: 0.26rem 0.3rem;
-		}
-
-		:deep(.van-icon-manager-o:before) {
-			content: '';
-			width: 0.4rem;
-			height: 0.4rem;
-			background: url("@/assets/images/user/password.png") no-repeat center;
-			background-size: 0.26rem 0.27rem;
-		}
-
-		.van-cell {
-			margin-bottom: 0.3rem;
-			padding: 0.30rem 0.40rem;
-			background: #F8F8F8;
-			border-radius: 0.5rem;
-			height: 1rem;
-
-			&::after {
-				display: none;
-			}
-		}
-
-		:deep(.van-cell__title) {
-			color: #000;
-
-			span {
-				font-size: 0.30rem;
-			}
-		}
-
-		:deep(.van-cell__value) {
-			font-size: 0.30rem;
-
-			span {
-				font-size: 0.28rem;
-				color: #333;
-			}
-		}
-
-		:deep(.van-field__control) {
-			font-size: 0.30rem;
-			height: 0.4rem;
-			color: #000;
-			background: none !important;
-
-			&:autofill {
-				background: #F8F8F8;; // 支持火狐
-			}
-
-			// 支持chrome
-			&:-webkit-autofill,
-			&:-webkit-autofill:hover,
-			&:-webkit-autofill:focus,
-			&:-webkit-autofill:active {
-				transition-delay: 99999s;
-				transition: background-color 99999s ease-out;
-			}
-		}
-
-		:deep(.van-cell--clickable) {
-			padding: 0.26rem 0.40rem;
-		}
-
-		:deep(.van-cell--clickable .van-cell__title) {
-			color: #999999;
-		}
-
-		:deep(.van-icon) {
-			font-size: 0.35rem;
-		}
-
-		.van-button {
-			height: 0.9rem;
-			line-height: 0.9rem;
-			background: var(--main-color);
-			border-color: transparent;
-			color: #fff;
-
-			:deep(span) {
-				font-size: 0.32rem;
-			}
-		}
-
-		.password-input {
-			position: relative;
-
-			.no-password {
-				position: absolute;
-				right: 0.40rem;
-				top: 0.4rem;
-				line-height: 0.24rem;
-				color: #666;
-				font-size: 0.26rem;
-				display: inline-block;
-			}
-
-			.no-password:active {
-				background: rgba(0, 0, 0, 0.1);
-			}
-		}
-
-		p {
-			display: flex;
-			flex-wrap: nowrap;
-			justify-content: space-between;
-			margin: 0 0.7rem;
-
-			span {
-				width: auto;
-				font-size: 0.24rem;
-				color: #333;
-				line-height: 1.2;
-				cursor: pointer;
-			}
-		}
-	}
-}
+@import "@/assets/css/login";
 </style>
