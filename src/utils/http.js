@@ -27,7 +27,7 @@ if (!localStorage.getItem('visitorId')) {
 axios.defaults.timeout = 15000
 
 // 如果用的JSONP，可以配置此参数带上cookie凭证，如果是代理和CORS不用设置
-axios.defaults.withCredentials = true
+// axios.defaults.withCredentials = true
 axios.defaults.baseURL = import.meta.env.VITE_APP_URL
 // post请求头
 axios.defaults.headers.Accept = 'application/json'

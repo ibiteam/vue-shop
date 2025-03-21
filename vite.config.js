@@ -8,10 +8,10 @@ import { createHtmlPlugin } from 'vite-plugin-html';
 const getEnv = (mode, target) => {
     return loadEnv(mode, process.cwd())[target]
 }
+
 export default ({ mode }) => {
     const is_https = getEnv(mode, 'VITE_APP_URL').includes('https')
     const is_dev = getEnv(mode, 'VITE_APP_CURRENTMODE') == 'dev'
-    const is_prod = getEnv(mode, 'VITE_APP_CURRENTMODE') == 'prod'
     return defineConfig({
         plugins: [
             vue({ reactivityTransform: true }),
@@ -44,13 +44,15 @@ export default ({ mode }) => {
             open: true,
             strictPort: false,
             https: is_https,
-            proxy: {
-                '/api': {
-                    target: getEnv(mode, 'VITE_APP_URL'),
-                    changeOrigin: true,
-                    rewrite: (path) => path.replace(/^\/api/, '')
-                }
-            }
+            // cors: true,
+            // proxy: {
+            //     '/api': {
+            //         target: getEnv(mode, 'VITE_APP_URL'),
+            //         changeOrigin: true,
+            //         rewrite: (path) => path.replace(/^\/api/, ''),
+            //         secure: false
+            //     }
+            // }
         }
     })
 }
