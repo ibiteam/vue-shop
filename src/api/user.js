@@ -14,10 +14,12 @@ export function registerOrPhoneLogin({info, action, is_register}) {
 }
 
 export function sendCode(info) {
+    if(info.action == 'password-edit') delete info.phone
     return $http.doPost('v1/sms-action', info)
 }
 
 export function updatePassword(info, action) {
     const URL = action == 'password-forget' ? 'v1/auth/forget-password' : 'v1/auth/edit-password'
+    if(action == 'password-edit') delete info.phone
     return $http.doPost(URL, info)
 }

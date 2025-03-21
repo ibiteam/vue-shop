@@ -25,8 +25,8 @@
                                     :class="{'codeing':!isFirst&&second>0}"
                                     @click.prevent="sendPhoneCode">
                             <span v-if="isFirst">获取验证码</span>
-                            <span v-if="!isFirst&&second>0" style="color: #F71111;">重新获取<i v-html="second" style="font-style: normal;"></i>s</span>
-                            <span v-if="!isFirst&&second==0" style="color: #F71111;">重新获取</span>
+                            <span v-if="!isFirst&&second>0">重新获取<i v-html="second" style="font-style: normal;"></i>s</span>
+                            <span v-if="!isFirst&&second==0">重新获取</span>
                         </van-button>
                     </template>
                 </van-field>
@@ -94,58 +94,65 @@
             cns.$toast('请输入正确的手机号码')
             return
         }
-		checkPhone(route.query.phone ? route.query.phone : phone.value).then(res => {
-            if (res.code == 200 && res.data.is_register) {
-                if (values.code == '') {
-                    cns.$toast('请输入短信验证码')
-                    return
-                }
-                if (values.new_password == '') {
-                    cns.$toast('请输入新密码')
-                    return
-                }
-                if(values.new_password.length < minNumber.value || values.new_password.length > maxNumber.value){
-                    let textNumber = '长度只能在' + minNumber.value + '-' + maxNumber.value + '个字符之间';
-                    cns.$toast(textNumber)
-                    return;
-                }
-                if (values.new_password_confirmation == '') {
-                    cns.$toast('请再次输入密码')
-                    return
-                }
-                if (values.new_password_confirmation !== values.new_password) {
-                    cns.$toast('您两次输入的密码不同，请重试')
-                    return
-                }
-                values.new_password = md5(values.new_password)
-                values.new_password_confirmation = md5(values.new_password_confirmation)
-                values.phone = route.query.phone ? route.query.phone : phone.value
-	            updatePassword(values, passwordType.value).then(res => {
-                    if (res.code == 200) {
-                        if (passwordType.value == 'password-edit') {
-                            cns.$toast('修改密码成功！请重新登录账号。')
-                            cns.$cookies.remove('m-token')
-                            setTimeout(() => {
-                                router.replace({name:'login'})
-                            }, 1000)
-                        } else {
-                            cns.$toast('重置密码成功！')
-                            setTimeout(() => {
-                                router.replace({name:'login'})
-                            }, 1000)
-                        }
-                    } else {
-                        cns.$toast(res.message)
-                    }
-                }).catch(err => {
-                    router.back()
-                })
-            } else {
-                cns.$toast('该手机号未注册，请重新输入')
-            }
-        })
-    }
+	    if (values.code == '') {
+		    cns.$toast('请输入短信验证码')
+		    return
+	    }
+	    if (values.new_password == '') {
+		    cns.$toast('请输入新密码')
+		    return
+	    }
+	    if(values.new_password.length < minNumber.value || values.new_password.length > maxNumber.value){
+		    let textNumber = '长度只能在' + minNumber.value + '-' + maxNumber.value + '个字符之间';
+		    cns.$toast(textNumber)
+		    return;
+	    }
+	    if (values.new_password_confirmation == '') {
+		    cns.$toast('请再次输入密码')
+		    return
+	    }
+	    if (values.new_password_confirmation !== values.new_password) {
+		    cns.$toast('您两次输入的密码不同，请重试')
+		    return
+	    }
+	    values.new_password = md5(values.new_password)
+	    values.new_password_confirmation = md5(values.new_password_confirmation)
+	    values.phone = route.query.phone ? route.query.phone : phone.value
+		if(!route.query.phone){
+			checkPhone(route.query.phone ? route.query.phone : phone.value).then(res => {
+				if (res.code == 200 && res.data.is_register) {
+					submitPassword(values)
+				} else {
+					cns.$toast('该手机号未注册，请重新输入')
+				}
+			})
+		}else {
+			submitPassword(values)
+		}
 
+    }
+	const submitPassword = (values) => {
+		updatePassword(values, passwordType.value).then(res => {
+			if (res.code == 200) {
+				if (passwordType.value == 'password-edit') {
+					cns.$toast('修改密码成功！请重新登录账号。')
+					cns.$cookies.remove('m-token')
+					setTimeout(() => {
+						router.replace({name:'login'})
+					}, 1000)
+				} else {
+					cns.$toast('重置密码成功！')
+					setTimeout(() => {
+						router.replace({name:'login'})
+					}, 1000)
+				}
+			} else {
+				cns.$toast(res.message)
+			}
+		}).catch(err => {
+			router.back()
+		})
+	}
     const sendPhoneCode = () => {
         if (!cns.$public.isTelPhone(phone.value) && !route.query.phone) {
             cns.$toast('请输入正确的手机号码')
@@ -154,28 +161,36 @@
         if (second.value) {
             return;
         }
-	    checkPhone(route.query.phone ? route.query.phone : phone.value).then(res => {
-            if (res.code == 200 && res.data.is_register) {
-                let info = {
-                    phone: route.query.phone ? route.query.phone : phone.value,
-                    action: passwordType.value
-                }
-	            sendCode(info).then(ret => {
-                    isFirst.value = false
-                    if (ret.code == 200) {
-                        second.value = 60
-                        countTime()
-                        cns.$toast('短信已经发送')
-                    } else {
-                        cns.$toast(ret.message)
-                    }
-                }).catch(err => {
-                })
-            } else {
-                cns.$toast('该手机号未注册，请重新输入')
-            }
-        })
+	    let info = {
+		    phone: route.query.phone ? route.query.phone : phone.value,
+		    action: passwordType.value
+	    }
+		if(!route.query.phone){
+			checkPhone(phone.value).then(res => {
+				if (res.code == 200 && res.data.is_register) {
+					submitSendCode(info)
+				} else {
+					cns.$toast('该手机号未注册，请重新输入')
+				}
+			})
+		}else {
+			submitSendCode(info)
+		}
     }
+
+	const submitSendCode = (info)=>{
+		sendCode(info).then(ret => {
+			isFirst.value = false
+			if (ret.code == 200) {
+				second.value = 60
+				countTime()
+				cns.$toast('短信已经发送')
+			} else {
+				cns.$toast(ret.message)
+			}
+		}).catch(err => {
+		})
+	}
 
     onMounted(() => {
         passwordType.value = route.query.type

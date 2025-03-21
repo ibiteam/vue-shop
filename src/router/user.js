@@ -17,7 +17,7 @@ const user = [
         name: 'register',
         component: () => import('@/views/user/Register.vue'),
     },
-    /*找回密码*/
+    /*找回密码/修改密码*/
     {
         path: '/getPassword',
         name: 'getPassword',
