@@ -36,7 +36,7 @@
 <script setup>
 	import {useConfigStore} from '@/stores'
 	const configStore = useConfigStore()
-	import {  checkPhone} from "@/api/user";
+	import { checkPhone } from "@/api/user";
 
     import { ref, onMounted, getCurrentInstance, computed } from 'vue'
     import { useRouter } from 'vue-router'
@@ -62,7 +62,7 @@
                 sessionStorage.setItem('can_send_code', true)
                 let params = {
                     phone: phone.value,
-                    type: '3'
+                    action: 'register'
                 }
                 cns.appRoute('phone', params, params)
             } else {
@@ -85,5 +85,5 @@
 </script>
 
 <style scoped lang="scss">
-@import "@/assets/css/login";
+@use "@/assets/css/login.scss" as *;
 </style>

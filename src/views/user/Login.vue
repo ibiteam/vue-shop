@@ -56,7 +56,7 @@
 			<p>
 				<span @click="appRoute('register')">新用户注册</span>
 				<span @click="loginType=!loginType">{{ loginType ? '短信验证码登录' : '账号密码登录' }}</span>
-				<span class="no-password" @click="appRoute('getPassword',{type:4},{type:4})" v-if="loginType">忘记密码</span>
+				<span class="no-password" @click="appRoute('getPassword',{ type:'password-forget' })" v-if="loginType">忘记密码</span>
 			</p>
 		</div>
 	</div>
@@ -105,16 +105,16 @@ const onSubmit = (values) => {
 
 const loginPassword = () => {
 	let data = {
-		'user_name': cns.$public.filterWhitespace(username.value),
+		'account': cns.$public.filterWhitespace(username.value),
 		'password': md5(password.value),
 	}
 	accountLogin(data).then(res => {
 		if (res.code == 200) {
-			cns.$cookies.set('app_token', res.data.token)
+			cns.$cookies.set('m-token', res.data.token, res.data.expires_at)
 			let redirect = route.query.redirect
 			if (redirect) {
 				cns.appRoute(redirect, {}, 'replace')
-			} else if (fromPath.value.name && (fromPath.value.name != 'getPassword' || fromPath.value.name != 'articleDetail' || fromPath.value.name != 'register' || fromPath.value.name != 'phone_getPassword')) {
+			} else if (fromPath.value.name && (fromPath.value.name != 'getPassword' || fromPath.value.name != 'register')) {
 				cns.appRoute(fromPath.value.name, fromPath.value.query, 'replace')
 			} else {
 				cns.appRoute('ucenter', {}, 'replace')
@@ -135,8 +135,8 @@ const onSubmitPhone = (values) => {
 		return
 	}
 	checkPhone(phone.value).then(res=>{
-		isRegistered.value = res.code == 1003 ? '1' : '0'
-		if (isRegistered.value == '1') {
+		isRegistered.value = res.data.is_register
+		if (res.data.is_register) {
 			goToPhone()
 		} else {
 			cns.$dialog.confirm({
@@ -157,14 +157,14 @@ const goToPhone = () => {
 
 	let query = {}
 	if (redirect) {
-		console.log(redirect)
+		// 不处理
 	} else if (fromPath.value.name && fromPath.value.name != 'getPassword' && fromPath.value.name != 'register' && fromPath.value.name != 'phone_getPassword') {
 		redirect = fromPath.value.name
 		query = fromPath.value.query
 	} else {
 		redirect = 'ucenter'
 	}
-	cns.appRoute('phone', {phone: phone.value, type: '9', redirect: redirect, query_page: query, is_registered: isRegistered.value}, 'replace')
+	cns.appRoute('phone', {phone: phone.value, action: isRegistered.value?'login':'register', redirect: redirect, query_page: JSON.stringify(query), is_registered: isRegistered.value}, 'replace')
 }
 
 onMounted(() => {
@@ -177,5 +177,5 @@ router.beforeEach((to, from, next) => {
 </script>
 
 <style scoped lang="scss">
-@import "@/assets/css/login";
+@use "@/assets/css/login.scss" as *;
 </style>

@@ -1,18 +1,23 @@
 import $http from '@/utils/http'
 
 export function accountLogin(data) {
-    return $http.doPost('v4/user/login', data)
+    return $http.doPost('v1/auth/login-by-password', data)
 }
 
 export function checkPhone(phone) {
-    return $http.doGet('v3/user/checkPhone', {mobile_phone: phone})
+    return $http.doGet('v1/auth/check-phone', {phone: phone})
 }
 
-export function registerOrPhoneLogin({info, type, is_register}) {
-    let url = type == '9' ? is_register == 0 ? 'v3/user/phoneLoginOrRegister' : 'v3/user/phoneLogin' : 'v3/user/register'
-    return $http.doPost(url, info)
+export function registerOrPhoneLogin({info, action, is_register}) {
+    const URL = action == 'register' ? is_register == 0 ? 'v1/auth/login-register-by-phone' : 'v1/auth/register-by-phone' : 'v1/auth/login-by-phone'
+    return $http.doPost(URL, info)
 }
 
 export function sendCode(info) {
-    return $http.doPost('v3/user/sendCode', info)
+    return $http.doPost('v1/sms-action', info)
+}
+
+export function updatePassword(info, action) {
+    const URL = action == 'password-forget' ? 'v1/auth/forget-password' : 'v1/auth/edit-password'
+    return $http.doPost(URL, info)
 }

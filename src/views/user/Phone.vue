@@ -4,7 +4,7 @@
 		<div class="login-company">
 			<span><img src="@/assets/images/user/login-phone.png"/></span>
 			<div class="fs36 co-333" style="padding:0.32rem 0;">请输入验证码</div>
-			<div style="padding:0 0 0.2rem;" class="co-999 fs26">已发送至<span style="line-height:1;font-size:0.26rem;" class="co-333">{{ mobile_phone_hide }}</span></div>
+			<div style="padding:0 0 0.2rem;" class="co-999 fs26">已发送至<span style="line-height:1;font-size:0.26rem;" class="co-333">{{ phone_hide }}</span></div>
 		</div>
 		<div class="login-form">
 			<van-password-input
@@ -37,9 +37,9 @@ const phoneCode = ref('')
 const showKeyboard = ref(false)
 const second = ref(0)
 const timer = ref(null)
-const mobile_phone = ref('')
-const mobile_phone_hide = ref('')
-const mobile_type = ref('')
+const phone = ref('')
+const phone_hide = ref('')
+const action = ref('')
 const title = ref('手机号快捷登录')
 const fromPath = ref({})
 
@@ -68,8 +68,8 @@ const sendPhoneCode = () => {
 	}
 	second.value = 60
 	let info = {
-		mobile_phone: mobile_phone.value,
-		type: mobile_type.value
+		phone: phone.value,
+		action: action.value
 	}
 	sendCode(info).then(res => {
 		sessionStorage.removeItem('can_send_code')
@@ -86,17 +86,13 @@ const sendPhoneCode = () => {
 
 const codeSubmit = () => {
 	let info = {
-		mobile_phone: mobile_phone.value,
+		phone: phone.value,
 		code: phoneCode.value
 	}
-	if (route.query.parent_id) {
-		info.parent_id = route.query.parent_id
-	}
-
-	registerOrPhoneLogin({info, type: mobile_type.value, is_register: route.query.is_registered}).then(res => {
+	registerOrPhoneLogin({info, action: action.value, is_register: route.query.is_registered}).then(res => {
 		if (res.code == 200) {
-			cns.$toast(mobile_type.value == '9' ? '登录成功' : '注册成功')
-			cns.$cookies.set('app_token', res.data.token)
+			cns.$toast(action.value == 'login' ? '登录成功' : '注册成功')
+			cns.$cookies.set('m-token', res.data.token, res.data.expires_at)
 			let redirect = route.query.redirect
 			let query = route.query.query_page ? JSON.parse(route.query.query_page) : {}
 			setTimeout(() => {
@@ -115,17 +111,15 @@ const codeSubmit = () => {
 	})
 }
 onMounted(() => {
-	mobile_phone.value = route.query.phone
-	mobile_type.value = route.query.type
-	mobile_phone_hide.value = cns.$public.getPrivacyPhone(route.query.phone)
-	title.value = mobile_type.value == '9' ? '手机号快捷登录' : '手机快速注册'
+	phone.value = route.query.phone
+	action.value = route.query.action
+	phone_hide.value = cns.$public.getPrivacyPhone(route.query.phone)
+	title.value = action.value == 'login' ? '手机号快捷登录' : '手机快速注册'
 	if (sessionStorage.getItem('can_send_code')) {
 	    sendPhoneCode()
 	} else if (fromPath.value.name) {
 	    router.back()
-	} else if (mobile_type.value == '9') {
-	    cns.appRoute('login', {}, {}, 'replace')
-	} else if (mobile_type.value == '3') {
+	} else if (action.value == 'register') {
 	    cns.appRoute('register', {}, {}, 'replace')
 	} else {
 	    cns.appRoute('login', {}, {}, 'replace')

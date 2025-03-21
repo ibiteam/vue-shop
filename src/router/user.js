@@ -16,6 +16,12 @@ const user = [
         path: '/register',
         name: 'register',
         component: () => import('@/views/user/Register.vue'),
-    }
+    },
+    /*找回密码*/
+    {
+        path: '/getPassword',
+        name: 'getPassword',
+        component: () => import('@/views/user/GetPassword.vue')
+    },
 ]
 export default user
