@@ -6,7 +6,8 @@ function confirm({title='',message='',cancelButtonText='取消',confirmButtonTex
 			title: title,
 			message: message,
 			cancelButtonText: cancelButtonText,
-			confirmButtonText: confirmButtonText
+			confirmButtonText: confirmButtonText,
+            confirmButtonColor: 'var(--main-color)'
 		}).then(() => {
 			resolve()
 		}).catch(() => {
@@ -21,7 +22,8 @@ function alert({title='',message='',cancelButtonText='取消',confirmButtonText=
 			title: title,
 			message: message,
 			cancelButtonText: cancelButtonText,
-			confirmButtonText: confirmButtonText
+			confirmButtonText: confirmButtonText,
+            confirmButtonColor: 'var(--main-color)'
 		}).then(() => {
 			resolve()
 		}).catch(() => {
