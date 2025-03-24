@@ -10,41 +10,16 @@
   --input-bg-color: #f5f5f5;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  font-weight: normal;
-}
-
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   font-weight: normal;
   font-size: var(--base-font-size);
-}
-span,i,div,a,em{
-  margin: 0;
-  padding: 0;
-}
-
-blockquote, q {
-  quotes: none;
-}
-
-blockquote:before, blockquote:after, q:before, q:after {
-  content: none;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
 }
 
 a {
   text-decoration: none;
-  -webkit-backface-visibility: hidden;
 }
 
 li {
@@ -105,13 +80,6 @@ input:-moz-placeholder {
   color: #999;
 }
 /*flex布局*/
-.flex {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-}
-
 .s-flex {
   display: flex;
 }
@@ -180,12 +148,6 @@ input:-moz-placeholder {
   align-items: flex-start;
 }
 /*文本省略*/
-.povf-ell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-}
 
 .elli-1, .ellipsis-1 {
   overflow: hidden;
@@ -304,7 +266,7 @@ input:-moz-placeholder {
 }
 
 .co-666 {
-  color: #666666;
+  color: #666;
 }
 
 .bg-fff {
