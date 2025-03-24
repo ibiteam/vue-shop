@@ -83,17 +83,6 @@ axios.interceptors.response.use(
         if (response.status === 200) {
             if (response.data.code === 403) {
                 cookies.remove('m-token')
-            } else if (response.data.code === 405) {
-                dialog.alert({
-                    message: '您没有权限访问'
-                }).then(() => {
-                    router.replace('/')
-                })
-            } else if (response.data.code === 4019) { // 代表加密方式有更改，需要重新请求config接口
-                publics.getShopConfig().then((config)=>{
-                    localStorage.setItem('sign_verify_type',config.sign_verify_type?config.sign_verify_type:'1')
-                    window.location.reload()
-                })
             } else if (response.data.code === 404) { // 需要重新请求config接口
                 publics.getShopConfig()
             }
@@ -191,82 +180,6 @@ function postNotLoading(url, param) {
             })
     })
 }
-
-/**
- * post方法，对应post请求，入参有空值不去除
- * @param {String} url [请求的url地址]
- */
-function doPostNotRemove(url, param) {
-    let params = param || {}
-
-    return new Promise((resolve, reject) => {
-        axios.post(url, request.signNotRemove(params), {
-            loading: false
-        })
-            .then(res => {
-                if (res.data.code !== 403) {
-                    resolve(res.data)
-                }else {
-                    reject('403')
-                }
-            })
-            .catch(err => {
-                reject(err.data)
-            })
-    })
-}
-
-/**
- * post方法，对应post请求
- * @param {String} url [请求的url地址]
- */
-function doUpload(url, param) {
-    let params = param || {}
-    return new Promise((resolve, reject) => {
-        axios.post(url, params, {
-            loading: true
-        })
-            .then(res => {
-                resolve(res.data)
-            })
-            .catch(err => {
-                reject(err.data)
-            })
-    })
-}
-/**
- * image 文件流上传
- * @param {String} url [请求的url地址]
- */
-function doFile(url, param, method = 'post',other={}) {
-    let params = param || {}
-    var formData = new FormData()
-    params.forEach(item => {
-        formData.append("files[]", item, item.name);
-    })
-    // 增加其他需要上传参数
-    if(Object.keys(other).length>0){
-        Object.keys(other).map(its => {
-            formData.append(its,other[its])
-        })
-    }
-    return new Promise((resolve, reject) => {
-        axios[method](url, formData, {
-            loading: true,
-            headers: {
-                'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundarynl6gT1BKdPWIejNq',
-                'type': 'file'
-            },
-            maxBodyLength: Infinity,
-        }).then(res => {
-            resolve(res.data)
-        })
-            .catch(err => {
-                reject(err.data.data)
-            })
-    })
-
-}
 function changeBaseUrl(url) {
     const baseUrl = import.meta.env.VITE_APP_URL;
 
@@ -279,7 +192,7 @@ function changeBaseUrl(url) {
  * image 图片上传上传
  * @param {String} url [请求的url地址]
  */
-function doFileNew(url, param, method = 'post') {
+function doFile(url, param, method = 'post') {
     changeBaseUrl(url);
 
     let params = param || {};
@@ -312,8 +225,5 @@ export default {
     doGet,
     getNotLoading,
     postNotLoading,
-    doPostNotRemove,
-    doUpload,
-    doFile,
-    doFileNew
+    doFile
 }
