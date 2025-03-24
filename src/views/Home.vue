@@ -21,7 +21,7 @@
         <section class="home-item-wrapper home-swiper-wrapper">
             <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
                 <van-swipe-item v-for="i in 3">
-                    <image-item v-bind="{width: '7.1rem', height: '2rem', radius: '.2rem'}"></image-item>
+                    <common-image v-bind="{width: '7.1rem', height: '2rem', radius: '.2rem'}"></common-image>
                 </van-swipe-item>
             </van-swipe>
         </section>
@@ -35,7 +35,6 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { shopCommonConfig } from '@/api/common'
-import ImageItem from '@/components/goods/image'
 import HorizontalScroller from '@/components/swiper/horizontalScroller'
 import RecommendColumn from '../components/recommendColumn/RecommendColumn'
 

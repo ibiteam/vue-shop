@@ -4,12 +4,12 @@
         <slot name="title" v-else></slot>
         <div class="waterfall-container">
             <div v-for="(item, index) in goods" :key="item.goods_id" class="waterfall-item">
-                <goods-image v-bind="{width: '3.5rem', height: '3.5rem', src: item.goods_thumb}"></goods-image>
+                <common-image v-bind="{width: '3.5rem', height: '3.5rem', src: item.goods_thumb}"></common-image>
                 <div class="item-info">
                     <van-text-ellipsis class="title" :content="item.goods_name" rows="2"/>
                     <van-text-ellipsis class="subtitle" :content="item.goods_subtitle" rows="1"/>
                     <div class="s-flex jc-bt ai-ct">
-                        <goods-price v-bind="{price: item.shop_price, unit: item.unit}"></goods-price>
+                        <common-price v-bind="{price: item.shop_price, unit: item.unit}"></common-price>
                         <span class="sold-out">已售10+</span>
                     </div>
                 </div>
@@ -19,8 +19,6 @@
 </template>
 
 <script setup>
-import GoodsImage from '@/components/goods/image'
-import GoodsPrice from '@/components/goods/price'
 import { defineProps } from 'vue'
 
 const props = defineProps({

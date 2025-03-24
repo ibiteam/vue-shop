@@ -15,6 +15,8 @@ import VueCookies from 'vue3-cookies'
 import { appRoute } from "@/router/appRoute";
 // 公用组件
 import CommonHeader from '@/components/layout/Navbar'
+import CommonImage from '@/components/common/Image'
+import CommonPrice from '@/components/common/Price'
 
 const app = createApp(App)
 
@@ -29,4 +31,6 @@ app.config.globalProperties.$dialog = $dialog
 app.config.globalProperties.$toast = toast
 app.config.globalProperties.appRoute = appRoute
 app.component('CommonHeader', CommonHeader)
+app.component('CommonImage', CommonImage)
+app.component('CommonPrice', CommonPrice)
 app.mount('#app')
