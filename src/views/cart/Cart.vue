@@ -10,7 +10,7 @@
                 </div>
             </div>
             <!--购物车内容-->
-            <section v-if="!is_placeholder">
+            <section v-if="!is_placeholder" style="margin-bottom: 0.2rem;">
                 <van-pull-refresh v-model="isLoading" @refresh="getData">
                     <div v-if="hasLogin && (shopList.length > 0 || invalid_goods.length>0)" class="padding-horizontal-02">
                         <div class="bg-fff shop-box MT20 shop-box-section" v-for="(item,shop_index) in shopList" :key="item.seller_id">
@@ -147,7 +147,7 @@
                         </div>
                     </div>
                     <!--购物车猜你喜欢部分-->
-                    <!--<RecommendColumn :recommend="recommend"></RecommendColumn>-->
+                    <RecommendColumn :recommend="recommend"></RecommendColumn>
                 </van-pull-refresh>
             </section>
             <section v-else class="loaded padding-horizontal-02">
@@ -257,8 +257,7 @@ import {
     newAddAttensionAxios, placeOrderAxios, usercouponAddAxios
 } from "@/api/cart.js";
 import { showToast } from 'vant';
-import $dialog from "@/utils/dialog.js";
-// import RecommendColumn from '@/components/recommendColumn/RecommendColumn'
+import RecommendColumn from '@/components/recommendColumn/RecommendColumn'
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -1165,8 +1164,8 @@ onMounted(() => {
                 height: 1.08rem;
                 border-bottom: 1px solid #e5e5e5;
                 position: fixed;
-                bottom: calc(0.98rem + constant(safe-area-inset-bottom));
-                bottom: calc(0.98rem + env(safe-area-inset-bottom));
+                bottom: calc(50px + constant(safe-area-inset-bottom));
+                bottom: calc(50px + env(safe-area-inset-bottom));
                 /*bottom: 0.98rem;*/
                 z-index: 100;
                 padding-left: 0.3rem;
