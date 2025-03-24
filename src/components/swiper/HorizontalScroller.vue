@@ -2,7 +2,7 @@
     <div class="h-scroll-container">
         <swiper v-bind="swiperOptions" class="h-scroll-wrapper" ref="swiperRef">
             <swiper-slide class="scroll-item" v-for="(i,index) in items" :key="index">
-                <image-item v-bind="{width: '0.9rem', height: '0.9rem', src: i.icon}"></image-item>
+                <common-image v-bind="{width: '0.9rem', height: '0.9rem', src: i.icon}"></common-image>
                 <van-text-ellipsis class="subtitle" :content="i.name" rows="1" />
             </swiper-slide>
         </swiper>
@@ -12,7 +12,6 @@
   
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import ImageItem from '@/components/goods/image'
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Pagination, Scrollbar } from "swiper/modules"
 import 'swiper/css';
