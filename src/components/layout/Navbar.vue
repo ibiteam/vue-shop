@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { defineProps, getCurrentInstance } from 'vue'
+import { defineProps, getCurrentInstance, defineEmits } from 'vue'
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 const props = defineProps({
@@ -54,13 +54,15 @@ const props = defineProps({
     },
 })
 
+const emit = defineEmits(['click-left', 'click-right'])
+
 const handleClickLeft = () => {
     cns.$router.go(-1)
-    cns.$bus.emit('navbar-click-left')
+    emit('click-left')
 }
 
 const handleClickRight = () => {
-    cns.$bus.emit('navbar-click-right')
+    emit('click-right')
 }
 </script>
 
