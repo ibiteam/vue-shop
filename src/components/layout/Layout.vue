@@ -1,6 +1,6 @@
 <template>
-    <div class="shop-layout-container">
-        <router-view class="shop-view" v-slot="{ Component }">
+    <div class="shop-layout-container s-flex flex-dir">
+        <router-view class="shop-view flex-1" style="height: 0" v-slot="{ Component }">
             <keep-alive>
                 <component :is="Component" />
             </keep-alive>
