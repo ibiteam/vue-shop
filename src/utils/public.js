@@ -162,6 +162,22 @@ function isEmail(value) {
     }
 }
 
+function isUserNameV3(value) {
+    let isVery = /^(?![\d]+$)(?![a-zA-Z]+$)(?![_]+$)[\da-zA-Z_]{3,22}$/
+    let isC = /^[A-Za-z]+$/
+    return isVery.test(value) || isC.test(value)
+}
+
+function isUserName(value) {
+    for(var i in value){
+        var asc = value.charCodeAt(i)
+        if((asc>=65 && asc<=90) || (asc>=97&&asc<=122)){
+            return true
+        }
+    }
+    return false
+}
+
 /**
  * 获取加密的手机号
  * phone
@@ -300,6 +316,8 @@ export default {
     decimal,
     formatCurrency,
     isEmail,
+    isUserNameV3,
+    isUserName,
     getShopConfig,
     initShopConfig,
     checkUserLogin,
