@@ -1,4 +1,5 @@
 import $http from '@/utils/http.js'
+import { useCookies } from "vue3-cookies";
 
 export function getUserInfoAxios() {
     return $http.doGet('v3/set/getinfo')
@@ -18,4 +19,9 @@ export function updateUserNameAxios(user_name) {
 
 export function updateNickNameAxios(nickname) {
     return $http.doPost('v3/set/nickname', {nickname: nickname})
+}
+
+export function logOutAxios() {
+    const { cookies } = useCookies();
+    return $http.doGet('v3/user/logout', {token: cookies.get('app_token')})
 }

@@ -49,7 +49,8 @@
 <script setup>
 import FileChoosePop from './../../components/imgCropper/fileChoosePop'
 import ImgCropperPop from './../../components/imgCropper/imgCropperPop'
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
+const cns = getCurrentInstance().appContext.config.globalProperties
 import { showToast } from 'vant';
 import {
     getUserInfoAxios, updateNickNameAxios, updatePortraitAxios, updateUserNameAxios, uploadFileAxios
@@ -86,7 +87,7 @@ const getUserInfo = () => {
             editUsername.value = res.data.user_name
         } else if (res.code == 403) {
             // 去登录
-            appRoute('login')
+            cns.appRoute('login')
         }else {
             showToast(res.message)
         }
@@ -162,7 +163,7 @@ const updateUserName = () => {
         showToast('用户名不能设置为纯数字')
         return
     }
-    if (editUsername.value.length > 22 || editUsername.value.length < 3 || !this.$public.isUserNameV3(editUsername.value)) {
+    if (editUsername.value.length > 22 || editUsername.value.length < 3 || !cns.$public.isUserNameV3(editUsername.value)) {
         showToast('用户名3-22个字符，建议使用“_”、数字或字母（区分大小写）组合')
         return
     }
