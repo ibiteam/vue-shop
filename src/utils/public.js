@@ -268,6 +268,30 @@ function filterWhitespace(str){
     let newStr = str.replace(/\s*/g,"")
     return newStr;
 }
+
+const debounce = (fnc,delay) => {
+  let timer = null
+  return function (args){
+    if(timer){
+      clearTimeout(timer)
+      timer = null
+    }
+    timer = setTimeout(()=>{
+      fnc.apply(this,args)
+    },delay)
+  }
+}
+
+const throttle = (func,delay) => {
+  let last = 0
+  return function (args){
+    let now = Date.now()
+    if(now - last > delay){
+      func.apply(this,args)
+      last = now
+    }
+  }
+}
 export default {
     openVConsole,
     isTelPhone,
@@ -281,5 +305,7 @@ export default {
     checkUserLogin,
     filterWhitespace,
     getPrivacyPhone,
-    isLogin
+    isLogin,
+    debounce,
+    throttle
 }

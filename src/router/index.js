@@ -21,6 +21,21 @@ const router = createRouter({
                     name: 'ucenter',
                     component: () => import('@/views/Ucenter.vue'),
                 },
+                {
+                  path: 'cart',
+                  name: 'cart',
+                  component: () => import('@/views/cart/Cart.vue'),
+                },
+                {
+                  path: 'category',
+                  name: 'category',
+                  component: () => import('@/views/category/Category.vue'),
+                },
+                {
+                  path: 'search/history',
+                  name: 'search_history',
+                  component: () => import('@/views/search/History.vue'),
+                }
             ],
         },
         ...user,

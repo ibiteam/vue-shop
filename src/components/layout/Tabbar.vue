@@ -1,5 +1,5 @@
 <template>
-    <van-tabbar 
+    <van-tabbar
         v-model="active"
         placeholder
         safe-area-inset-bottom
