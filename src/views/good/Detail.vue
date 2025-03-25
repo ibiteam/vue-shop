@@ -3,7 +3,7 @@
 		<template v-if="goods_info.is_delete===1">
 			<common-header title="商品过期不存在"></common-header>
 			<div class="no-data text-center" style="padding-top: 0.5rem;">
-				<img src="https://cdn.toodudu.com/uploads/2023/11/08/no-data (2).png" alt="" style="width: 4rem;">
+				<img src="@/assets/images/good/no-data-shop.png" alt="" style="width: 4rem;">
 				<p class="fs26 co-3D text-center" style="position: relative;bottom: 0.6rem;">商品过期不存在</p>
 			</div>
 			<div style="padding: 0 0.2rem;" class="border-wrap">
@@ -21,23 +21,20 @@
 							<div class="recommend-item-img">
 								<van-image :src="item.goods_thumb" class="re-img">
 									<template v-slot:loading>
-										<img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt=""
-										     class="re-img">
+										<img src="@/assets/images/common/no-pic.png" alt="" class="re-img">
 									</template>
 									<template v-slot:error>
-										<img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt=""
+										<img src="@/assets/images/common/no-pic.png" alt=""
 										     class="re-img">
 									</template>
 								</van-image>
 							</div>
 							<div class="MT10" style="padding: 0 0.15rem;">
-								<div class="item-name fs26 co-333 elli-2"><span class="fs22 co-fff isZiying"
-								                                                v-if="item.ziying_sign"
-								                                                :class="{ def: item.is_ziying == 0 }">{{ item.ziying_sign }}</span>{{ item.goods_name }}
+								<div class="item-name fs26 co-333 elli-2">
+									<span class="fs22 co-fff is-ziying" v-if="item.ziying_sign" :class="{ def: item.is_ziying == 0 }">{{ item.ziying_sign }}</span>{{ item.goods_name }}
 								</div>
 								<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct jc-bt">
-									<form-price :price="item.shop_price" :unit="item.unit" unit_color="#333"
-									            weight="bold"></form-price>
+									<form-price :price="item.shop_price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
 								</div>
 							</div>
 						</div>
@@ -54,32 +51,29 @@
 						<div style="font-size: 14px;min-width: 4rem;" v-if="search_word_list.length">
 							<swiper ref="mySwiper" :options="swiperOptions" style="height: 0.6rem;">
 								<swiper-slide v-for="(item,index) in search_word_list" :key="`kb${index}`">
-									<span style="font-size: 14px;color: #333;"
-									      @click="clickKeywords(item)">{{ item.keywords }}</span>
+									<span style="font-size: 14px;color: #333;" @click="clickKeywords(item)">{{ item.keywords }}</span>
 								</swiper-slide>
 							</swiper>
 						</div>
 					</div>
-					<img src="https://cdn.toodudu.com/uploads/2023/10/20/attention-no.png" alt="" style="width: 0.4rem;"
-					     v-if="!active_a" @click="attention">
-					<img src="https://cdn.toodudu.com/uploads/2023/10/20/attention.png" alt="" style="width: 0.4rem;"
-					     v-else @click="attention">
+					<img src="@/assets/images/good/attention.png" alt="" style="width: 0.4rem;" @click="attention" v-if="isAttention">
+					<img src="@/assets/images/good/attention-no.png" alt="" style="width: 0.4rem;" @click="attention" v-else>
 				</div>
 			</van-sticky>
 			<div class="nav" :style="{opacity: opacity}" v-if="is_show_header">
 				<div class="tabs s-flex jc-ad ai-ct">
-					<a href="javascript:" dtype="item" :class="{'active': active=='goods'}" @click="onScrollGoods">
+					<a href="javascript:" :class="{'active': active=='goods'}" @click="onScrollGoods">
 						<span>商品</span>
 					</a>
-					<a href="javascript:" dtype="comment" :class="{'active': active=='comment'}"
-					   @click="onScrollComment" v-if="goods_info.is_on_sale==1">
-						<span>评价</span>
-					</a>
-					<a href="javascript:" dtype="detail" :class="{'active': active=='detail'}" @click="onScrollDetail"
+					<!--<a href="javascript:" :class="{'active': active=='comment'}"-->
+					<!--   @click="onScrollComment" v-if="goods_info.is_on_sale==1">-->
+					<!--	<span>评价</span>-->
+					<!--</a>-->
+					<a href="javascript:" :class="{'active': active=='detail'}" @click="onScrollDetail"
 					   v-if="goods_info.is_on_sale==1">
 						<span>详情</span>
 					</a>
-					<a href="javascript:" dtype="guess" :class="{'active': active=='recommend'}"
+					<a href="javascript:" :class="{'active': active=='recommend'}"
 					   @click="onScrollRecommend">
 						<span>推荐</span>
 					</a>
@@ -91,62 +85,54 @@
 					<!--轮播图-->
 					<div class="swiper-box">
 						<template v-if="banner.video&&goodTab == 0">
-							<div class="play-btn"><img
-								src="https://cdn.toodudu.com/uploads/2023/10/20/good-video-play.png"
-								@click="router.push({name:'good_play',query:{url:banner.video}})"></div>
+							<div class="play-btn">
+								<img src="@/assets/images/good/good-video-play.png" @click="router.push({name:'goodPlay',query:{url:banner.video}})">
+							</div>
 							<van-image :src="imgUrls[0].url" v-if="imgUrls&&imgUrls.length">
 								<template v-slot:loading>
-									<img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="">
+									<img src="@/assets/images/common/no-pic.png" alt="">
 								</template>
 								<template v-slot:error>
-									<img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="">
+									<img src="@/assets/images/common/no-pic.png" alt="">
 								</template>
 							</van-image>
 						</template>
-						<van-swipe :autoplay="3000" indicator-color="black" :touchable="$platform.is_phone()"
-						           @change="onChangeSwiper" v-else ref="swiper">
+						<van-swipe :autoplay="3000" indicator-color="black" @change="onChangeSwiper" v-else ref="swiper">
 							<van-swipe-item v-for="(item, index) in imgUrls" :key="index" @click="lookBig(item.url)">
 								<van-image :src="item.url">
 									<template v-slot:loading>
-										<img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="">
+										<img src="@/assets/images/common/no-pic.png" alt="">
 									</template>
 									<template v-slot:error>
-										<img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="">
+										<img src="@/assets/images/common/no-pic.png" alt="">
 									</template>
 								</van-image>
 							</van-swipe-item>
 							<template #indicator>
 								<div class="indicator-wrap" v-if="imgUrls&&imgUrls.length>1">
-									<div class="custom-indicator" :class="{'indicator-active':swiperIndex == index}"
-									     v-for="(item, index) in imgUrls" :key="`swiperIndex-${index}`"></div>
+									<div class="custom-indicator" :class="{'indicator-active':swiperIndex == index}" v-for="(item, index) in imgUrls" :key="`swiperIndex-${index}`"></div>
 								</div>
 							</template>
 						</van-swipe>
 						<div class="main-btn-wrap">
 							<div :class="{active:goodTab == 0}" v-if="banner.video" @click="goodTab = 0">视频</div>
 							<div :class="{active:goodTab == 1}" @click="changeToImg">图集</div>
-							<div @click="toEvaluate('good')" v-if="banner.evaluate">评价</div>
+							<!--<div @click="toEvaluate('good')" v-if="banner.evaluate">评价</div>-->
 						</div>
 					</div>
-					<div
-						style="position: relative;top: -0.4rem;border-radius: 0.34rem 0.34rem 0 0;overflow: hidden;margin-bottom: -0.4rem;">
+					<div style="position: relative;top: -0.4rem;border-radius: 0.34rem 0.34rem 0 0;overflow: hidden;margin-bottom: -0.4rem;">
 						<!--        已删除/已下架        -->
-						<div class="price-on-sale-no bg-fff" style="padding: 0.35rem 0.2rem 0.15rem;"
-						     v-if="goods_info.is_on_sale==0||goods_info.is_delete==1">
+						<div class="price-on-sale-no bg-fff" style="padding: 0.35rem 0.2rem 0.15rem;" v-if="goods_info.is_on_sale==0||goods_info.is_delete==1">
 							暂无报价
 						</div>
 						<!--普通商品多规格-非拼团-->
-						<div class="bg-fff" style="padding-bottom: 0.1rem;padding-top: 0.3rem;"
-						     v-else-if="goods_info.act_type == 9&&goods_info.is_set_sku==1">
-							<skuSelect :list="sku_param_list" :main_img="imgUrls[0].url" :http_ing="isSkuIng"
-							           @select="updateSkuFirst"></skuSelect>
-							<div class="bg-pink price-ladder new"
-							     style="width: 100%;background: none;padding: 0 0.2rem;">
-								<div class="s-flex flex-wrap ladder-style jc-bt ai_fs" v-if="true">
+						<div class="bg-fff" style="padding-bottom: 0.1rem;padding-top: 0.3rem;" v-else-if="goods_info.act_type == 9&&goods_info.is_set_sku==1">
+							<skuSelect :list="sku_param_list" :main_img="imgUrls[0].url" :http_ing="isSkuIng" @select="updateSkuFirst"></skuSelect>
+							<div class="bg-pink price-ladder new" style="width: 100%;background: none;padding: 0 0.2rem;">
+								<div class="s-flex flex-wrap ladder-style jc-bt ai-fs">
 									<div class="duan s-flex ai-ct">
 										<p style="padding: 0;">
-											<form-price :price="goods_info.shop_price" weight="bold" :sign_size="24"
-											            :INT_size="50" :DF_size="28"></form-price>
+											<form-price :price="goods_info.shop_price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
 										</p>
 										<p class="fs24 co-red" style="margin-left: 0.3rem;">
 											起订量{{ goods_info.min_number }}{{ goods_info.unit }}
@@ -157,33 +143,27 @@
 						</div>
 						<div class="shop-box">
 							<!--优惠券新-->
-							<div class="coupon_box s-flex ai-ct fs20" @click="coupon_popup=true"
-							     v-if="discount_list.is_show&&goods_info.is_on_sale">
+							<div class="coupon_box s-flex ai-ct fs20" @click="coupon_popup=true" v-if="discount_list.is_show&&goods_info.is_on_sale">
 								<div class="flex-1 elli-1 flex-wrap" style="overflow: hidden;">
-									<span class="coupon elli-1" style="color: var(--red-color);"
-									      v-for="item in discount_list.short_desc_list">{{ item }}</span>
+									<span class="coupon elli-1" style="color: var(--red-color);" v-for="item in discount_list.short_desc_list">{{ item }}</span>
 								</div>
-								<span class="get_more">{{ discount_list.btn.name }}<i></i></span>
+								<span class="get_more">详情<i></i></span>
 							</div>
 							<!--自营/商家直营 新板块-->
-							<div style="padding-top: 0.2rem;" v-if="slogan">
-								<div class="small-fun s-flex ai-ct jc-bt">
-									<div class="s-flex ai-ct">
-										<div class="sign">
-											<span class="isZiying"
-											      :class="{ def: slogan.is_self != '1' }">{{ slogan.name }}</span>
-										</div>
-										<p class="fs24 co-333" @click="goUrl(slogan.url)">{{ slogan.value }}<em
-											class="iconfont"
-											style="font-size: 0.22rem;color: #333;margin-left: 0.04rem;">&#xe773;</em>
-										</p>
-									</div>
-								</div>
-							</div>
+							<!--<div style="padding-top: 0.2rem;" v-if="slogan">-->
+							<!--	<div class="small-fun s-flex ai-ct jc-bt">-->
+							<!--		<div class="s-flex ai-ct">-->
+							<!--			<div class="sign">-->
+							<!--				<span class="is-ziying" :class="{ def: slogan.is_self != '1' }">{{ slogan.name }}</span>-->
+							<!--			</div>-->
+							<!--			<p class="fs24 co-333" @click="goUrl(slogan.url)">{{ slogan.value }}<em class="iconfont" style="font-size: 0.22rem;color: #333;margin-left: 0.04rem;">&#xe773;</em></p>-->
+							<!--		</div>-->
+							<!--	</div>-->
+							<!--</div>-->
 							<!--商品名称-->
 							<p class="shop-name">{{ goods_info.goods_name }}</p>
 							<!--副标题-->
-							<p class="goods_desc fs24 co-red" v-if="goods_info.goods_subtitle">
+							<p class="goods-desc fs24 co-red" v-if="goods_info.goods_subtitle">
 								{{ goods_info.goods_subtitle }}</p>
 						</div>
 					</div>
@@ -361,7 +341,7 @@
 												{{ floor.data.shop_name }}</p>
 											<div class="star-level s-flex ai-ct"
 											     v-if="floor.data.shop_type||floor.data.rank">
-												<span class="isZiying" :class="{def:floor.data.is_self != '1'}"
+												<span class="is-ziying" :class="{def:floor.data.is_self != '1'}"
 												      v-if="floor.data.shop_type">{{ floor.data.shop_type }}</span>
 												<shop-rate :rank="floor.data.rank" v-if="floor.data.rank"></shop-rate>
 											</div>
@@ -408,12 +388,12 @@
 													<van-image :src="item.goods_thumb" class="re-img">
 														<template v-slot:loading>
 															<img
-																src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png"
+																src="@/assets/images/common/no-pic.png"
 																alt="" class="re-img">
 														</template>
 														<template v-slot:error>
 															<img
-																src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png"
+																src="@/assets/images/common/no-pic.png"
 																alt="" class="re-img">
 														</template>
 													</van-image>
@@ -442,12 +422,12 @@
 															<van-image :src="item.goods_thumb" class="re-img">
 																<template v-slot:loading>
 																	<img
-																		src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png"
+																		src="@/assets/images/common/no-pic.png"
 																		alt="" class="re-img">
 																</template>
 																<template v-slot:error>
 																	<img
-																		src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png"
+																		src="@/assets/images/common/no-pic.png"
 																		alt="" class="re-img">
 																</template>
 															</van-image>
@@ -562,17 +542,17 @@
 								<div class="recommend-item-img">
 									<van-image :src="item.goods_thumb" class="re-img">
 										<template v-slot:loading>
-											<img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt=""
+											<img src="@/assets/images/common/no-pic.png" alt=""
 											     class="re-img">
 										</template>
 										<template v-slot:error>
-											<img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt=""
+											<img src="@/assets/images/common/no-pic.png" alt=""
 											     class="re-img">
 										</template>
 									</van-image>
 								</div>
 								<div class="MT10" style="padding: 0 0.15rem;">
-									<div class="item-name fs26 co-333 elli-2"><span class="fs22 co-fff isZiying"
+									<div class="item-name fs26 co-333 elli-2"><span class="fs22 co-fff is-ziying"
 									                                                v-if="item.ziying_sign"
 									                                                :class="{ def: item.is_ziying == 0 }">{{ item.ziying_sign }}</span>{{ item.goods_name }}
 									</div>
@@ -802,7 +782,7 @@
 		<!--领取优惠券-->
 		<div class="coupon" v-if="coupon_popup">
 			<van-popup
-				v-model="coupon_popup"
+				v-model:show="coupon_popup"
 				round
 				position="bottom"
 				:close-on-click-overlay="false"
@@ -822,22 +802,14 @@
 								<span class="co-333 fs20" style="line-height: 0.32rem;">{{ item.desc }}</span>
 							</section>
 						</template>
-
-						<p class="co-333 fs30 ML20 s-flex ai-ct"
-						   style="line-height: 1;margin-bottom: 0.3rem;font-size: 0.3rem;"
-						   v-if="coupon_list&&coupon_list.length"><img
-							src="https://cdn.toodudu.com/uploads/2023/10/31/new-coupon-title.png" alt=""
-							style="width: 0.33rem;margin-right: 0.1rem;">可领取优惠券</p>
+						<p class="co-333 fs30 ML20 s-flex ai-ct" style="line-height: 1;margin-bottom: 0.3rem;font-size: 0.3rem;" v-if="coupon_list&&coupon_list.length"><img src="@/assets/images/good/new-coupon-title.png" alt="" style="width: 0.33rem;margin-right: 0.1rem;">可领取优惠券</p>
 						<div class="list_box" style="padding: 0 0.4rem 0.3rem;">
-							<div class="coupon_list" :class="[item.show_limit? 'coupon-mit' : '']"
-							     v-for="(item,index) in coupon_list">
+							<div class="coupon_list" :class="[item.show_limit? 'coupon-mit' : '']" v-for="(item,index) in coupon_list">
 								<div class="s-flex ai-ct jc-bt">
 									<div class="s-flex ai-ct jc-ct flex-wrap"
 									     style="width: 2.1rem;padding: 0.33rem 0;flex: none;">
 										<div style="width: 100%;line-height: 0.45rem;" class="s-flex jc-ct">
-											<form-price :price="item.money" color="#E12A61" sign_size="20" INT_size="50"
-											            DF_size="24" class="elli-1"
-											            style="max-width: 3.5rem;"></form-price>
+											<form-price :price="item.money" color="#E12A61" sign_size="20" INT_size="50" DF_size="24" class="elli-1" style="max-width: 3.5rem;"></form-price>
 										</div>
 										<div style="width: 100%;line-height: 0.3rem;" class="s-flex jc-ct">
 											<span style="color: #E12A61;" class="fs20">{{ item.desc }}</span>
@@ -848,22 +820,19 @@
 											<h4 class="elli-1 fs24 fw-b" style="color: #E12A61;">{{ item.name }}</h4>
 											<p class="fs20 co-999" v-if="item.end_time&&item.start_time">
 												{{ item.start_time }} - {{ item.end_time }}</p>
-											<p class="fs20 co-666 s-flex ai-ct"
-											   v-if="item.limit_info&&item.limit_info.length"
-											   @click="changeShowInfo(index)">详细信息 <em class="iconfont"
-											                                               v-if="!item.show_limit">&#xe67a;</em><em
-												class="iconfont" v-else>&#xe61e;</em></p>
+											<p class="fs20 co-666 s-flex ai-ct" v-if="item.limit_info&&item.limit_info.length" @click="changeShowInfo(index)">
+												详细信息
+												<em class="iconfont" v-if="!item.show_limit">&#xe67a;</em>
+												<em class="iconfont" v-else>&#xe61e;</em>
+											</p>
 										</div>
 										<div>
-											<span class="coupon-btn" v-if="!item.max_limit"
-											      @click="getCoupon(item)">{{ item.btn.name }}</span>
-											<span class="coupon-btn can-use" v-else
-											      @click="goUrl(item.btn.url)">{{ item.max_limit_text }}</span>
+											<span class="coupon-btn" v-if="!item.max_limit" @click="getCoupon(item)">点击领取</span>
+											<span class="coupon-btn can-use" v-else @click="goUrl(item.btn.url)">去使用</span>
 										</div>
 									</div>
 								</div>
-								<div class="fs20 co-999" style="padding: 0.2rem 0.24rem;line-height: 0.26rem;"
-								     v-if="item.show_limit&&item.limit_info&&item.limit_info.length">
+								<div class="fs20 co-999" style="padding: 0.2rem 0.24rem;line-height: 0.26rem;" v-if="item.show_limit&&item.limit_info&&item.limit_info.length">
 									<p v-for="info in item.limit_info" class="fs20 co-999 elli-1">{{ info }}</p>
 								</div>
 							</div>
@@ -965,7 +934,7 @@
 <script setup>
 import {ref, reactive, computed, onMounted, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {useGoodStore, useConfigStore} from "@/stores";
+import {useGoodStore} from "@/stores";
 import $ from 'jquery'
 import shoppingCard from '@/components/shoppingCard/shoppingCard'
 import skuSelect from './SkuSelect.vue'
@@ -974,7 +943,6 @@ const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const router = useRouter()
 const goodStore = useGoodStore()
-const configStore = useConfigStore()
 
 // 响应式数据
 const category = ref({})
@@ -1008,36 +976,25 @@ const swiperIndex = ref(0)
 const parent_id = ref(0)
 const fromPath = ref('')
 const goods_id = ref(7419)
-const scrollTop = ref(0)
 const opacity = ref(0)
 const active = ref('good')
 const nodata = ref(false)
 const goods_info = ref({})
-const side_advertising = ref({})
-const giveGood = ref(null)
 const shop_info = ref({})
-const live_info = ref(null)
 const imgUrl = ref([])
 const imgUrls = ref([])
-const active_a = ref(false)
-const promote = ref({})
+const isAttention = ref(false)
 const coupon_list = ref([])
 const address_popup = ref(false)
-const is_leader = ref(false)
-const leader_id = ref(0)
-const group_id = ref(0)
+const coupon_popup = ref(false)
 const shopping_type = ref(-1)
 const carNum = ref(0)
 const choose_attr = ref(false)
-const goods_cost = ref({})
 const goods_attr = ref({})
-const showSales = ref(true)
-const showTrader = ref(true)
 const recommend = ref([])
 const recommendTitle = ref('')
 const bottomlineRecommend = ref(false)
 const pageRecommend = ref(1)
-const share_data = ref({})
 const group_last_price = ref(0)
 const no_group_last_price = ref(0)
 const init_flag = ref(0)
@@ -1049,16 +1006,11 @@ const startIndex = ref(0)
 const showIndex = ref(false)
 const imgUrlBig = ref([])
 const is_show_header = ref(true)
-const act = ref('')
-const hot_heat = ref({})
 const addressList = ref([])
 const pageInfo = ref({})
 const is_limit = ref(false)
 const limitAddress = ref('')
 const ship = ref(null)
-const invite_template = ref(null)
-const trader_user_info = ref(null)
-const is_live = ref('')
 const is_select_spec = ref(false)
 const paramNum = ref(0)
 const sku_param_list = ref([])
@@ -1078,10 +1030,6 @@ const activityData = ref([])
 const propPopup = ref(false)
 const shopRecommend = ref([])
 const shopRecommendNew = ref([])
-const hot_category_id = ref(null)
-
-// 计算属性
-const config = computed(() => configStore.shopConfig)
 
 // 方法
 const changeShowInfo = (index) => {
@@ -1381,8 +1329,8 @@ const attention = () => {
 	cns.$http.doPost("v3/collect/goods/attentionOrCancelGood", {"goods_id": goods_info.value.goods_id})
 		.then((res) => {
 			if (res.code == 200) {
-				active_a.value = res.data.is_attention > 0
-				if (active_a.value) {
+				isAttention.value = res.data.isAttention > 0
+				if (isAttention.value) {
 					cns.$toast('添加成功')
 				} else {
 					cns.$toast('取消关注成功')
@@ -1592,7 +1540,6 @@ const getData = () => {
 				if (res.data.banner.video) {
 					goodTab.value = 0
 				}
-				giveGood.value = res.data.give_goods
 				/**非拼团最终价**/
 				no_group_last_price.value = res.data.goods.shop_price
 				// ******待后端补到外层
@@ -1621,7 +1568,7 @@ const getData = () => {
 				getImage(arr)
 
 				// 是否关注
-				active_a.value = res.data.header.collect_goods
+				isAttention.value = res.data.header.collect_goods
 
 				nextTick(() => {
 					// 活动倒计时
@@ -1685,7 +1632,6 @@ onMounted(() => {
 	if (fromPath.value == 'address_add') {
 		changeAddress()
 	}
-	leader_id.value = route.query.leader_id
 	// 初始化
 	getData()
 	// 绑定滚动事件
@@ -2781,7 +2727,7 @@ onBeforeUnmount(() => {
 	width: fit-content;
 }
 
-.isZiying {
+.is-ziying {
 	line-height: 0.5rem;
 	font-size: 0.24rem;
 	min-width: 0.7rem;
@@ -2795,7 +2741,7 @@ onBeforeUnmount(() => {
 	margin: 0 0.2rem 0 0;
 }
 
-.isZiying.def {
+.is-ziying.def {
 	background: linear-gradient(-270deg, #5436D5 4%, #735CFF 100%);
 }
 
@@ -2819,7 +2765,7 @@ onBeforeUnmount(() => {
 	font-weight: bold;
 }
 
-.goods_desc {
+.goods-desc {
 	color: var(--red-color);
 	font-size: 0.24rem;
 	line-height: 0.36rem;
