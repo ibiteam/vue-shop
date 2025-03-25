@@ -320,6 +320,7 @@ export default {
     isUserName,
     getShopConfig,
     initShopConfig,
+    requestLogin,
     checkUserLogin,
     filterWhitespace,
     getPrivacyPhone,

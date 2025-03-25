@@ -220,7 +220,7 @@ import {ref , reactive , computed , onMounted , watch , nextTick} from 'vue'
 import $public from '@/utils/public'
 import {useRoute,useRouter} from 'vue-router'
 // import BottomLabel from "../../components/layout/BottomLabel.vue";
-import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import {cateAxios, navAxios} from "@/api/category.js";
 import { showToast } from 'vant';
