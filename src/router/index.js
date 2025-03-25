@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LayoutComponent from '@/components/Layout/Layout'
 import user from "./user";
 import account from "./account";
+import good from "./good";
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -23,7 +24,8 @@ const router = createRouter({
             ],
         },
         ...user,
-        ...account
+        ...account,
+        ...good
     ],
 })
 

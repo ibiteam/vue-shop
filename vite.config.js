@@ -4,6 +4,7 @@ import path from 'path'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import { createHtmlPlugin } from 'vite-plugin-html';
+import vueJsx from '@vitejs/plugin-vue-jsx';
 
 const getEnv = (mode, target) => {
     return loadEnv(mode, process.cwd())[target]
@@ -15,6 +16,7 @@ export default ({ mode }) => {
     return defineConfig({
         plugins: [
             vue({ reactivityTransform: true }),
+            vueJsx(), // 添加JSX支持
             is_dev && vueDevTools(),
             createHtmlPlugin({
                 minify: true,
@@ -56,4 +58,3 @@ export default ({ mode }) => {
         }
     })
 }
-

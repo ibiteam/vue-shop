@@ -17,13 +17,14 @@ import { appRoute } from "@/router/appRoute";
 import CommonHeader from '@/components/layout/Navbar'
 import CommonImage from '@/components/common/Image'
 import CommonPrice from '@/components/common/Price'
-
+import FormPrice from '@/components/price/form-price'
 const app = createApp(App)
 
 app.use(pinia)
 app.use(router)
 app.use(Vant)
 app.use(VueCookies)
+app.use(FormPrice)
 app.config.globalProperties.$bus = mitt()
 app.config.globalProperties.$public = $public
 app.config.globalProperties.$http = $http

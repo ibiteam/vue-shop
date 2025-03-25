@@ -269,6 +269,10 @@ input:-moz-placeholder {
   color: #666;
 }
 
+.co-red{
+  color: var(--red-color);
+}
+
 .bg-fff {
   background-color: #fff;
 }
@@ -341,6 +345,9 @@ input:-moz-placeholder {
   float: right;
 }
 
+.text-center {
+  text-align: center;
+}
 /*呼吸条*/
 .breathe {
   padding-bottom: constant(safe-area-inset-bottom);

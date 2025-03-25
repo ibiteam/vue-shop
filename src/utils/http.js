@@ -60,10 +60,9 @@ axios.interceptors.request.use(
             visitorId = generateUUID()
             localStorage.setItem('visitorId', visitorId)
         }
-        config.headers['Access-Token'] = token
         config.headers['Device-Id'] = visitorId
         config.headers['System-Type'] = 'other'
-
+        config.headers['Authorization'] = token ? 'Bearer ' + token : ''
         if(config.method=='get'){
             config.params = createParams(config.params)
         }else {
