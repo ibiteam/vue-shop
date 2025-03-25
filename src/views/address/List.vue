@@ -8,13 +8,11 @@
                 <p>
                     <span>{{ item.consignee }}&emsp;</span>
                     <span class="co-999">{{ item.mobile }}&emsp;</span>
-                    <van-tag class="address-type" :color="addressTypeColor(item.address_type)">{{ item.address_type }}</van-tag>
+                    <!-- <van-tag class="address-type" :color="addressTypeColor(item.address_type)">{{ item.address_type }}</van-tag> -->
                 </p>
                 <van-divider style="border-color: #e5e5e6" />
                 <div class="address-tools s-flex ai-ct jc-bt">
-                    <van-radio-group v-model="item.used" style="flex: 1;">
-                        <van-radio icon-size="16" :name="1" checked-color="var(--main-color)">{{item.used ? '已' : ''}}设为默认</van-radio>
-                    </van-radio-group>
+                    <van-checkbox v-model="item.used" icon-size="16" style="flex: 1;" checked-color="var(--main-color)">{{item.used ? '已' : ''}}设为默认</van-checkbox>
                     <p @click="handleClickDelete(item)">删除</p>
                     <p>修改</p>
                 </div>
@@ -125,7 +123,7 @@ const handleClickDelete = (item)  => {
         message: '确定要删除地址吗？',
         confirmButtonText: '删除',
     }).then(() => {
-        
+
     })
 }
 const addressTypeColor = (type)  => {
@@ -177,7 +175,7 @@ const addressTypeColor = (type)  => {
         margin: 0 auto;
         line-height: 0.88rem;
         text-align: center;
-        border-radius: 333px;
+        border-radius: 0.6rem;
         background: linear-gradient(
             to right,
             var(--main-color),
