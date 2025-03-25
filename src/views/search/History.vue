@@ -46,13 +46,13 @@
                 </div>
             </div>
             <!--搜索发现列表-->
-            <div class="search-history-keywords search-history-find" v-if="$bus.searchFind && $bus.searchFind.length">
+            <div class="search-history-keywords search-history-find" v-if="searchFind && searchFind.length">
                 <div class="title s-flex ai-ct" ref="keywordTitle">
                     <label class="flex-1">搜索发现</label>
                     <em class="iconfont" style="font-size: 0.32rem;" @click="is_show_find = !is_show_find">{{ is_show_find ? '&#xe681;' : '&#xe67d;' }}</em>
                 </div>
                 <div class="keywords-list s-flex ai-ct" v-if="is_show_find">
-                    <div class="keywords-item van-ellipsis" v-for="(item, index) in $bus.searchFind" :key="index" @click="handleClickSearchFindItem(item)">
+                    <div class="keywords-item van-ellipsis" v-for="(item, index) in searchFind" :key="index" @click="handleClickSearchFindItem(item)">
                         <template v-if="item.web_path">{{item.title}}</template>
                     </div>
                 </div>
@@ -65,7 +65,9 @@
 <script setup>
 import { ref, reactive, watch, computed, onMounted, onBeforeMount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useCookies } from "vue3-cookies";
 
+const { cookies } = useCookies();
 const router = useRouter();
 const route = useRoute();
 
@@ -85,6 +87,34 @@ const is_show_list_more = ref(false);
 const is_open_list = ref(false);
 const search_keywords_find = ref([]);
 const is_show_find = ref(true);
+
+
+const searchFind = [
+    {
+        "title": "\u91d1\u7ea2\u77f3",
+        "app_path": "tooduduapp:\/\/toodudu.com\/shopcrop?type=1&title=\u91d1\u7ea2\u77f3",
+        "web_path": "https:\/\/test-tooduduh5.ptdplat.com\/#\/supermarket?type=1&title=\u91d1\u7ea2\u77f3",
+        "mini_url": "\/pages\/zhuanti\/shopcrop?type=1&title=\u91d1\u7ea2\u77f3"
+    },
+    {
+        "title": "\u8367\u5149\u5242",
+        "app_path": "tooduduapp:\/\/toodudu.com\/try_center?title=\u8367\u5149\u5242",
+        "web_path": "https:\/\/test-tooduduh5.ptdplat.com\/#\/try?title=\u8367\u5149\u5242",
+        "mini_url": "\/pages\/try\/list?title=\u8367\u5149\u5242"
+    },
+    {
+        "title": "\u6eb6\u5242",
+        "app_path": "tooduduapp:\/\/toodudu.com\/integral?title=\u6eb6\u5242",
+        "web_path": "https:\/\/test-tooduduh5.ptdplat.com\/#\/integral?title=\u6eb6\u5242",
+        "mini_url": "https:\/\/test-tooduduh5.ptdplat.com\/#\/integral?title=\u6eb6\u5242"
+    },
+    {
+        "title": "\u949b\u767d\u7c89",
+        "app_path": "tooduduapp:\/\/toodudu.com\/goods?goods_id=1218&title=\u949b\u767d\u7c89",
+        "web_path": "https:\/\/test-tooduduh5.ptdplat.com\/#\/good?goods_id=1218&title=\u949b\u767d\u7c89",
+        "mini_url": "\/pages\/good\/detail?goods_id=1218&title=\u949b\u767d\u7c89"
+    }
+]
 
 watch(
     () => info.keywords,
@@ -149,16 +179,11 @@ const handleSearchConfirm = (value) => {
         return false;
     }
     params.search_source = '首页';
-    $volcengine.collect('search_tab_click', {
-        search_type: '手动输入',
-        search_source: params.search_source,
-        search_keywords: params.keywords,
-    });
     if (from_path_name.value == router_name.value) {
-        if ($cookies.get('back_search_keywords')) {
-            $cookies.remove('back_search_keywords');
+        if (cookies.get('back_search_keywords')) {
+            cookies.remove('back_search_keywords');
         }
-        $cookies.set('back_search_keywords', params);
+        cookies.set('back_search_keywords', params);
         router.back();
     } else {
         appRoute(router_name.value, {}, params, 'replace');
@@ -189,12 +214,7 @@ const handleClickShowMoreKeywords = () => {
 const handleCheckServiceVolcengine = () => {
     $http.doPost('v3/chatUrl', { source_url: window.location.href }).then(res => {
         if (res.code == 200) {
-            $volcengine.collect('contact_customer_service', {
-                customer_service_type: '在线客服',
-                customer_service_content: '',
-                is_artificial_customer_service: '否',
-                shop_name: '',
-            });
+
             if ($platform.is_wx()) {
                 $volcengine.getCollectToken().then((token) => {
                     let hs_uuid = (token.user_unique_id == token.web_id) ? token.web_id : token.user_unique_id;
@@ -264,11 +284,11 @@ onBeforeMount(() => {
     .search-history-keywords .title em,
     .search-history-keywords .title label { font-size: 0.28rem; font-weight: 600; color: #343434; position: relative; }
     .search-history-keywords .keywords-list { flex-flow: row wrap; padding: 0.10rem 0; }
-    .search-history-keywords .keywords-list .keywords-item { height: 0.44rem; line-height: 0.44rem; padding: 0 0.20rem; margin-top: 10px; margin-right: 0.10rem; text-align: right; font-size: 0.20rem; color: #343434; background-color: #F2F2F2; border-radius: 0.60rem; float: left; }
+    .search-history-keywords .keywords-list .keywords-item { height: 0.44rem; line-height: 0.44rem; padding: 0 0.20rem; margin-top: 10px; margin-right: 0.10rem; text-align: right; font-size: 0.20rem; color: #343434; background-color: var(--page-bg-color); border-radius: 0.60rem; float: left; }
     .search-history-keywords .keywords-list .history-more { padding: 0 4px !important;; margin: 10px 0.20rem 0 0; }
     .search-history-keywords .keywords-list .history-more.history-more-noright { margin-right: 0 !important; }
     /*搜索发现*/
     .search-history-find .keywords-list .keywords-item { width: 40%; text-align: left; margin-bottom: 0.10rem; background: none; font-size: 0.24rem; }
-    .search-history-find .title label::before { content: ''; width: 0.50rem; height: 0.05rem; padding: 0 0 0.12rem; background-image: url('../../assets/images/home/active_border.png'); background-position: center bottom; background-repeat: no-repeat; background-size: 0.50rem 0.05rem; position: absolute; bottom: -2px; left: 0.32rem; }
+    .search-history-find .title label::before { content: ''; width: 0.50rem; height: 0.05rem; padding: 0 0 0.12rem; background-image: url('@/assets/images/search/active_border.png'); background-position: center bottom; background-repeat: no-repeat; background-size: 0.50rem 0.05rem; position: absolute; bottom: -2px; left: 0.32rem; }
 }
 </style>
