@@ -6,7 +6,7 @@
                 <li>
                     <div class="logo-img">
                         <img :src="portrait" v-if="portrait"/>
-                        <img src="../../assets/images/ucenter/header_photo_1.png" v-else/>
+                        <img src="@/assets/images/ucenter/header_photo_1.png" v-else/>
                     </div>
                     <div class="user_name">
                         <template v-if="is_login">

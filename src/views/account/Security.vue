@@ -3,10 +3,9 @@
         <common-header :title="title" :is_show_more="false"></common-header>
         <nav class="user-center" v-if="!loading">
             <van-cell-group style="margin-top: 0.2rem;border-radius: 0.2rem;overflow: hidden">
-                <van-cell title="登录密码" value="* 建议您定期修改密码以确保帐户的安全" is-link @click="goPassword"/>
+                <van-cell title="登录密码" value="* 建议您定期修改密码以确保帐户的安全" is-link @click="appRoute('getPassword',{},{type:'password-edit'})"/>
                 <van-cell title="绑定注册手机" value="* 为了您的账户安全请尽快绑定手机号码" is-link @click="appRoute('updatePhone')" v-if="!phone"/>
-                <van-cell title="修改注册手机" :value="mobile_phone" is-link v-if="phone"
-                          @click="appRoute('updatePhone',{},{phone:phone,area:national_city,code:national_code})"/>
+                <van-cell title="修改注册手机" :value="mobile_phone" is-link v-if="phone" @click="appRoute('updatePhone',{},{phone:phone,area:national_city,code:national_code})"/>
             </van-cell-group>
 
             <van-cell-group style="border-radius: 0.2rem;overflow: hidden">
@@ -48,13 +47,6 @@ const getUserInfo = () => {
     }).catch(err => {
         console.log(err)
     })
-}
-const goPassword = () =>{
-    if(phone.value){
-        cns.appRoute('phone_getPassword',{},{type:17,phone:this.phone,area:national_city.value,code:national_code.value})
-    }else {
-        showToast('请先绑定手机号')
-    }
 }
 </script>
 

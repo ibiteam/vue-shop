@@ -19,7 +19,7 @@ const router = createRouter({
                 {
                     path: 'ucenter',
                     name: 'ucenter',
-                    component: () => import('@/views/Ucenter.vue'),
+                    component: () => import('@/views/ucenter/Ucenter.vue'),
                 },
                 {
                   path: 'cart',
