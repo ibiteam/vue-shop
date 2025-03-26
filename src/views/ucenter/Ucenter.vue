@@ -5,7 +5,7 @@
             <template v-if="user_load">
                 <div class="head-info-box s-flex">
                     <div class="head-tx">
-                        <img src="https://cdn.toodudu.com/uploads/2022/01/12/portait.jpeg" alt="">
+                        <img src="@/assets/images/ucenter/portait.jpeg" alt="">
                     </div>
                 </div>
             </template>
@@ -13,40 +13,40 @@
                 <!--            用户信息-未登录-->
                 <div class="head-info-box s-flex" v-if="unLogin">
                     <div class="head-tx">
-                        <img src="https://cdn.toodudu.com/uploads/2022/01/12/portait.jpeg" alt="">
+                        <img src="@/assets/images/ucenter/portait.jpeg" alt="">
                     </div>
                     <div class="user-info flex-1">
                         <div class="s-flex jc-bt">
                             <div class="info-name" style="margin-top: 0.38rem">
-                                <span>登录/</span><span>注册</span>
+                                <span @click="toPage('login')">登录/</span><span @click="toPage('register')">注册</span>
                             </div>
-                            <div class="info-set">
-                                <img src="https://cdn.toodudu.com/uploads/2023/10/20/set.png" alt="">
+                            <div class="info-set" @click="toPage('set')">
+                                <img src="@/assets/images/ucenter/set.png" alt="">
                             </div>
                         </div>
                     </div>
                 </div>
                 <!--            用户信息-已登录-->
                 <div class="head-info-box s-flex" v-else>
-                    <div class="head-tx">
+                    <div class="head-tx" @click="toPage('userInfo')">
                         <van-image :src="userInfo.portrait" class="portrait">
                             <template v-slot:loading>
-                                <img src="https://cdn.toodudu.com/uploads/2022/01/12/portait.jpeg" alt="">
+                                <img src="@/assets/images/ucenter/portait.jpeg" alt="">
                             </template>
                             <template v-slot:error>
-                                <img src="https://cdn.toodudu.com/uploads/2022/01/12/portait.jpeg" alt="">
+                                <img src="@/assets/images/ucenter/portait.jpeg" alt="">
                             </template>
                         </van-image>
                     </div>
                     <div class="user-info flex-1">
                         <div class="s-flex jc-bt">
-                            <div>
+                            <div @click="toPage('userInfo')">
                                 <div class="info-name" v-if="userInfo.nickname">{{userInfo.nickname}}</div>
                                 <div class="info-name" v-else>未设置昵称</div>
                                 <div class="user_name">用户名：{{userInfo.user_name}}</div>
                             </div>
-                            <div class="info-set">
-                                <img src="https://cdn.toodudu.com/uploads/2023/10/20/set.png" alt="">
+                            <div class="info-set" @click="toPage('set')">
+                                <img src="@/assets/images/ucenter/set.png" alt="">
                             </div>
                         </div>
                     </div>
@@ -103,12 +103,12 @@
                 <div class="order-box">
                     <div class="order-head s-flex">
                         <div class="s-flex ai-ct jc-ct">
-                            <img src="https://cdn.toodudu.com/uploads/2023/10/26/good-attention.png" alt="">
+                            <img src="@/assets/images/ucenter/good_attention.png" alt="">
                             <div class="MR10">商品关注</div>
                             <div>10</div>
                         </div>
                         <div class="s-flex ai-ct jc-ct">
-                            <img src="https://cdn.toodudu.com/uploads/2023/10/26/shop_attention.png" alt="">
+                            <img src="@/assets/images/ucenter/shop_attention.png" alt="">
                             <div class="MR10">店铺关注</div>
                             <div>10</div>
                         </div>
@@ -119,28 +119,23 @@
                     </div>
                     <div class="order-main s-flex">
                         <div class="order-model">
-                            <img src="https://cdn.toodudu.com/uploads/2023/10/25/组 503@3x.png" alt="">
+                            <img src="@/assets/images/ucenter/order_1.png" alt="">
                             <div>待确认</div>
                             <!--                        <div class="order-model-num" v-if="ite.count && ite.count < 100">{{ite.count}}</div>-->
                             <div class="order-model-num">99+</div>
                         </div>
                         <div class="order-model">
-                            <img src="https://cdn.toodudu.com/uploads/2023/10/25/组 503@3x.png" alt="">
+                            <img src="@/assets/images/ucenter/order_2.png" alt="">
                             <div>待付款</div>
                             <div class="order-model-num">99+</div>
                         </div>
                         <div class="order-model">
-                            <img src="https://cdn.toodudu.com/uploads/2023/10/25/组 503@3x.png" alt="">
+                            <img src="@/assets/images/ucenter/order_3.png" alt="">
                             <div>待收货</div>
                             <div class="order-model-num">99+</div>
                         </div>
                         <div class="order-model">
-                            <img src="https://cdn.toodudu.com/uploads/2023/10/25/组 503@3x.png" alt="">
-                            <div>待评价</div>
-                            <div class="order-model-num">99+</div>
-                        </div>
-                        <div class="order-model">
-                            <img src="https://cdn.toodudu.com/uploads/2023/10/25/组 503@3x.png" alt="">
+                            <img src="@/assets/images/ucenter/order_5.png" alt="">
                             <div>退款/售后</div>
                         </div>
                     </div>
@@ -185,7 +180,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
+const cns = getCurrentInstance().appContext.config.globalProperties
 const head_opacity = ref(0)
 const user_load = ref(true)
 const unLogin = ref(true)
@@ -235,10 +231,19 @@ onMounted(() => {
         }, 1000)
     }, 1000)
 })
+
+const toPage = (name) => {
+    if (unLogin.value && name != 'set' && name != 'register'){
+        cns.appRoute('login')
+    }else{
+        cns.appRoute(name)
+    }
+}
 </script>
 
 <style lang='scss' scoped>
 .ucenter-main-container {
+    background: #F8F8F8;
     .ucenter-head-fix{
         position: fixed;
         width: 7.5rem;
@@ -257,22 +262,7 @@ onMounted(() => {
         background-size: 100% auto;
         background-color: #F8F8F8;
         padding-bottom: 0.2rem;
-        min-height: 100vh;
         width: 100%;
-        //头部icon模块
-        .head-icon-box{
-            padding-top: 0.36rem;
-            height: 0.36rem;
-            >div:nth-child(1){
-                width: 0.33rem;
-                height: 0.36rem;
-                margin-right: 0.4rem;
-            }
-            >div>img{
-                width: 100%;
-                height: 100%;
-            }
-        }
         //用户信息模块
         .head-info-box{
             padding-top: 0.4rem;
@@ -312,22 +302,6 @@ onMounted(() => {
                         width: 100%;
                         height: 100%;
                     }
-                }
-                .info-improve{
-                    width: 1.8rem;
-                    height: 0.6rem;
-                    background-image: url("https://cdn.toodudu.com/uploads/2023/10/26/user_improve.png");
-                    background-repeat: no-repeat;
-                    background-size: 100% 100%;
-                    color: #966526;
-                    font-size: 0.28rem;
-                    padding-left: 0.28rem;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    border-radius: 0.3rem 0 0 0.3rem;
-                    box-sizing: border-box;
-                    overflow: hidden;
                 }
                 .user_name{
                     font-size: 0.22rem;
@@ -373,7 +347,7 @@ onMounted(() => {
             .order-main{
                 padding: 0.46rem 0 0.4rem;
                 .order-model{
-                    width: 20%;
+                    width: 25%;
                     text-align: center;
                     position: relative;
                     img{

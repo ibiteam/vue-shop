@@ -6,8 +6,8 @@
                 <van-cell title="头像" is-link clickable class="logo-cell">
                     <div class="s-flex jc-fe">
                         <div class="logo-img">
-                            <img :src="portrait" onerror="return onerror=null,src='https://cdn.toodudu.com/uploads/2022/01/12/portait.jpeg'" v-if="portrait" @click="openFileChoosePop"/>
-                            <img src="../../assets/images/ucenter/header_photo_1.png" v-else @click="openFileChoosePop"/>
+                            <img :src="portrait" onerror="return onerror=null,src='@/assets/images/ucenter/portait.jpeg'" v-if="portrait" @click="openFileChoosePop"/>
+                            <img src="@/assets/images/ucenter/header_photo_1.png" v-else @click="openFileChoosePop"/>
                         </div>
                     </div>
                 </van-cell>
