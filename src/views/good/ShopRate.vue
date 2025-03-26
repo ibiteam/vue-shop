@@ -1,7 +1,7 @@
 <template>
     <div class="shop-rate s-flex ai-ct">
         <span v-for="i in 5" @click="clickStar(i)">
-            <img :src="selectValue>=i?'https://cdn.toodudu.com/uploads/2023/11/17/star.png':'https://cdn.toodudu.com/uploads/2023/11/17/star-no.png'" alt="">
+            <img :src="selectValue>=i?'/src/assets/images/good/star.png':'/src/assets/images/good/star-no.png'" alt="">
         </span>
     </div>
 </template>
