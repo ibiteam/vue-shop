@@ -2,14 +2,21 @@
     <main class="ucenter-main-container">
         <div class="ucenter-head-fix" v-if="head_opacity > 0" :style="{opacity: head_opacity}">我的</div>
         <div class="ucenter-head">
-            <template v-if="user_load">
+            <div class="ucenter-head-main" v-if="user_load">
+                <div class="head-icon-box s-flex jc-fe ai-ct"></div>
                 <div class="head-info-box s-flex">
                     <div class="head-tx">
                         <img src="@/assets/images/ucenter/portait.jpeg" alt="">
                     </div>
                 </div>
-            </template>
-            <template v-else>
+            </div>
+            <div class="ucenter-head-main" v-else>
+                <div class="head-icon-box s-flex jc-fe ai-ct">
+                    <div @click="toPage('set')" class="s-flex ai-ct">
+                        <img src="@/assets/images/ucenter/set.png" alt="">
+                        <div>设置</div>
+                    </div>
+                </div>
                 <!--            用户信息-未登录-->
                 <div class="head-info-box s-flex" v-if="unLogin">
                     <div class="head-tx">
@@ -19,9 +26,6 @@
                         <div class="s-flex jc-bt">
                             <div class="info-name" style="margin-top: 0.38rem">
                                 <span @click="toPage('login')">登录/</span><span @click="toPage('register')">注册</span>
-                            </div>
-                            <div class="info-set" @click="toPage('set')">
-                                <img src="@/assets/images/ucenter/set.png" alt="">
                             </div>
                         </div>
                     </div>
@@ -45,13 +49,11 @@
                                 <div class="info-name" v-else>未设置昵称</div>
                                 <div class="user_name">用户名：{{userInfo.user_name}}</div>
                             </div>
-                            <div class="info-set" @click="toPage('set')">
-                                <img src="@/assets/images/ucenter/set.png" alt="">
-                            </div>
+                            <div class="info-improve" @click="toPage('userInfo')">完善信息<i class="iconfont" style="vertical-align: bottom">&#xe60b;</i></div>
                         </div>
                     </div>
                 </div>
-            </template>
+            </div>
             <div v-if="component_load">
                 <div class="bg-fff" style="border-radius: 0.2rem;margin: 0.35rem 0.2rem 0;padding: 0.4rem 0.2rem">
                     <div class="s-flex jc-ad">
@@ -101,29 +103,11 @@
             <template v-else>
                 <!--            订单模块-->
                 <div class="order-box">
-                    <div class="order-head s-flex">
-                        <div class="s-flex ai-ct jc-ct">
-                            <img src="@/assets/images/ucenter/good_attention.png" alt="">
-                            <div class="MR10">商品关注</div>
-                            <div>10</div>
-                        </div>
-                        <div class="s-flex ai-ct jc-ct">
-                            <img src="@/assets/images/ucenter/shop_attention.png" alt="">
-                            <div class="MR10">店铺关注</div>
-                            <div>10</div>
-                        </div>
-                    </div>
                     <div class="order-join s-flex ai-ct jc-bt">
-                        <strong>我的订单</strong>
+                        <strong>订单</strong>
                         <p class="s-flex ai-ct">全部 <em class="iconfont">&#xe60b;</em></p>
                     </div>
                     <div class="order-main s-flex">
-                        <div class="order-model">
-                            <img src="@/assets/images/ucenter/order_1.png" alt="">
-                            <div>待确认</div>
-                            <!--                        <div class="order-model-num" v-if="ite.count && ite.count < 100">{{ite.count}}</div>-->
-                            <div class="order-model-num">99+</div>
-                        </div>
                         <div class="order-model">
                             <img src="@/assets/images/ucenter/order_2.png" alt="">
                             <div>待付款</div>
@@ -132,6 +116,12 @@
                         <div class="order-model">
                             <img src="@/assets/images/ucenter/order_3.png" alt="">
                             <div>待收货</div>
+                            <div class="order-model-num">99+</div>
+                        </div>
+
+                        <div class="order-model">
+                            <img src="@/assets/images/ucenter/order_4.png" alt="">
+                            <div>待评价</div>
                             <div class="order-model-num">99+</div>
                         </div>
                         <div class="order-model">
@@ -143,43 +133,56 @@
                 <!--            我的资产模块-->
                 <div class="assert-box">
                     <div class="assert-join s-flex ai-ct jc-bt">
-                        <strong>我的资产</strong>
-                        <p class="s-flex ai-ct">全部 <em class="iconfont">&#xe60b;</em></p>
+                        <strong>资产</strong>
                     </div>
                     <div class="assert-main s-flex jc-bt">
                         <div class="assert-model">
-                            <div :class="unLogin?'no-fw':''">
-                                {{unLogin?'--':100}}
-                                <span v-if="!unLogin" class="assert-model-txt">张</span>
-                            </div>
+                            <img src="@/assets/images/ucenter/coupon.png" alt="">
                             <div>优惠券</div>
                         </div>
                         <div class="assert-model">
-                            <div :class="unLogin?'no-fw':''">
-                                {{unLogin?'--':100}}
-                                <span v-if="!unLogin" class="assert-model-txt">张</span>
-                            </div>
+                            <img src="@/assets/images/ucenter/redPack.png" alt="">
                             <div>红包</div>
                         </div>
                         <div class="assert-model">
-                            <div :class="unLogin?'no-fw':''">
-                                <span v-if="!unLogin" class="assert-model-txt fw_b">￥</span>
-                                {{unLogin?'--':100}}
-                            </div>
-                            <div>100可抵</div>
+                            <img src="@/assets/images/ucenter/integral.png" alt="">
+                            <div>积分</div>
                         </div>
                         <div class="assert-model">
-                            <div :class="unLogin?'no-fw':''">{{unLogin?'--':10000}}</div>
-                            <div>积分</div>
+                            <img src="@/assets/images/ucenter/balance.png" alt="">
+                            <div>余额</div>
                         </div>
                     </div>
                 </div>
+<!--                菜单模块-->
+                <div class="menu-box">
+                    <div class="menu-main s-flex flex-wrap">
+                        <div class="menu-model">
+                            <img src="@/assets/images/ucenter/address.png" alt="">
+                            <div>收货地址</div>
+                        </div>
+                        <div class="menu-model">
+                            <img src="@/assets/images/ucenter/attention.png" alt="">
+                            <div>商品收藏</div>
+                        </div>
+                        <div class="menu-model">
+                            <img src="@/assets/images/ucenter/history.png" alt="">
+                            <div>浏览记录</div>
+                        </div>
+                        <div class="menu-model">
+                            <img src="@/assets/images/ucenter/chat.png" alt="">
+                            <div>联系客服</div>
+                        </div>
+                    </div>
+                </div>
+                <recommend-column></recommend-column>
             </template>
         </div>
     </main>
 </template>
 
 <script setup>
+import RecommendColumn from '../../components/recommendColumn/RecommendColumn'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
 const head_opacity = ref(0)
@@ -257,15 +260,32 @@ const toPage = (name) => {
         font-size: 0.32rem;
     }
     .ucenter-head{
-        background-image: url("https://cdn.toodudu.com/uploads/2023/10/26/mine_back.png");
-        background-repeat: no-repeat;
-        background-size: 100% auto;
         background-color: #F8F8F8;
-        padding-bottom: 0.2rem;
         width: 100%;
+        .ucenter-head-main{
+            height: 2.4rem;
+            background-image: url("@/assets/images/ucenter/ucenter-back.png");
+            background-repeat: no-repeat;
+            background-size: 100% auto;
+        }
+        //头部icon模块
+        .head-icon-box{
+            height: 1rem;
+            >div{
+                margin-right: 0.4rem;
+                >img{
+                    width: 0.32rem;
+                    height: 0.32rem;
+                }
+                >div{
+                    font-size: 0.24rem;
+                    color: #3D3D3D;
+                    margin-left: 0.1rem;
+                }
+            }
+        }
         //用户信息模块
         .head-info-box{
-            padding-top: 0.4rem;
             .head-tx{
                 width: 1rem;
                 height: 1rem;
@@ -303,6 +323,23 @@ const toPage = (name) => {
                         height: 100%;
                     }
                 }
+                .info-improve{
+                    width: 1.8rem;
+                    height: 0.6rem;
+                    background-image: url("@/assets/images/ucenter/improve.png");
+                    background-repeat: no-repeat;
+                    background-size: 100% 100%;
+                    color: #966526;
+                    font-size: 0.28rem;
+                    padding-left: 0.28rem;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 0.3rem 0 0 0.3rem;
+                    box-sizing: border-box;
+                    overflow: hidden;
+                    margin-top: 0.1rem;
+                }
                 .user_name{
                     font-size: 0.22rem;
                     color: #666666;
@@ -313,31 +350,9 @@ const toPage = (name) => {
         //订单模块
         .order-box{
             background: #ffffff;
-            margin: 0.35rem 0.2rem 0;
+            margin: 0.25rem 0.2rem 0;
             padding: 0 0.2rem;
             border-radius: 0.2rem;
-            .order-head{
-                border-bottom: 1px solid #E5E5E5;
-                >div{
-                    width: 50%;
-                    margin:0.25rem 0;
-                    font-size: 0.24rem;
-                    color: #333333;
-                    img{
-                        width: 0.3rem;
-                        height: 0.3rem;
-                        margin-right: 0.2rem;
-                    }
-                    >div{
-                        color: #333333;
-                        font-size: 0.24rem;
-                    }
-                }
-                >div:nth-child(1){
-                    border-right: 1px dashed #D8D8D8;
-                }
-            }
-
             .order-join {
                 padding: 0.3rem 0.1rem 0 0.1rem;
                 strong { font-size: 0.28rem; font-weight: bold;color: #333333 }
@@ -379,7 +394,7 @@ const toPage = (name) => {
         //资产模块
         .assert-box{
             background: #ffffff;
-            margin: 0.1rem 0.2rem 0;
+            margin: 0.2rem 0.2rem 0;
             border-radius: 0.2rem;
             padding: 0 0.2rem ;
             .assert-join{
@@ -389,28 +404,41 @@ const toPage = (name) => {
                 p em { margin-left: 0.1rem; font-size: 0.4rem; }
             }
             .assert-main{
-                padding: 0.4rem 0 0.35rem;
+                padding: 0.4rem 0 0.2rem;
                 .assert-model{
                     width: 25%;
                     text-align: center;
-                    >div:nth-child(1){
-                        font-size: 0.4rem;
-                        color: #3D3D3D;
-                        height: 0.48rem;
-                        line-height: 0.48rem;
-                        font-weight: bold;
+                    >img{
+                        width: 0.6rem;
+                        height: 0.6rem;
                     }
-                    >div:nth-child(2){
+                    >div{
                         font-size: 0.26rem;
                         color: #3D3D3D;
-                        margin-top: 0.4rem;
+                        margin-top: 0.2rem;
                     }
-                    .assert-model-txt{
+                }
+            }
+        }
+        //菜单模块
+        .menu-box{
+            background: #ffffff;
+            margin: 0.4rem 0.2rem 0;
+            border-radius: 0.2rem;
+            padding: 0 0.2rem ;
+            .menu-main{
+                padding: 0.4rem 0 0.2rem;
+                .menu-model{
+                    width: 25%;
+                    text-align: center;
+                    >img{
+                        width: 0.6rem;
+                        height: 0.6rem;
+                    }
+                    >div{
                         font-size: 0.26rem;
                         color: #3D3D3D;
-                    }
-                    .no-fw{
-                        font-weight: normal!important;
+                        margin-top: 0.2rem;
                     }
                 }
             }
