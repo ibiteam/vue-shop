@@ -18,7 +18,6 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick,getCurrentInstance } from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
-import { showToast } from 'vant';
 import {getUserInfoAxios} from "@/api/account.js";
 const title = ref('账户安全')
 const loading = ref(false)
@@ -39,10 +38,10 @@ const getUserInfo = () => {
             national_city.value = res.data.national_city
             national_code.value = res.data.national_code
         }else if(res.code==403){
-            showToast(res.message)
+            cns.$toast(res.message)
             cns.appRoute('home',{},{},'replace')
         }else {
-            showToast(res.message)
+            cns.$toast(res.message)
         }
     }).catch(err => {
         console.log(err)

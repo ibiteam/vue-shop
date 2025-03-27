@@ -37,7 +37,6 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
-import { showToast } from 'vant';
 import {logOutAxios} from "@/api/account.js";
 const title = ref('用户设置')
 const nickname = ref('')
@@ -66,7 +65,7 @@ const logOut = () => {
             localStorage.setItem('wxlogout','true')
             cns.appRoute('ucenter',{},{},'replace')
         }else {
-            showToast(res.message)
+            cns.$toast(res.message)
         }
     }).catch(err => {
         console.log(err)

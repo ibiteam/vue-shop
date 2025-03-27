@@ -51,7 +51,6 @@ import FileChoosePop from './../../components/imgCropper/fileChoosePop'
 import ImgCropperPop from './../../components/imgCropper/imgCropperPop'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
-import { showToast } from 'vant';
 import {
     getUserInfoAxios, updateNickNameAxios, updatePortraitAxios, updateUserNameAxios, uploadFileAxios
 } from "@/api/account.js";
@@ -89,7 +88,7 @@ const getUserInfo = () => {
             // 去登录
             cns.appRoute('login')
         }else {
-            showToast(res.message)
+            cns.$toast(res.message)
         }
     }).catch(err => {
         console.log(err)
@@ -119,7 +118,7 @@ const afterRead = (file) => {
         if (res.code == 200) {
             updatePortrait(res.data.url);
         } else {
-            showToast('上传失败，请重试')
+            cns.$toast('上传失败，请重试')
         }
     }).catch(err => {
         console.log(err)
@@ -128,7 +127,7 @@ const afterRead = (file) => {
 const updatePortrait = (url) => {
     updatePortraitAxios(url).then(res => {
         if (res.code == 200) {
-            showToast('修改成功')
+            cns.$toast('修改成功')
         }
         portrait.value = url;
         setTimeout(() => {
@@ -140,7 +139,7 @@ const updatePortrait = (url) => {
 }
 const showUpdateUser = () => {
     if (is_modify.value == '1') {
-        showToast('用户名只能修改一次哦')
+        cns.$toast('用户名只能修改一次哦')
         return
     }
     showUsername.value = true
@@ -152,38 +151,38 @@ const cancelUpdateUser = () => {
 const updateUserName = () => {
     let regExp = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]")
     if (editUsername.value == '') {
-        showToast('请输入您的用户名')
+        cns.$toast('请输入您的用户名')
         return
     }
     if(regExp.test(editUsername.value)){
-        showToast('输入的用户名不能包含特殊字符。')
+        cns.$toast('输入的用户名不能包含特殊字符。')
         return
     }
     if(!isNaN(Number(editUsername.value))){
-        showToast('用户名不能设置为纯数字')
+        cns.$toast('用户名不能设置为纯数字')
         return
     }
     if (editUsername.value.length > 22 || editUsername.value.length < 3 || !cns.$public.isUserNameV3(editUsername.value)) {
-        showToast('用户名3-22个字符，建议使用“_”、数字或字母（区分大小写）组合')
+        cns.$toast('用户名3-22个字符，建议使用“_”、数字或字母（区分大小写）组合')
         return
     }
     if (!this.$public.isUserName(editUsername.value)) {
-        showToast('用户名不能设置为纯数字')
+        cns.$toast('用户名不能设置为纯数字')
         return
     }
     if (editUsername.value.charAt(0) == '_') {
-        showToast('用户名不能以“_”开头')
+        cns.$toast('用户名不能以“_”开头')
         return
     }
     updateUserNameAxios(editUsername.value).then(res => {
         if (res.code == 200) {
-            showToast('修改成功')
+            cns.$toast('修改成功')
             showUsername.value = false
             setTimeout(() => {
                 getUserInfo()
             }, 300)
         } else {
-            showToast(res.message)
+            cns.$toast(res.message)
         }
     }).catch(err => {
         console.log(err)
@@ -203,22 +202,22 @@ const cancelUpdateNick = () => {
 const updateNickname = () => {
     let regExp = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]")
     if (editNickname.value == '') {
-        showToast('请设置您的昵称')
+        cns.$toast('请设置您的昵称')
         return
     }
     if(regExp.test(editNickname.value)){
-        showToast('输入的昵称不能包含特殊字符')
+        cns.$toast('输入的昵称不能包含特殊字符')
         return
     }
     updateNickNameAxios(editNickname.value).then(res => {
         if (res.code == 200) {
-            showToast('修改成功')
+            cns.$toast('修改成功')
             showNickname.value = false
             setTimeout(() => {
                 getUserInfo()
             }, 300)
         } else {
-            showToast(res.message)
+            cns.$toast(res.message)
         }
     }).catch(err => {
         console.log(err)

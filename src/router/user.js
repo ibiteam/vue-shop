@@ -23,6 +23,12 @@ const user = [
         name: 'getPassword',
         component: () => import('@/views/user/GetPassword.vue')
     },
+    /*修改/绑定注册手机号*/
+    {
+        path: '/updatePhone',
+        name: 'updatePhone',
+        component: () => import('@/views/user/UpdatePhone.vue')
+    },
     /** 收货地址-列表 */
     {
         path: '/address',
@@ -35,6 +41,6 @@ const user = [
         name: 'addressForm',
         component: () => import('@/views/address/Form.vue')
     },
-    
+
 ]
 export default user

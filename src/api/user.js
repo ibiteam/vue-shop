@@ -23,3 +23,7 @@ export function updatePassword(info, action) {
     if(action == 'password-edit') delete info.phone
     return $http.doPost(URL, info)
 }
+
+export function updatePhone(info) {
+    return $http.doPost('v3/bind/phone', info)
+}
