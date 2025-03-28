@@ -3,7 +3,19 @@ const property = [
     {
         path: '/property/coupon',
         name: 'coupon',
-        component: () => import('@/views/property/coupon.vue'),
+        component: () => import('@/views/property/coupon/coupon.vue'),
+    },
+    /*优惠券使用说明*/
+    {
+        path: '/property/coupon/explain',
+        name: 'couponExplain',
+        component: () => import('@/views/property/coupon/explain.vue'),
+    },
+    /*优惠券-不可使用*/
+    {
+        path: '/property/coupon/unchange',
+        name: 'couponUnchange',
+        component: () => import('@/views/property/coupon/unchange.vue'),
     },
     /*红包*/
     {

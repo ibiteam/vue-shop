@@ -16,11 +16,10 @@
         <div class="coupon-index">
             <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
                 <van-list
-                    v-model="loading"
+                    v-model:loading="loading"
                     :finished="finished"
                     finished-text="没有更多了~"
                     :immediate-check="false"
-                    :offset="offsetLoad"
                     @load="loadMore"
                 >
                     <div class="coupon-list">
@@ -58,13 +57,13 @@
                         </div>
                     </div>
                     <div v-if="noDataShow" class="no-Data">
-                        <img src="@/assets/images/property/noCoupon.png" alt="" class="no-Img">
+                        <img src="@/assets/images/property/coupon/noCoupon.png" alt="" class="no-Img">
                         <span>暂无可用优惠券</span>
                     </div>
                 </van-list>
                 <div class="coupon-add s-flex breathe" :class="{ 'fixed': couponList.length == 0 }">
                     <div style="display: table; margin: 0 auto;">
-                        <a @click="appRoute('couponHelp')">优惠券使用说明</a>
+                        <a @click="appRoute('couponExplain')">优惠券使用说明</a>
                         <a @click="appRoute('couponUnchange')">查看不可用优惠券</a>
                     </div>
                 </div>
@@ -74,12 +73,13 @@
 </template>
 
 <script setup>
+import $ from 'jquery'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
-import {getCouponListAxios} from "@/api/property.js";
+import {couponExchangeAxios, getCouponListAxios} from "@/api/property.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const coupon_sn = ref('')
 const couponList = ref([])
-const noDataShow = ref(false)
+const noDataShow = ref(true)
 const loading = ref(false)
 const finished =ref(false)
 const page = ref(1)
@@ -87,11 +87,11 @@ const isLoading = ref(false)
 const is_can_exchange = ref(true)
 
 onMounted(() => {
-    getListData()
+    // getListData()
 })
 
 const getListData = () => {
-    getCouponListAxios().then((res) => {
+    getCouponListAxios({page:page.value}).then((res) => {
         loading.value = false
         finished.value = false
         if (res.code == 200) {
@@ -151,7 +151,87 @@ const handleClickExchange = () => {
 }
 
 const couponExchange = () => {
+    couponExchangeAxios({coupon_sn: coupon_sn.value}).then((res) => {
+        if (res.code == 200){
+            cns.$toast("优惠券兑换成功")
+            setTimeout(() => {
+                page.value = 1
+                coupon_sn.value = ''
+                noDataShow.value = false
+                loading.value = false
+                finished.value = false
+                couponList.value = []
+                // getListData()
+                document.body.scrollTop=document.documentElement.scrollTop=0
+            }, 3000)
+        } else if (res.code == 403) {
+            cns.appRoute('login', {}, {}, 'replace')
+        } else if (res.code == 1008) {
+            cns.$toast(res.message)
+            is_can_exchange.value = false
+        } else {
+            cns.$toast(res.message)
+        }
+    })
+}
 
+const handleClickDesc = (item) => {
+    item.isShowDesc = !item.isShowDesc
+}
+
+const onRefresh = () => {
+    setTimeout(() => {
+        // page.value = 1
+        // couponList.value = []
+        // getListData()
+        isLoading.value = false
+    }, 1000)
+}
+
+const loadMore = () => {
+    if (couponList.value.length >= 10) {
+        getCouponListAxios({page:page.value}).then((res) => {
+            loading.value= false
+            if (res.code == 200) {
+                if (res.data.data.length > 0) {
+                    Array.from(res.data.data, (item) => {
+                        item.isShowDesc = false
+                        couponList.value = couponList.value.concat(item)
+                    })
+
+                    nextTick(() => {
+                        let pDom = Array.from($('.desc-p'))
+                        if (pDom.length == 0) {
+                            return false
+                        }
+                        pDom.forEach((item) => {
+                            let spanDom = Array.from($(item).children())
+                            let num = 0
+                            spanDom.forEach((child) => {
+                                if ($(item).width() >= $(child).width()) {
+                                    num ++
+                                }
+                            })
+                            if (num == spanDom.length) {
+                                $(item).siblings('em').css({display: 'none'})
+                            }
+                        })
+                    })
+                } else {
+                    finished.value = true
+                }
+            } else if(res.code == 404 && res.message === "no data !") {
+                finished.value = true
+            } else if(res.code == 403) {
+                cns.appRoute('login', {}, {}, 'replace')
+            } else {
+                cns.$toast(res.message)
+            }
+        })
+        page.value++
+    } else {
+        loading.value = false
+    }
 }
 
 </script>
@@ -250,7 +330,7 @@ const couponExchange = () => {
     }
     .coupon-index .coupon-list .coupon-list-item .coupon-list-info {
         padding: 0 0.25rem;
-        background: url("@/assets/images/property/packet_background_use1.jpg") center no-repeat;
+        background: url("@/assets/images/property/coupon/couponBack.jpg") center no-repeat;
         background-size: 100% 100%;
         border-radius: 0.1rem;
     }
