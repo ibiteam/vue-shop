@@ -24,6 +24,10 @@ export function updatePassword(info, action) {
     return $http.doPost(URL, info)
 }
 
+export function verifyPhone(info) {
+    return $http.doPost('v3/primary/phone', info)
+}
+
 export function updatePhone(info) {
     return $http.doPost('v3/bind/phone', info)
 }
