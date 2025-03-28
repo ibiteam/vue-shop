@@ -11,3 +11,11 @@ export function couponExchangeAxios(info) {
 export function couponUnchangeListAxios(info) {
     return $http.doPost('v3/usercoupon/newList',info)
 }
+
+export function getRedPackListAxios(info) {
+    return $http.doGet('v3/bonus',info)
+}
+
+export function getIntegralListAxios(info) {
+    return $http.doGet('v3/integration/detail',info)
+}

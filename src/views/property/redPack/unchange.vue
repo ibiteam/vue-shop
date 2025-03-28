@@ -1,15 +1,15 @@
 <template>
     <div class="coupon-unchange-container" v-cloak>
-        <common-header title="不可用优惠券"></common-header>
+        <common-header title="不可用红包"></common-header>
         <div class="coupon-dis">
             <div style="width:7.5rem;height:50px;">
                 <div style="position:fixed;z-index:100;width:7.5rem;height:50px;" class="s-flex jc-ct bg-f2">
                     <van-tabs v-model="activeIndex" @click="handleClickTabs" line-width="1.06rem"
                               title-inactive-color="#333333">
                         <van-tab
-                            :title="'已使用(' + (couponsCount.used_count < 99 ? couponsCount.used_count : '99+') + ')'"></van-tab>
+                            :title="'已使用(' + (bonusCount.used_count < 99 ? bonusCount.used_count : '99+') + ')'"></van-tab>
                         <van-tab
-                            :title="'已过期(' + (couponsCount.expired_count < 99 ? couponsCount.expired_count : '99+') + ')'"></van-tab>
+                            :title="'已过期(' + (bonusCount.expired_count < 99 ? bonusCount.expired_count : '99+') + ')'"></van-tab>
                     </van-tabs>
                 </div>
             </div>
@@ -22,7 +22,7 @@
                     @load="loadMore"
                 >
                     <div class="coupon-list">
-                        <div class="" v-for="(item, index) of couponList" :key="index">
+                        <div class="" v-for="(item, index) of redPackList" :key="index">
                             <div class="coupon-list-item" :class="{ disable: activeIndex != 0 }">
                                 <div class="coupon-list-info s-flex">
                                     <div class="coupon-item-le flex-align-center s-flex">
@@ -56,8 +56,8 @@
                             </div>
                         </div>
                         <div v-if="noDataShow" class="no-Data">
-                            <img src="@/assets/images/property/coupon/noCoupon.png" alt="" class="no-Img">
-                            <span>暂无优惠券</span>
+                            <img src="@/assets/images/property/redPack/noRedPack.png" alt="" class="no-Img">
+                            <span>暂无红包</span>
                         </div>
                     </div>
                 </van-list>
@@ -72,11 +72,11 @@ import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 import {couponUnchangeListAxios} from "@/api/property.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const activeIndex = ref(0)
-const couponsCount = ref({
+const bonusCount = ref({
     expired_count: 0,
     used_count: 0,
 })
-const couponList = ref([])
+const redPackList = ref([])
 const noDataShow = ref(true)
 const loading = ref(false)
 const finished = ref(false)
@@ -85,7 +85,7 @@ const info = ref({
     type:2
 })
 const isLoading = ref(false)
-const stateText = ref('仅显示近一年的优惠券数据')
+const stateText = ref('仅显示近一年的红包数据')
 
 onMounted(() => {
     // getListData()
@@ -95,13 +95,13 @@ const getListData = () => {
     couponUnchangeListAxios(info.value).then((res) => {
         loading.value = false
         finished.value = false
-        stateText.value = '仅显示近一年的优惠券数据'
+        stateText.value = '仅显示近一年的红包数据'
         if (res.code == 200) {
             if (res.data.list.data.length > 0) {
                 Array.from(res.data.list.data, (item) => {
                     item.isShowDesc = false
                 })
-                couponList.value = res.data.list.data
+                redPackList.value = res.data.list.data
                 noDataShow.value = false
                 info.page++
 
@@ -126,7 +126,7 @@ const getListData = () => {
             } else {
                 noDataShow.value = true
             }
-            couponsCount.value = res.data.couponsCount
+            bonusCount.value = res.data.bonusCount
         } else if (res.code == 403) {
             cns.appRoute('login', {}, {}, 'replace')
         } else {
@@ -138,7 +138,7 @@ const getListData = () => {
 const handleClickTabs = (index) =>{
     activeIndex.value = index
     noDataShow.value = false
-    couponList.value = []
+    redPackList.value = []
     stateText.value = ''
     if (index == 1) {
         info.type = 3
@@ -153,21 +153,21 @@ const handleClickTabs = (index) =>{
 const onRefresh = () => {
     setTimeout(() => {
         info.page = 1
-        couponList.value = []
+        redPackList.value = []
         // getListData()
         isLoading.value = false
     }, 1000)
 }
 
 const loadMore = () =>{
-    if (couponList.value.length >= 10) {
+    if (redPackList.value.length >= 10) {
         couponUnchangeListAxios(info.value).then((res) => {
             loading.value = false
             if (res.code == 200) {
                 if (res.data.list.data.length > 0) {
                     Array.from(res.data.list.data, (item) => {
                         item.isShowDesc = false
-                        couponList.value = couponList.value.concat(item)
+                        redPackList.value = redPackList.value.concat(item)
                     })
 
                     nextTick(() => {
