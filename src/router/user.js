@@ -29,18 +29,5 @@ const user = [
         name: 'updatePhone',
         component: () => import('@/views/user/UpdatePhone.vue')
     },
-    /** 收货地址-列表 */
-    {
-        path: '/address',
-        name: 'address',
-        component: () => import('@/views/address/List.vue')
-    },
-    /** 收货地址-表单 */
-    {
-        path: '/address/:id',
-        name: 'addressForm',
-        component: () => import('@/views/address/Form.vue')
-    },
-
 ]
 export default user

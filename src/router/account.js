@@ -7,7 +7,7 @@ const user = [
     },
     /*用户设置*/
     {
-        path: '/account/Set',
+        path: '/account/set',
         name: 'set',
         component: () => import('@/views/account/Set.vue'),
     },

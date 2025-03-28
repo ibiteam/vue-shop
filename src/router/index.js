@@ -4,6 +4,8 @@ import user from "./user";
 import account from "./account";
 import good from "./good";
 import property from "./property";
+import mine from "./mine";
+import order from "./order";
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -47,7 +49,9 @@ const router = createRouter({
         ...user,
         ...account,
         ...good,
-        ...property
+        ...property,
+        ...mine,
+        ...order
     ],
 })
 
