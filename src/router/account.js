@@ -17,11 +17,5 @@ const user = [
         name: 'security',
         component: () => import('@/views/account/Security.vue'),
     },
-    /*意见反馈*/
-    {
-        path: '/account/feedback',
-        name: 'feedback',
-        component: () => import('@/views/account/Feedback.vue'),
-    },
 ]
 export default user

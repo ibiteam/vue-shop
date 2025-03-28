@@ -24,9 +24,6 @@
             <van-cell-group style="border-radius: 0.2rem;overflow: hidden;">
                 <van-cell title="账户与安全" is-link @click="handleClickRouterLinkBefore({ name: 'accountSecurity' })"/>
             </van-cell-group>
-            <van-cell-group style="border-radius: 0.2rem;overflow: hidden;">
-                <van-cell title="意见反馈" is-link @click="handleClickRouterLinkBefore({ name: 'feedback' })"/>
-            </van-cell-group>
             <div style="position: fixed;bottom: 0.94rem;left: 0;right: 0;margin: auto; width: 6.9rem;height: 0.88rem;" class="breathe" v-if="is_login">
                 <div class="botom" @click="logOut()">退出账号</div>
             </div>
