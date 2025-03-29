@@ -13,53 +13,33 @@
             <section v-if="!is_placeholder" style="margin-bottom: 0.2rem;">
                 <van-pull-refresh v-model="isLoading" @refresh="getData">
                     <div v-if="hasLogin && (shopList.length > 0 || invalid_goods.length>0)" class="padding-horizontal-02">
-                        <div class="bg-fff shop-box MT20 shop-box-section" v-for="(item,shop_index) in shopList" :key="item.seller_id">
-                            <div class="shop-title s-flex ai-ct">
-                                <div v-if="shop_isSelect(item.goods)" class="no-check check-grey"></div>
-                                <div
-                                    v-else-if="item.shop_select"
-                                    class="iconfont checkbox"
-                                    @click="chooseShop(item,shop_index)"
-                                ></div>
-                                <div v-else class="no-check" @click="chooseShop(item,shop_index)"></div>
-                                <div class="s-flex flex-1 ai-ct" @click="toShop(item.seller_id)">
-                                    <em class="iconfont">&#xe646;</em>
-                                    <span class="fs24 co-333 ML20">{{item.shop_name}}</span>
-                                    <img src="@/assets/images/cart/arrow-right.png" style="height:0.16rem;" class="ML10"/>
-                                </div>
-                                <div class="control-box s-flex jc-ct ai-ct fs22" v-if="item.is_coupon>0" @click="getCoupon(item)">领券</div>
-                            </div>
-                            <div class="goods-box valid-goods" v-for="(goods,index) in item.goods" :key="goods.goods_id" :class="!((goods.act_type==1 || goods.act_type==2) && goods.limit_number>0) ? 'border-sty' : '' ">
+                        <div class="bg-fff shop-box MT20 shop-box-section">
+                            <!--<div class="shop-title s-flex ai-ct">-->
+                            <!--    <div v-if="!item.is_check" class="no-check check-grey"></div>-->
+                            <!--    <div-->
+                            <!--        v-else-if="item.shop_select"-->
+                            <!--        class="iconfont checkbox"-->
+                            <!--        @click="chooseShop(item,shop_index)"-->
+                            <!--    ></div>-->
+                            <!--    <div v-else class="no-check" @click="chooseShop(item,shop_index)"></div>-->
+                            <!--    <div class="s-flex flex-1 ai-ct" @click="toShop(item.seller_id)">-->
+                            <!--        <em class="iconfont">&#xe646;</em>-->
+                            <!--        <span class="fs24 co-333 ML20">{{item.shop_name}}</span>-->
+                            <!--        <img src="@/assets/images/cart/arrow-right.png" style="height:0.16rem;" class="ML10"/>-->
+                            <!--    </div>-->
+                            <!--    <div class="control-box s-flex jc-ct ai-ct fs22" v-if="item.is_coupon>0" @click="getCoupon(item)">领券</div>-->
+                            <!--</div>-->
+                            <div class="goods-box valid-goods" v-for="(goods,index) in shopList" :key="goods.id" :class="!((goods.act_type==1 || goods.act_type==2) && goods.limit_number>0) ? 'border-sty' : '' ">
                                 <!--满减-->
-                                <div class="s-flex fs24 ai-ct MT20 reduction" v-if="goods.act_type==6">
-                                    <span class="act-sign MR20">满减</span>
-                                    <p class="co-333">
-                                    <span class="fs22 co-333">
-                                        {{goods.increase_desc}}
-                                    </span>
-                                    </p>
-                                </div>
-                                <!--活动倒计时-->
-                                <div class="count-down s_flex fs24 ai_ct MT20" v-if="goods.act_type==1 || goods.act_type==2">
-                                    <img src="@/assets/images/cart/cart_sale.png" alt="" v-if="goods.act_type==2">
-                                    <img src="@/assets/images/cart/clock.png" alt="" v-else-if="goods.act_type==1">
-                                    <div class="count-sign ML10 MR30">{{goods.act_type==1 ? '秒杀' : (goods.act_type==2 ? '特卖' : '')}}</div>
-                                    <div class="co-333 elli-1 distance">
-                                        <div class="fs20 co-redF7 s-flex ai-ct">距结束还剩
-                                            <van-count-down :time="goods.end_time | getTime(service_time)" class="ML20" @finish="getData">
-                                                <template #default="timeData">
-                                                    <span class="fs20 co-redF7" v-if="timeData.days">{{ timeData.days }}</span>
-                                                    <span class="fs20 co-redF7 MR10" v-if="timeData.days">天</span>
-                                                    <span class="block">{{ timeData.hours | timeFilter }}</span>
-                                                    <span class="colon">:</span>
-                                                    <span class="block">{{ timeData.minutes | timeFilter }}</span>
-                                                    <span class="colon">:</span>
-                                                    <span class="block">{{ timeData.seconds | timeFilter }}</span>
-                                                </template>
-                                            </van-count-down>
-                                        </div>
-                                    </div>
-                                </div>
+                                <!--<div class="s-flex fs24 ai-ct MT20 reduction" v-if="goods.act_type==6">-->
+                                <!--    <span class="act-sign MR20">满减</span>-->
+                                <!--    <p class="co-333">-->
+                                <!--    <span class="fs22 co-333">-->
+                                <!--        {{goods.increase_desc}}-->
+                                <!--    </span>-->
+                                <!--    </p>-->
+                                <!--</div>-->
+
                                 <van-swipe-cell>
                                     <template #right>
                                         <van-button square type="danger" class="atten" @click="toAttentionSole(goods.rec_id, shop_index, index)">移入<br>关注</van-button>
@@ -68,33 +48,41 @@
                                     <div class="goods-list">
                                         <div class="s-flex ai-ct MT20">
                                             <div class="selectrange">
-                                                <div v-if="goods.reselect" class="no-check check-grey"></div>
                                                 <div
-                                                    v-else-if="goods.is_pay>0"
+                                                    v-if="goods.is_check>0"
                                                     class="iconfont checkbox"
-                                                    @click="chooseGoods(item,goods)"
+                                                    @click="chooseGoods(goods)"
                                                 ></div>
-                                                <div v-else class="no-check" @click="chooseGoods(item,goods)"></div>
+                                                <div v-else class="no-check" @click="chooseGoods(goods)"></div>
                                             </div>
-                                            <div class="img-box MR20" :style="{backgroundImage:'url('+ goods.goods_thumb +')'}" style="flex: none;"
-                                                 @click="toGood(goods.goods_id)"></div>
+                                            <div class="img-box MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}" style="flex: none;"
+                                                 @click="toGood(goods.goods.goods_id)"></div>
                                             <div class="goods-msg flex-1 s-flex flex-dir jc-bt">
-                                                <p class="elli-2 fs22 co-333 goods-name" @click="toGood(goods.goods_id)">{{goods.goods_name}}</p>
+                                                <p class="elli-2 fs22 co-333 goods-name" @click="toGood(goods.id)">{{goods.goods.name}}</p>
                                                 <!--增值费 价格-->
                                                 <!--<cartCost :goods_info="goods" @last_money="lastMoney($event, goods)" @unusual="getData"></cartCost>-->
+
+                                                <div class="s-flex ai-fe jc-bt">
+                                                    <!--价格 数量-->
+                                                    <form-price :price="goods.goods.price" :unit="goods.goods.unit"
+                                                                unit_color="#333" weight="600">
+                                                    </form-price>
+
+                                                    <van-stepper v-model="goods.buy_number" :min="1" :max="goods.goods.can_quota === 1? goods.goods.quota_number : goods.goods.total" />
+                                                </div>
                                             </div>
                                         </div>
                                         <!--限购-->
-                                        <div class="fs22 MT20 limit-sty" v-if="(goods.act_type==1 || goods.act_type==2) && goods.limit_number>0">
-                                            每人限购{{goods.limit_number}}{{goods.unit}}
-                                        </div>
-                                        <div class="gift-box MT20 s_flex jc_fe" v-if="goods.gift" @click="toGood(goods.gift.goods_id)">
-                                            <div>{{ goods.gift.title }}</div>
-                                            <div class="gift-box-line"></div>
-                                            <div class="elli-1">{{ goods.gift.name }}</div>
-                                            <div>x{{ goods.gift.number }}</div>
-                                            <em class="iconfont">&#xe60b;</em>
-                                        </div>
+                                        <!--<div class="fs22 MT20 limit-sty" v-if="(goods.act_type==1 || goods.act_type==2) && goods.limit_number>0">-->
+                                        <!--    每人限购{{goods.limit_number}}{{goods.unit}}-->
+                                        <!--</div>-->
+                                        <!--<div class="gift-box MT20 s_flex jc_fe" v-if="goods.gift" @click="toGood(goods.gift.goods_id)">-->
+                                        <!--    <div>{{ goods.gift.title }}</div>-->
+                                        <!--    <div class="gift-box-line"></div>-->
+                                        <!--    <div class="elli-1">{{ goods.gift.name }}</div>-->
+                                        <!--    <div>x{{ goods.gift.number }}</div>-->
+                                        <!--    <em class="iconfont">&#xe60b;</em>-->
+                                        <!--</div>-->
                                     </div>
                                 </van-swipe-cell>
                             </div>
@@ -110,21 +98,21 @@
                                     <div class="selectrange">
                                         <div class="invalid-sign">失效</div>
                                     </div>
-                                    <div class="img-box s-flex ai-ct jc-ct MR20" :style="{backgroundImage:'url('+ goods.goods_thumb +')'}"
-                                         @click="goods.invalid_type=='out_of_stock' || goods.invalid_type=='promote_change' ? toGood(goods.goods_id) : ''"
+                                    <div class="img-box s-flex ai-ct jc-ct MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}"
+                                         @click="goods.invalid_type=='out_of_stock' || goods.invalid_type=='promote_change' ? toGood(goods.id) : ''"
                                     >
                                         <img v-if="goods.invalid_type=='out_of_stock'" class="nogood" src="@/assets/images/cart/nogood.png" alt="">
                                     </div>
                                     <div class="goods-msg flex-1 s-flex flex-dir jc-bt">
                                         <p class="elli-2 fs22 co-333 goods-name invalid-name"
-                                           @click="goods.invalid_type=='out_of_stock' || goods.invalid_type=='promote_change' ? toGood(goods.goods_id) : ''">{{goods.goods_name}}</p>
+                                           @click="goods.invalid_type=='out_of_stock' || goods.invalid_type=='promote_change' ? toGood(goods.goods_id) : ''">{{goods.goods.name}}</p>
                                         <!--失效原因-->
                                         <div class="fs20 co-333">
                                             {{goods.invalid_type=='is_delete' ? '该商品已不能购买,请联系商家处理哦！' : (goods.invalid_type=='out_of_stock' ? '该商品已售罄,请选购其他商品购买吧！': '该商品的促销模式已改变,请重新选购')}}
                                         </div>
                                         <div class="s-flex ai-fe jc-fe">
                                             <van-button color="#F71111" plain round v-if="goods.invalid_type=='promote_change'" @click="toGood(goods.goods_id)">重选</van-button>
-                                            <van-button color="#F71111" plain round v-else-if="goods.invalid_type=='out_of_stock'" @click="findSimilar(goods.cat_id, goods.cat_name)">找相似</van-button>
+                                            <van-button color="#F71111" plain round v-else-if="goods.invalid_type=='out_of_stock'" @click="findSimilar(goods.cat_id, goods.goods.name)">找相似</van-button>
                                         </div>
                                     </div>
                                 </div>
@@ -283,28 +271,17 @@ const recommend = ref([]) // 为你推荐
 const total_price = ref(0) // 结算金额
 const goods_count = ref(0) // 结算数量
 
-const service_time = ref(0) //
-
-const getTime = (value, value2) => {
-    if (!value || !value2) return 0
-    return (value - value2)*1000
-}
-
-const timeFilter = (value) => {
-    return value < 10 ? '0'+value : value
-}
-
 const getData = () => {
     getDataAxios().then(res => {
         isLoading.value = false
         is_placeholder.value = false
+        console.log(res)
         if (res.code == 200) {
             if (res.data != null && res.data.length != 0) {
-                invalid_goods.value = res.data.invalid_goods
-                shopList.value = res.data.shop
+                invalid_goods.value = res.data.invalid_carts
+                shopList.value = res.data.valid_carts
                 total_price.value = res.data.total.total_price
-                goods_count.value = res.data.pay_goods_count
-                service_time.value = res.data.service_time
+                goods_count.value = res.data.total.check_count
             } else {
                 invalid_goods.value = []
                 shopList.value = []
@@ -326,7 +303,7 @@ const getData = () => {
 const shop_isSelect = (value) => {
     let flag_child = true
     value.forEach((child) => {
-        if (!child.reselect) {
+        if (!child.shop_select) {
             flag_child = false
         }
     })
@@ -336,6 +313,7 @@ const shop_isSelect = (value) => {
 
 // 全选按钮是否可以操作
 const all_isSelect = (value) => {
+    return true
     let flag = true
     value.forEach((item) => {
         let flag_child = true
@@ -477,7 +455,6 @@ const chooseShop = (item) => {
         .then((res) => {
             if (res.code == 200) {
                 countTotal()
-                updateMJ(res.data.goods)
             } else if (res.code == 403) {
                 // 去登录
                 appRoute('login')
@@ -488,21 +465,14 @@ const chooseShop = (item) => {
 }
 
 // 切换商品的选择
-const chooseGoods = (shop_item, item) => {
-    item.is_pay = item.is_pay>0 ? '0' : '1'
-    let flag = true
-    shop_item.goods.forEach((item) => {
-        if (item.is_pay == 0) {
-            flag = false
-        }
-    })
+const chooseGoods = (item) => {
+    item.is_check = item.is_check>0 ? 0 : 1
+    selectAll.value = shopList.value.every(item => item.is_check)
 
-    shop_item.shop_select = flag
-    editByGoodsAxios({goods_id: item.goods_id, is_pay: item.is_pay>0 ? '1' : '0',sku_id:item.sku_id})
+    editByGoodsAxios({goods_id: item.id, is_check: item.is_check,goods_sku_id:item.goods_sku_id})
         .then((res) => {
             if (res.code == 200) {
                 countTotal()
-                updateMJ(res.data.goods)
             } else if (res.code == 403) {
                 // 去登录
                 appRoute('login')
@@ -519,18 +489,14 @@ const countTotal = () => {
     let goodsCount = 0
     shopList.value.forEach((item) => {
         let flag_child = true
-        item.goods.forEach((child) => {
-            if (!child.reselect) {
-                if (child.is_pay == 0) {
-                    flag = false
-                    flag_child = false
-                } else {
-                    typeof child.subtotal
-                    totalPrice += child.subtotal
-                    goodsCount++
-                }
-            }
-        })
+        if(item.is_check === 1){
+            typeof item.buy_number
+            totalPrice += item.buy_number
+            goodsCount++
+        }else{
+            flag = false
+            flag_child = false
+        }
         item.shop_select = flag_child
     })
 
@@ -569,7 +535,6 @@ const selectAllGoods = () => {
                 }
                 total_price.value = goodsCount
 
-                updateMJ(res.data.goods)
             } else if (res.code == 403) {
                 // 去登录
                 appRoute('login')
@@ -579,34 +544,7 @@ const selectAllGoods = () => {
         })
 }
 
-// 更新满减
-const updateMJ = (goods) => {
-    if (goods.length > 0) {
-        let shopLen = shopList.value.length
-        goods.forEach(item => {
-            let isFind = false
-            for (let i = 0; i < shopLen; i++) {
-                let flag = false
-                let goodsLen = shopList.value[i].goods.length
-                let temp = shopList.value[i].goods
-                for (let j = 0; j < goodsLen; j++) {
-                    if (temp[j].goods_id == item.goods_id) {
-                        temp[j].increase_desc = item.increase_desc
-                        flag = true
-                        isFind = true
-                        break
-                    }
-                }
-                if (flag) {
-                    break
-                }
-            }
-            if (!isFind) {
-                window.location.reload()
-            }
-        })
-    }
-}
+
 
 // 最终价格
 const lastMoney = (e, item) => {
@@ -813,7 +751,7 @@ onMounted(() => {
     document.querySelector('body').setAttribute('style', 'background-color: var(--page-bg-color)')
     hasBack.value = route.query.hasBack
     getData()
-    getRecommend()
+    // getRecommend()
 })
 
 </script>
