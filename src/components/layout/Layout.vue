@@ -1,9 +1,11 @@
 <template>
     <div class="shop-layout-container s-flex flex-dir">
         <router-view class="shop-view flex-1" style="height: 0" v-slot="{ Component }">
-            <keep-alive>
+            <keep-alive v-if="route.meta.keepAlive">
                 <component :is="Component" />
             </keep-alive>
+            <component :is="Component" v-else />
+
         </router-view>
         <Tabbar></Tabbar>
     </div>
@@ -11,6 +13,8 @@
 
 <script setup>
 import Tabbar from './Tabbar'
+import {useRoute} from "vue-router";
+const route = useRoute()
 </script>
 
 <style lang='scss' scoped>

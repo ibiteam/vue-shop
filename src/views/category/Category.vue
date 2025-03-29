@@ -1,11 +1,7 @@
 <template>
     <div class="category s-flex flex-dir">
         <div class="search s-flex ai-ct">
-            <template v-if="['tabbar','search'].includes(temType)">
-                <div class="back" style="margin-right: 0.27rem;" v-if="temType !== 'tabbar'" @click="routerBack">
-                    <em class="iconfont" style="font-size: 0.44rem;color: #333;">&#xe605;</em>
-                </div>
-                <div class="search-item s-flex ai-ct">
+            <div class="search-item s-flex ai-ct">
                     <div class="imgs s-flex ai-ct jc-ct">
                         <em class="iconfont">&#xe7c3;</em>
                     </div>
@@ -26,7 +22,7 @@
                                         stopOnLastSlide: false,
                                         disableOnInteraction: true,
                                     }"
-                                    @tap="handleClickSearch(navigation_data.search_data.items[currentIndex.value], 'history');"
+                                    @tap="handleClickSearch(navigation_data.search_data.items[currentIndex], 'history');"
                                     @slideChange="slideChange">
                                 <swiper-slide v-for="(item, index) in navigation_data.search_data.items" :key="index">
                                     <div class="s_flex" style="height: 0.66rem; line-height: 0.66rem;">
@@ -37,10 +33,6 @@
                         </template>
                     </div>
                 </div>
-            </template>
-            <template v-if="['common'].includes(temType)">
-                <common-header :title="title" :share_title="page_data.share_title" :desc="page_data.share_desc" :show_back_icon="true" :back_top_show="true"></common-header>
-            </template>
         </div>
         <div class="content s-flex flex-1" v-if="!noData" ref="content">
             <template v-if="loading">
@@ -51,7 +43,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="right">
+                <div class="right s-flex flex-dir">
                     <div class="head-nav s-flex jc-bt">
                         <div class="head-nav-box">
                             <div class="head-nav-ul s-flex jc-bt">
@@ -66,7 +58,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="category-content">
+                    <div class="category-content flex-1">
                         <div class="category-box" v-for="its in 2" :key="its">
                             <div class="title s-flex ai-ct">
                                 <span style="width: 1.12rem;height: 0.2rem;background: #f2f3f5;border-radius: 0.1rem;"></span>
@@ -88,7 +80,7 @@
             <template v-else>
                 <div class="leftNav flex-1">
                     <div class="nav-box" ref="navBox">
-                        <div class="nav-list flex ai-ct jc-ct" :class="{'active' : ids === active}" v-for="(its,ids) in categoryArr" :key="its.cat_id" @click="clickActive(ids,its)">
+                        <div class="nav-list flex ai-ct jc-ct" :class="{'active' : ids === active}" v-for="(its,ids) in categoryArr" :key="its.id" @click="clickActive(ids,its)">
                             <span>{{ its.name }}</span>
                         </div>
                     </div>
@@ -105,8 +97,8 @@
                                         :loop="false"
                                         @swiper="setSwiper"
                                         :freeMode="true">
-                                        <swiper-slide v-for="(its,ids) in categoryArr[active].children" :class="{'active' : ids === navActive}" style="width: auto;" :key="its.cat_id">
-                                            <div class="head-nav-li s-flex ai-ct jc-ct" @click="switchCategory(its.cat_id,its.name,ids)">
+                                        <swiper-slide v-for="(its,ids) in categoryArr[active].children" :class="{'active' : ids === navActive}" style="width: auto;" :key="its.id">
+                                            <div class="head-nav-li s-flex ai-ct jc-ct" @click="switchCategory(its.id,its.name,ids)">
                                                 <span>{{ its.name }}</span>
                                             </div>
                                         </swiper-slide>
@@ -122,13 +114,13 @@
                     </div>
                     <div class="category-content category-content-scroll flex-1">
                         <template v-if="categoryArr.length">
-                            <div class="category-box" :ref="el => itemRef[ids] = el" v-for="(its,ids) in categoryArr[active].children" :key="its.cat_id">
+                            <div class="category-box" :ref="el => itemRef[ids] = el" v-for="(its,ids) in categoryArr[active].children" :key="its.id">
                                 <div class="title s-flex ai-ct" @click="!its.type?to_detail(its,{}):null">
                                     <span>{{ its.name }}</span>
                                     <i class="iconfont" v-if="!its.type">&#xe60b;</i>
                                 </div>
                                 <div class="category-list-box s-flex flex-wrap" v-if="its.children && its.children.length">
-                                    <div class="category-list" v-for="itas in its.children"  @click="to_detail(its,itas)" :key="itas.cat_id">
+                                    <div class="category-list" v-for="itas in its.children"  @click="to_detail(its,itas)" :key="itas.id">
                                         <div class="imgs s-flex ai-ct jc-ct">
                                             <img :src="itas.logo" :alt="itas.name">
                                         </div>
@@ -159,7 +151,6 @@
                 </div>
             </div>
         </div>
-        <!--<BottomLabel v-if="temType === 'tabbar'" alias="category" />-->
         <van-popup v-model:show="popupShow" class="popupClass" position="top" teleport="#app" round @close="closePopup">
             <div class="search s-flex ai-ct">
                 <div class="search-item s-flex ai-ct">
@@ -185,7 +176,7 @@
                                     stopOnLastSlide: false,
                                     disableOnInteraction: true,
                                 }"
-                                @tap="handleClickSearch(navigation_data.search_data.items[currentIndex.value], 'history');"
+                                @tap="handleClickSearch(navigation_data.search_data.items[currentIndex], 'history');"
                                 @slideChange="slideChange">
                                 <swiper-slide v-for="(item, index) in navigation_data.search_data.items" :key="index">
                                     <div class="s_flex" style="height: 0.66rem; line-height: 0.66rem;">
@@ -204,7 +195,7 @@
                 </div>
                 <div class="head-nav-ul s-flex flex-wrap">
                     <template v-if="categoryArr.length">
-                        <div class="head-nav-li s-flex ai-ct jc-ct" :class="{'active' : ids === navActive}" v-for="(its,ids) in categoryArr[active].children" :key="its.id" @click="switchCategory(its.cat_id,its.name,ids)">
+                        <div class="head-nav-li s-flex ai-ct jc-ct" :class="{'active' : ids === navActive}" v-for="(its,ids) in categoryArr[active].children" :key="its.id" @click="switchCategory(its.id,its.name,ids)">
                             <span>{{ its.name }}</span>
                         </div>
                     </template>
@@ -219,11 +210,12 @@
 import {ref , reactive , computed , onMounted , watch , nextTick} from 'vue'
 import $public from '@/utils/public'
 import {useRoute,useRouter} from 'vue-router'
-// import BottomLabel from "../../components/layout/BottomLabel.vue";
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import {cateAxios, navAxios} from "@/api/category.js";
 import { showToast } from 'vant';
+import { appRoute } from "@/router/appRoute";
+
 
 const route = useRoute();
 const router = useRouter();
@@ -236,11 +228,9 @@ const contentRef = ref(null)
 
 const isScroll = ref(false);
 
-const temType = ref(route.query.type || 'tabbar')
 const loading = ref(true)
 const navigation_data = reactive({})
 const categoryId = ref(route.query.id || 3)
-const title = ref('')
 const active = ref(0) // 左侧选中分类
 const serachPlaceholder = ref('搜索关键词')
 const searchKey = ref('')
@@ -251,7 +241,6 @@ const popupShow = ref(false);
 const currentIndex = ref(0);
 const noData = ref(false);
 const replaceObj = reactive({});
-const page_data = reactive({});
 
 const keyword_hot = ''
 const config = {}
@@ -259,9 +248,9 @@ const config = {}
 const slideChange = () => {
     nextTick(() => {
         if (popupShow.value) {
-            currentIndex.value = temType.value === 'common' ? 0 : serachSwiper_2.value.realIndex;
+            currentIndex.value = serachSwiper_2.value.realIndex;
         } else {
-            currentIndex.value = temType.value === 'common' ? 0 : serachSwiper_1.value.realIndex;
+            currentIndex.value = serachSwiper_1.value.realIndex;
         }
     })
 }
@@ -278,21 +267,6 @@ onMounted(() => {
     }
 });
 
-watch(() => route, (newRoute) => {
-    if (newRoute.name !== 'category') return false;
-    if (
-        (newRoute.query.id === categoryId.value && newRoute.query.type === temType.value) ||
-        (!Object.keys(newRoute.query).length && Number(categoryId.value) === 3 && temType.value === 'tabbar')
-    ) return false;
-    temType.value = newRoute.query.type ? newRoute.query.type : 'tabbar';
-    categoryId.value = newRoute.query.id ? newRoute.query.id : 3;
-    active.value = 0;
-    navActive.value = 0;
-    categoryArr.value = [];
-    title.value = '';
-    page_data.value = {};
-    getData();
-}, { immediate: false });
 const getData = () => {
     noData.value = false;
     loading.value = true;
@@ -300,9 +274,7 @@ const getData = () => {
         loading.value = false;
         noData.value = false;
         if (res.code == 200) {
-            categoryArr.value = res.data.cate_data;
-            title.value = res.data.name;
-            page_data.value = res.data.share_data;
+            categoryArr.value = res.data;
             nextTick(() => {
                 document.querySelector(".category-content-scroll") && document.querySelector(".category-content-scroll").addEventListener("scroll", doubleScroll);
             });
@@ -365,11 +337,6 @@ const switchCategory = (id, name, index) => {
 
 const closePopup = () => {
     popupShow.value = false;
-    if (temType.value !== 'common') {
-        nextTick(() => {
-            // currentIndex.value = serachSwiper_1.value.realIndex;
-        });
-    }
 };
 
 const clickActive = (index, item) => {
@@ -404,21 +371,12 @@ const to_detail = (its, itas) => {
     if (Object.keys(itas).length) {
         if (its.type === 'is_hot_brands') {
             query = { 'defkeywords': itas.name, 'brand_id': itas.brand_id, 'brand_name': itas.name, 'keywords': itas.name, 'hotKeywords': searchKey.value, 'search_source': '其他', 'search_type': '手动输入' };
-            $volcengine.collect('goods_cate_click', {
-                goods_brand: itas.brand_id,
-                scene_source: '分类', // 场景来源
-            });
         } else {
-            query = { 'defkeywords': itas.name, 'cat_id': itas.cat_id, 'keywords': itas.name, 'hotKeywords': searchKey.value, 'search_source': '其他', 'search_type': '手动输入' };
-            $volcengine.collect('goods_cate_click', {
-                goods_first_cate_id: categoryArr.value[active.value].cat_id, // 一级品类id
-                goods_first_cate: categoryArr.value[active.value].name, // 一级品类名称
-                scene_source: '分类', // 场景来源
-            });
+            query = { 'defkeywords': itas.name, 'cat_id': itas.id, 'keywords': itas.name, 'hotKeywords': searchKey.value, 'search_source': '其他', 'search_type': '手动输入' };
         }
     } else {
         // 分类名称
-        query = { 'defkeywords': its.name, 'cat_id': its.cat_id, 'keywords': its.name, 'hotKeywords': searchKey.value, 'search_source': '其他', 'search_type': '手动输入' };
+        query = { 'defkeywords': its.name, 'cat_id': its.id, 'keywords': its.name, 'hotKeywords': searchKey.value, 'search_source': '其他', 'search_type': '手动输入' };
     }
     setTimeout(() => {
         appRoute('search', query, query);
@@ -436,7 +394,8 @@ const getPageData = () => {
 };
 
 const handleClickSearch = (item, type) => {
-    appRoute('search_history', {}, { placeholder: item.keywords, url: item.url, alias: item.url_alias || item.alias });
+    console.log(item.keywords)
+    appRoute('search_history', {placeholder: item.keywords}, {});
 };
 
 const isScrolledToBottom = (element) => {
@@ -686,6 +645,7 @@ const isScrolledToBottom = (element) => {
                 line-height: 0.8rem;
                 border-radius: 0.4rem;
                 box-sizing: border-box;
+                text-align: center;
                 span{
                     font-size: 0.28rem;
                     font-weight: 600;

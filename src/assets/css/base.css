@@ -82,7 +82,7 @@ input:-moz-placeholder {
   color: #999;
 }
 /*flex布局*/
-.s-flex {
+.s-flex,.flex {
   display: flex;
 }
 
@@ -126,15 +126,15 @@ input:-moz-placeholder {
   justify-content: flex-end;
 }
 
-.jc_fs {
+.jc-fs {
   justify-content: flex-start;
 }
 
-.jc_se {
+.jc-se {
   justify-content: space-evenly;
 }
 
-.ai_fe {
+.ai-fe {
   align-items: flex-end;
 }
 
@@ -363,4 +363,20 @@ input:-moz-placeholder {
 .breathe {
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+
+/*nodata*/
+.noData{
+  text-align: center;
+
+}
+.noData img{
+  width: 100%;
+}
+.noData p,
+.noData span{
+  text-align: center;
+  color: #666666;
+  font-size: 0.28rem;
 }

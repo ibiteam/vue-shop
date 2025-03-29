@@ -63,18 +63,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, computed, onMounted, onBeforeMount } from 'vue';
+import {ref, reactive, watch, computed, onMounted, onBeforeMount, onActivated} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useCookies } from "vue3-cookies";
+import $public from '@/utils/public'
+import {searchKeywordsAxios} from '@/api/search'
 
 const { cookies } = useCookies();
 const router = useRouter();
 const route = useRoute();
 
-const router_name = ref('search');
-const router_url = ref('');
-const router_url_alias = ref('');
-const from_path_name = ref('');
 const search_placeholder = ref('');
 const info = reactive({
     keywords: '',
@@ -85,7 +83,6 @@ const search_keywords_all_list = ref([]);
 const search_keywords_over_list = ref([]);
 const is_show_list_more = ref(false);
 const is_open_list = ref(false);
-const search_keywords_find = ref([]);
 const is_show_find = ref(true);
 
 
@@ -123,33 +120,12 @@ watch(
     }
 );
 
-watch(
-    () => route,
-    (to, from) => {
-        from_path_name.value = from.name;
-    },
-    { deep: true }
-);
-
-const computedDataType = computed(() => {
-    return function (value) {
-        const type = Object.prototype.toString.call(value).slice(8, -1);
-        return type;
-    };
-});
-
 const handleClickRouterBack = () => {
-    router.back();
-};
-
-const isValidHttpUrl = (string) => {
-    let url;
-    try {
-        url = new URL(string);
-    } catch (_) {
-        return false;
+    if(search_keywords_optiosn.value.length){
+        search_keywords_optiosn.value = []
+    }else{
+        router.back();
     }
-    return url.protocol === "http:" || url.protocol === "https:";
 };
 
 const handleSearchConfirm = (value) => {
@@ -166,40 +142,21 @@ const handleSearchConfirm = (value) => {
         list = [...new Set(list)];
         search_keywords_list.value = list;
         localStorage.setItem('keywordList', JSON.stringify(search_keywords_list.value));
-    } else if (search_placeholder.value && (router_url.value || (router_url_alias.value && router_url_alias.value == 'customer_service'))) {
-        if (router_url_alias.value == 'customer_service') {
-            handleCheckServiceVolcengine();
-        } else {
-            if (isValidHttpUrl(router_url.value)) {
-                locationUrl(router_url.value);
-            } else {
-                $toast('无效链接地址');
-            }
-        }
-        return false;
     }
-    params.search_source = '首页';
-    if (from_path_name.value == router_name.value) {
-        if (cookies.get('back_search_keywords')) {
-            cookies.remove('back_search_keywords');
-        }
-        cookies.set('back_search_keywords', params);
-        router.back();
-    } else {
-        appRoute(router_name.value, {}, params, 'replace');
-    }
+    router.push({
+        name:'search',
+        query: params
+    })
     setTimeout(() => info.keywords = '', 200);
 };
 
-const handleInputSearchOptions = (value) => {
-    setTimeout(() => {
-        $http.doPost("v3/search/keywords", { keywords: value }).then(res => {
-            if (res.code == 200) {
-                search_keywords_optiosn.value = res.data;
-            }
-        });
-    }, 300);
-};
+const handleInputSearchOptions = $public.debounce(() => {
+    searchKeywordsAxios({ keywords: info.keywords }).then(res => {
+        if (res.code == 200) {
+            search_keywords_optiosn.value = res.data;
+        }
+    });
+},300);
 
 const handleClickClearKeywords = () => {
     search_keywords_list.value = [];
@@ -211,49 +168,21 @@ const handleClickShowMoreKeywords = () => {
     search_keywords_list.value = is_open_list.value ? search_keywords_all_list.value : search_keywords_over_list.value;
 };
 
-const handleCheckServiceVolcengine = () => {
-    $http.doPost('v3/chatUrl', { source_url: window.location.href }).then(res => {
-        if (res.code == 200) {
-
-            if ($platform.is_wx()) {
-                $volcengine.getCollectToken().then((token) => {
-                    let hs_uuid = (token.user_unique_id == token.web_id) ? token.web_id : token.user_unique_id;
-                    locationUrl(`${res.data.chat_url}&hs_uuid=${hs_uuid}&v=${(new Date().getTime())}`);
-                });
-            } else {
-                $volcengine.getCollectToken().then((token) => {
-                    let hs_uuid = (token.user_unique_id == token.web_id) ? token.web_id : token.user_unique_id;
-                    locationUrl(`${res.data.chat_url}&hs_uuid=${hs_uuid}`);
-                });
-            }
-        } else {
-            $toast(res.message);
-        }
-    });
-};
-
 const handleClickSearchFindItem = (item) => {
     if (item.web_path) {
-        if ($platform.is_app() && item.app_path) {
-            $platform.appRouteTo(item.app_path, true);
-        } else {
-            locationUrl(item.web_path);
-        }
+        locationUrl(item.web_path);
     }
 };
 
 onMounted(() => {
     if (route.query) {
-        router_url_alias.value = route.query.alias || '';
-        router_url.value = route.query.url || '';
-        router_name.value = route.query.type || 'search';
-        from_path_name.value = route.query.name || '';
         search_placeholder.value = route.query.placeholder || '';
         info.keywords = route.query.keywords || '';
     }
 });
 
 onBeforeMount(() => {
+    console.log('onBeforeMount')
     if (localStorage.getItem('keywordList')) {
         search_keywords_all_list.value = search_keywords_list.value = JSON.parse(localStorage.getItem('keywordList'));
     }

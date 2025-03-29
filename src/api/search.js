@@ -1,20 +1,15 @@
 import $http from '@/utils/http'
 
 
-const searchShopAxios = (params) => {
+export function searchShopAxios(params){
   return $http.doPost("v3/search/shop", params)
 }
 
-const searchAxios = (params) => {
-  return $http.doPost("v3/search", params)
+export function searchAxios(params){
+  return $http.doPost("v1/search/goods", params)
 }
 
-const searchKeywordsAxios = (params) => {
-  return $http.doPost("v3/search/keywords",params)
+export function searchKeywordsAxios(params){
+  return $http.doGet("v1/search/keywords",params)
 }
 
-export default {
-  searchShopAxios,
-  searchAxios,
-  searchKeywordsAxios
-}

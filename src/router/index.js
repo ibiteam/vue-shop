@@ -33,16 +33,19 @@ const router = createRouter({
                   path: 'category',
                   name: 'category',
                   component: () => import('@/views/category/Category.vue'),
+                  meta:{keepAlive:false}
                 },
                 {
                   path: 'search',
                   name: 'search',
                   component: () => import('@/views/search/Index.vue'),
+                  meta:{keepAlive:true}
                 },
                 {
                   path: 'search/history',
                   name: 'search_history',
                   component: () => import('@/views/search/History.vue'),
+                  meta:{keepAlive:true}
                 }
             ],
         },
