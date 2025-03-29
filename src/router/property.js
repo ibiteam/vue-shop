@@ -45,7 +45,7 @@ const property = [
     {
         path: '/property/balance',
         name: 'balance',
-        component: () => import('@/views/property/balance.vue'),
+        component: () => import('@/views/property/balance/balance.vue'),
     },
 ]
 export default property
