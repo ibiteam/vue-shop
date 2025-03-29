@@ -23,91 +23,79 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import $ from 'jquery'
-export default {
-    name: 'fileChoosePop',
-    props: {
-        visible: {
-            type: Boolean,
-            default: false,
-        },
-        choose_data: {
-            type: Object,
-            default: {
-                img: ''
-            }
-        }
-    },
-    data() {
-        return {
-            show: false,
-            capture: ''
-        }
-    },
-    watch: {
-        visible: {
-            immediate: true,
-            handler: function(newVal) {
-                this.show = newVal
-                if (this.show) {
-                }
-            }
-        },
-    },
-    mounted() {
+import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, defineEmits} from 'vue'
+const cns = getCurrentInstance().appContext.config.globalProperties
+const show = ref(false)
+const capture = ref('')
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+  choose_data: {
+    type: Object,
+    default: {
+      img: ''
+    }
+  }
+})
+const emit = defineEmits(['save','close'])
 
-    },
-    methods: {
-        fileChange(e) {
-            if (!e.target.files || !e.target.files[0]) return
-            // if (!this.beforeAvatarUpload(e.target.files[0])) return
-            this.$emit('save', e.target.files[0])
-            this.$refs.file_input.value = ''
-        },
-        selectType(type) {
-            this.capture = type
-            if (type == 'camera') {
-                $("#file_input").attr("capture", "camera");
-            } else {
-                $("#file_input").removeAttr("capture");
-            }
-            this.$refs.file_input.click()
-        },
-        saveImg() {
-            if (!this.choose_data.img) {
-                this.$toast('请先上传图片')
-                return false
-            }
-            let name = this.choose_data.img.split('/')
-            if (!name || name.length == 0) return
-            this.downloadImage(this.choose_data.img, name[name.length-1])
-        },
-        downloadImage(imgsrc, name) {
-            let image = new Image()
-            // 解决跨域 Canvas 污染问题
-            image.setAttribute('crossOrigin', 'anonymous')
-            image.onload = function () {
-                let canvas = document.createElement('canvas')
-                canvas.width = image.width
-                canvas.height = image.height
-                let context = canvas.getContext('2d')
-                context.drawImage(image, 0, 0, image.width, image.height)
-                let url = canvas.toDataURL('image/png') // 得到图片的base64编码数据
-                let a = document.createElement('a') // 生成一个a元素
-                let event = new MouseEvent('click') // 创建一个单击事件
-                a.download = name || 'photo' // 设置图片名称
-                a.href = url // 将生成的URL设置为a.href属性
-                a.dispatchEvent(event) // 触发a的单击事件
-            }
-            image.src = imgsrc
-        },
-        closePop() {
-            this.$emit('close')
-        }
-    },
+watch(() => props.visible, (newVal) => {
+  show.value = newVal
+})
+
+const fileChange = () => {
+  if (!e.target.files || !e.target.files[0]) return
+  emit('save', e.target.files[0])
+  // this.$refs.file_input.value = ''
 }
 
+const selectType = (type) => {
+  capture.value = type
+  if (type == 'camera') {
+    $("#file_input").attr("capture", "camera");
+  } else {
+    $("#file_input").removeAttr("capture");
+  }
+  // this.$refs.file_input.click()
+}
+
+const saveImg = () => {
+  if (!props.choose_data.img) {
+    cns.$toast('请先上传图片')
+    return false
+  }
+  let name = props.choose_data.img.split('/')
+  if (!name || name.length == 0) return
+  downloadImage(props.choose_data.img, name[name.length-1])
+}
+
+const downloadImage = (imgsrc, name) => {
+  let image = new Image()
+  // 解决跨域 Canvas 污染问题
+  image.setAttribute('crossOrigin', 'anonymous')
+  image.onload = function () {
+    let canvas = document.createElement('canvas')
+    canvas.width = image.width
+    canvas.height = image.height
+    let context = canvas.getContext('2d')
+    context.drawImage(image, 0, 0, image.width, image.height)
+    let url = canvas.toDataURL('image/png') // 得到图片的base64编码数据
+    let a = document.createElement('a') // 生成一个a元素
+    let event = new MouseEvent('click') // 创建一个单击事件
+    a.download = name || 'photo' // 设置图片名称
+    a.href = url // 将生成的URL设置为a.href属性
+    a.dispatchEvent(event) // 触发a的单击事件
+  }
+  image.src = imgsrc
+}
+
+const closePop = () => {
+  emit('close')
+}
 </script>
 <style lang='scss' scoped>
 .pop-wrap {

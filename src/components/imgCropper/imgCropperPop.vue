@@ -20,98 +20,77 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import H5Cropper from "vue-cropper-h5";
 import $ from 'jquery'
-export default {
-    name: 'imgCropperPop',
-    components: {
-        H5Cropper
-    },
-    props: {
-        visible: {
-            type: Boolean,
-            default: false,
-        },
-        file: null,
-        type: String,
-    },
-    data() {
-        return {
-            show: false,
-            reset: false,
-            option: {
-                // mode: '100% auto',
-                fixedBox: true,
-                canMoveBox: false,
-                autoCropWidth: document.body.clientWidth - 45,
-                autoCropHeight: document.body.clientWidth - 45,
-                maxImgSize: document.body.clientWidth - 45,
-                mode: 'cover'
-            }
-        }
-    },
-    watch: {
-        visible: {
-            immediate: true,
-            handler: function(newVal) {
-                this.show = newVal
-                if (this.show) {
+import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, defineEmits} from 'vue'
+const cns = getCurrentInstance().appContext.config.globalProperties
+const show = ref(false)
+const reset = ref(false)
+const option = ref({
+  fixedBox: true,
+  canMoveBox: false,
+  autoCropWidth: document.body.clientWidth - 45,
+  autoCropHeight: document.body.clientWidth - 45,
+  maxImgSize: document.body.clientWidth - 45,
+  mode: 'cover'
+})
 
-                }
-            }
-        },
-        file: {
-            immediate: true,
-            handler: function(newVal) {
-                if (newVal) {
-                    this.$nextTick(() => {
-                        this.$refs.cropper.loadFile(newVal)
-                    })
-                }
-            }
-        },
-    },
-    mounted() {
-    },
-    methods: {
-        getFile(file) {
-            this.$emit('getFile', file)
-            this.$emit('close')
-        },
-        getbase64Data(file) {
-            this.$emit('getbase64Data', file)
-            this.$emit('close')
-        },
-        imgSave() {
-            const child = $('.cropper-box .upbtn .btndiv').children()
-            if (child && child[2]) {
-                child[2].click()
-            }
-        },
-        imgRotate() {
-            this.$refs.cropper.rotating();
-        },
-        imgReset() {
-            if (!this.file) return
-            this.reset = true
-            setTimeout(() => {
-                this.reset = false
-                this.$nextTick(() => {
-                    this.$refs.cropper.loadFile(this.file)
-                })
-            }, 100)
-        },
-        imgCancel() {
-            this.$refs.cropper.canceltailor()
-            this.closePop()
-        },
-        closePop() {
-            this.$emit('close')
-        }
-    },
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+  file: null,
+  type: String,
+})
+
+watch(() => props.visible, (newVal) => {
+  show.value = newVal
+})
+
+watch(() => props.file, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      // this.$refs.cropper.loadFile(newVal)
+    })
+  }
+})
+const emit = defineEmits(['getFile','close','getbase64Data'])
+const getFile = (file) => {
+  emit('getFile', file)
+  emit('close')
 }
-
+const getbase64Data = (file) => {
+  emit('getbase64Data', file)
+  emit('close')
+}
+const imgSave = () => {
+  const child = $('.cropper-box .upbtn .btndiv').children()
+  if (child && child[2]) {
+    child[2].click()
+  }
+}
+const imgRotate = () => {
+  // this.$refs.cropper.rotating();
+}
+const imgReset = () =>{
+  if (!props.file) return
+  reset.value = true
+  setTimeout(() => {
+    reset.value = false
+    nextTick(() => {
+      // this.$refs.cropper.loadFile(props.file)
+    })
+  }, 100)
+}
+const imgCancel = () =>{
+  // this.$refs.cropper.canceltailor()
+  closePop()
+}
+const closePop = () =>{
+  emit('close')
+}
 </script>
 <style lang='scss' scoped>
 .img-cropper-pop {background: #999;}
