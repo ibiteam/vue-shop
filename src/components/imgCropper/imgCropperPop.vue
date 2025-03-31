@@ -2,9 +2,7 @@
     <div>
         <van-popup class="img-cropper-pop" v-model:show="show" :close-on-click-overlay="false" :style="{ height: '100vh' }" :lock-scroll="false">
             <div class="pop-wrap">
-                <div class="cropper-box">
-                    <h5-cropper v-if="!reset" id="h5_cropper" ref="cropper" :option="option" @getbase64="getbase64Data" @getFile="getFile"></h5-cropper>
-                </div>
+                <div class="cropper-box"></div>
                 <div class="cropper-tools">
                     <div class="tools s-flex ai-ct jc-bt">
                         <img style="height: .4rem;" src="https://cdn.toodudu.com/uploads/2024/03/07/向右@2x.png" alt="" @click="imgRotate">
@@ -21,7 +19,6 @@
 </template>
 
 <script setup>
-import H5Cropper from "vue-cropper-h5";
 import $ from 'jquery'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, defineEmits} from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
