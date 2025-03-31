@@ -40,7 +40,6 @@
     </div>
 </template>
 <script setup>
-import md5 from "js-md5";
 import { ref, watch, onMounted, getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {checkPhone, sendCode, verifyPhone, updatePhone} from "@/api/user";

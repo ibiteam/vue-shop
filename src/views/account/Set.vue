@@ -34,7 +34,8 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
-import {logOutAxios} from "@/api/account.js";
+import {logOutAxios} from "@/api/user.js";
+import {getUserInfoAxios} from "@/api/account.js";
 const title = ref('用户设置')
 const nickname = ref('')
 const portrait = ref('')
@@ -42,8 +43,25 @@ const user_name = ref('')
 const is_login = ref(true)
 
 onMounted(() => {
-
+    getUserInfo()
 })
+
+const getUserInfo = () => {
+    getUserInfoAxios().then(res => {
+        if (res.code == 200) {
+            nickname.value = res.data.nickname||'未设置昵称'
+            portrait.value = res.data.avatar
+            user_name.value = res.data.user_name
+            is_login.value = true
+        } else if (res.code == 401) {
+            is_login.value = false
+        }else {
+            cns.$toast(res.message)
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+}
 
 const handleClickRouterLinkBefore = async() => {
     is_login.value = await cns.$public.requestLogin()

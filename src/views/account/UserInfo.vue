@@ -55,7 +55,7 @@ import {
     getUserInfoAxios, updateNickNameAxios, updatePortraitAxios, updateUserNameAxios, uploadFileAxios
 } from "@/api/account.js";
 const title = ref('用户信息')
-const page_loading = ref(true)
+const page_loading = ref(false)
 const portrait = ref('')
 const nickname = ref('')
 const user_name = ref('')
@@ -73,6 +73,20 @@ const file_choose_data = ref({
 
 onMounted(() => {
     // getUserInfo()
+    let userInfo = {
+        "user_name": "laravel_shop", // 用户名
+        "nickname": "lc_1742536033_4969_26", // 昵称
+        "phone": "15145678901", // 手机号
+        "avatar": "", // 头像
+        "is_modify": true // 是否修改过用户名
+    }
+    is_modify.value = userInfo.is_modify
+    nickname.value = userInfo.nickname||'未设置昵称'
+    portrait.value = userInfo.avatar
+    user_name.value = userInfo.user_name
+    editNickname.value = userInfo.nickname
+    editUsername.value = userInfo.user_name
+    page_loading.value = true
 })
 const getUserInfo = () => {
     getUserInfoAxios().then(res => {
@@ -80,11 +94,11 @@ const getUserInfo = () => {
             page_loading.value = true
             is_modify.value = res.data.is_modify
             nickname.value = res.data.nickname||'未设置昵称'
-            portrait.value = res.data.portrait
+            portrait.value = res.data.avatar
             user_name.value = res.data.user_name
             editNickname.value = res.data.nickname
             editUsername.value = res.data.user_name
-        } else if (res.code == 403) {
+        } else if (res.code == 401) {
             // 去登录
             cns.appRoute('login')
         }else {

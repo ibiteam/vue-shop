@@ -13,6 +13,11 @@ export function registerOrPhoneLogin({info, action, is_register}) {
     return $http.doPost(URL, info)
 }
 
+// 退出登录
+export function logOutAxios() {
+    return $http.doPost('v1/auth/logout')
+}
+
 export function sendCode(info) {
     if(info.action == 'password-edit') delete info.phone
     return $http.doPost('v1/sms-action', info)
@@ -29,5 +34,5 @@ export function verifyPhone(info) {
 }
 
 export function updatePhone(info) {
-    return $http.doPost('v3/bind/phone', info)
+    return $http.doPost('v1/account_set/phone', info)
 }

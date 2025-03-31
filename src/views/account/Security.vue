@@ -7,10 +7,6 @@
                 <van-cell title="绑定注册手机" value="* 为了您的账户安全请尽快绑定手机号码" is-link @click="appRoute('updatePhone')" v-if="!phone"/>
                 <van-cell title="修改注册手机" :value="mobile_phone" is-link v-if="phone" @click="appRoute('updatePhone',{},{phone:phone,area:national_city,code:national_code})"/>
             </van-cell-group>
-
-            <van-cell-group style="border-radius: 0.2rem;overflow: hidden">
-                <van-cell title="注销账号" is-link @click="appRoute('logout')"/>
-            </van-cell-group>
         </nav>
     </div>
 </template>
@@ -37,9 +33,9 @@ const getUserInfo = () => {
             phone.value = res.data.phone
             national_city.value = res.data.national_city
             national_code.value = res.data.national_code
-        }else if(res.code==403){
-            cns.$toast(res.message)
-            cns.appRoute('home',{},{},'replace')
+        }else if(res.code==401){
+            // 去登录
+            cns.appRoute('login')
         }else {
             cns.$toast(res.message)
         }
