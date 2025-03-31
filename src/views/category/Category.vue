@@ -370,16 +370,16 @@ const to_detail = (its, itas) => {
     let query;
     if (Object.keys(itas).length) {
         if (its.type === 'is_hot_brands') {
-            query = { 'defkeywords': itas.name, 'brand_id': itas.brand_id, 'brand_name': itas.name, 'keywords': itas.name, 'hotKeywords': searchKey.value, 'search_source': '其他', 'search_type': '手动输入' };
+            query = { 'keywords': itas.name,  };
         } else {
-            query = { 'defkeywords': itas.name, 'cat_id': itas.id, 'keywords': itas.name, 'hotKeywords': searchKey.value, 'search_source': '其他', 'search_type': '手动输入' };
+            query = { 'cat_id': itas.id, 'keywords': itas.name, };
         }
     } else {
         // 分类名称
-        query = { 'defkeywords': its.name, 'cat_id': its.id, 'keywords': its.name, 'hotKeywords': searchKey.value, 'search_source': '其他', 'search_type': '手动输入' };
+        query = { 'cat_id': its.id, 'keywords': its.name };
     }
     setTimeout(() => {
-        appRoute('search', query, query);
+        appRoute('search', query, {});
     }, 100);
 };
 

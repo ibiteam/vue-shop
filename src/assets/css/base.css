@@ -375,7 +375,8 @@ input:-moz-placeholder {
   width: 100%;
 }
 .noData p,
-.noData span{
+.noData span,
+.noData .noTex{
   text-align: center;
   color: #666666;
   font-size: 0.28rem;

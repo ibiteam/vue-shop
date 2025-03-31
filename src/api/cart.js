@@ -37,10 +37,6 @@ export function placeOrderAxios(){
   return $http.doGet('v1/cart/place_order')
 }
 
-export function cartAxios(){
-  return $http.doGet('v3/buried/data/cart')
-}
-
 export function changeNumberAxios(param){
   return $http.doPost('v1/cart/change_number',param)
 }

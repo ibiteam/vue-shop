@@ -208,7 +208,7 @@
 import {onMounted, ref, computed , getCurrentInstance} from 'vue'
 import {useRouter , useRoute} from 'vue-router'
 import {
-    cartAxios, changeNumberAxios,
+    changeNumberAxios,
     deleteAxios,
     editByGoodsAxios,
     emptyInvalidAxios, getCouponAxios,
@@ -245,7 +245,6 @@ const getData = () => {
     getDataAxios().then(res => {
         isLoading.value = false
         is_placeholder.value = false
-        console.log(res)
         if (res.code == 200) {
             if (res.data != null && res.data.length != 0) {
                 invalid_goods.value = res.data.invalid_carts
@@ -532,43 +531,7 @@ const toBuy = () => {
     placeOrderAxios()
         .then((res) => {
             if (res.code == 200) {
-                cartAxios().then(ret => {
-                    if (ret.code == 200) {
-                        if(ret.data){
-                            let vol_info = {
-                                shop_type: ret.data.shop_type,
-                                shop_id: ret.data.shop_id,
-                                shop_name: ret.data.shop_name,
-                                shop_star: ret.data.shop_star,
-                                buy_source:'购物车',
-                                goods_id_list: ret.data.goods_id_list, // 商品的唯一ID
-                                goods_name_list: ret.data.goods_name_list, // 商品对应的名称
-                                goods_first_cate_id_list: ret.data.goods_first_cate_id_list,
-                                goods_first_cate_list: ret.data.goods_first_cate_list,
-                                goods_second_cate_id_list: ret.data.goods_second_cate_id_list,
-                                goods_second_cate_list: ret.data.goods_second_cate_list,
-                                brand_id_list:ret.data.brand_id_list,
-                                goods_brand_list: ret.data.goods_brand_list, // 商品对应的品牌
-                                goods_price_list:ret.data.goods_price_list,
-                                goods_num_list:ret.data.goods_num_list,
-                                goods_info:ret.data.goods_info,
-                                ref_id:ret.data.shop_id,
-                            }
-                            if (ret.data.gift_active_info){
-                                vol_info.gift_active_info = ret.data.gift_active_info
-                            }
-                            if (ret.data.favourable_active_info){
-                                vol_info.favourable_active_info = ret.data.favourable_active_info
-                            }
-
-                            setTimeout(()=>{
-                                appRoute('checkout')
-                            },150)
-                        }
-                    } else {
-                        showToast(ret.message)
-                    }
-                })
+                appRoute('checkout')
             } else if (res.code == 403) {
                 // 去登录
                 appRoute('login')
@@ -607,10 +570,12 @@ const toBuy = () => {
                     message: res.message
                 }).then(() => {
                     getData()
-                })
+                }).catch(() => {})
             } else {
                 showToast(res.message)
             }
+        }).catch(error => {
+            console.log(error)
         })
 }
 

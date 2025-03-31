@@ -179,15 +179,8 @@ const searchData = (first) => {
         ...info,
         page:1,
     })
-    let ids = []
     let params = JSON.parse(JSON.stringify(info))
-    if ((route.query.cat_id && params.cat_id && route.query.cat_id==params.cat_id ) && route.query.keywords == params.keywords) {
-        params.keywords = ''
-    }else {
-        params.cat_id = ''
-    }
     params['number'] = 15
-    console.log(params)
     searchAxios(params).then(res => {
         if (res.code == 200) {
             listNoData.value = !res.data.list.length
@@ -207,6 +200,8 @@ const searchData = (first) => {
                 ...info,
                 page:info.page++,
             })
+        }else{
+            showToast(res.message)
         }
     })
 }
