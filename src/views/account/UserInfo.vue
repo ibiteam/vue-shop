@@ -1,6 +1,6 @@
 <template>
     <div class="userInfo-wrap" v-if="page_loading">
-        <common-header :title="title" :is_show_more="false"></common-header>
+        <common-header :title="title"></common-header>
         <nav class="user-center">
             <van-cell-group>
                 <van-cell title="头像" is-link clickable class="logo-cell">
@@ -72,21 +72,7 @@ const file_choose_data = ref({
 })
 
 onMounted(() => {
-    // getUserInfo()
-    let userInfo = {
-        "user_name": "laravel_shop", // 用户名
-        "nickname": "lc_1742536033_4969_26", // 昵称
-        "phone": "15145678901", // 手机号
-        "avatar": "", // 头像
-        "is_modify": true // 是否修改过用户名
-    }
-    is_modify.value = userInfo.is_modify
-    nickname.value = userInfo.nickname||'未设置昵称'
-    portrait.value = userInfo.avatar
-    user_name.value = userInfo.user_name
-    editNickname.value = userInfo.nickname
-    editUsername.value = userInfo.user_name
-    page_loading.value = true
+    getUserInfo()
 })
 const getUserInfo = () => {
     getUserInfoAxios().then(res => {
@@ -180,7 +166,7 @@ const updateUserName = () => {
         cns.$toast('用户名3-22个字符，建议使用“_”、数字或字母（区分大小写）组合')
         return
     }
-    if (!this.$public.isUserName(editUsername.value)) {
+    if (!cns.$public.isUserName(editUsername.value)) {
         cns.$toast('用户名不能设置为纯数字')
         return
     }

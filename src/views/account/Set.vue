@@ -1,5 +1,5 @@
 <template>
-    <div class="set-wrap">
+    <div class="set-wrap" v-if="page_loading">
         <common-header :title="title" :is_show_more="false"></common-header>
         <nav class="user-center">
             <ul class="user-basic MB20" @click="handleClickRouterLinkBefore({ name: 'userInfo' })">
@@ -22,7 +22,7 @@
                 </li>
             </ul>
             <van-cell-group style="border-radius: 0.2rem;overflow: hidden;">
-                <van-cell title="账户与安全" is-link @click="handleClickRouterLinkBefore({ name: 'accountSecurity' })"/>
+                <van-cell title="账户与安全" is-link @click="handleClickRouterLinkBefore({ name: 'security' })"/>
             </van-cell-group>
             <div style="position: fixed;bottom: 0.94rem;left: 0;right: 0;margin: auto; width: 6.9rem;height: 0.88rem;" class="breathe" v-if="is_login">
                 <div class="botom" @click="logOut()">退出账号</div>
@@ -37,6 +37,7 @@ const cns = getCurrentInstance().appContext.config.globalProperties
 import {logOutAxios} from "@/api/user.js";
 import {getUserInfoAxios} from "@/api/account.js";
 const title = ref('用户设置')
+const page_loading = ref(false)
 const nickname = ref('')
 const portrait = ref('')
 const user_name = ref('')
@@ -48,6 +49,7 @@ onMounted(() => {
 
 const getUserInfo = () => {
     getUserInfoAxios().then(res => {
+        page_loading.value = true
         if (res.code == 200) {
             nickname.value = res.data.nickname||'未设置昵称'
             portrait.value = res.data.avatar
@@ -63,7 +65,7 @@ const getUserInfo = () => {
     })
 }
 
-const handleClickRouterLinkBefore = async() => {
+const handleClickRouterLinkBefore = async(data) => {
     is_login.value = await cns.$public.requestLogin()
     if (is_login.value) {
         const { name, query, params } = data
