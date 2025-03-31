@@ -14,36 +14,11 @@
                 <van-pull-refresh v-model="isLoading" @refresh="getData">
                     <div v-if="hasLogin && (shopList.length > 0 || invalid_goods.length>0)" class="padding-horizontal-02">
                         <div class="bg-fff shop-box MT20 shop-box-section">
-                            <!--<div class="shop-title s-flex ai-ct">-->
-                            <!--    <div v-if="!item.is_check" class="no-check check-grey"></div>-->
-                            <!--    <div-->
-                            <!--        v-else-if="item.shop_select"-->
-                            <!--        class="iconfont checkbox"-->
-                            <!--        @click="chooseShop(item,shop_index)"-->
-                            <!--    ></div>-->
-                            <!--    <div v-else class="no-check" @click="chooseShop(item,shop_index)"></div>-->
-                            <!--    <div class="s-flex flex-1 ai-ct" @click="toShop(item.seller_id)">-->
-                            <!--        <em class="iconfont">&#xe646;</em>-->
-                            <!--        <span class="fs24 co-333 ML20">{{item.shop_name}}</span>-->
-                            <!--        <img src="@/assets/images/cart/arrow-right.png" style="height:0.16rem;" class="ML10"/>-->
-                            <!--    </div>-->
-                            <!--    <div class="control-box s-flex jc-ct ai-ct fs22" v-if="item.is_coupon>0" @click="getCoupon(item)">领券</div>-->
-                            <!--</div>-->
                             <div class="goods-box valid-goods" v-for="(goods,index) in shopList" :key="goods.id" :class="!((goods.act_type==1 || goods.act_type==2) && goods.limit_number>0) ? 'border-sty' : '' ">
-                                <!--满减-->
-                                <!--<div class="s-flex fs24 ai-ct MT20 reduction" v-if="goods.act_type==6">-->
-                                <!--    <span class="act-sign MR20">满减</span>-->
-                                <!--    <p class="co-333">-->
-                                <!--    <span class="fs22 co-333">-->
-                                <!--        {{goods.increase_desc}}-->
-                                <!--    </span>-->
-                                <!--    </p>-->
-                                <!--</div>-->
-
                                 <van-swipe-cell>
                                     <template #right>
-                                        <van-button square type="danger" class="atten" @click="toAttentionSole(goods.rec_id, shop_index, index)">移入<br>关注</van-button>
-                                        <van-button square type="danger" class="right-delet btn-gradient" @click="deleteGoodSole(goods.rec_id, shop_index, index)">删除</van-button>
+                                        <van-button square type="danger" class="atten" @click="toAttentionSole(goods,index)">移入<br>关注</van-button>
+                                        <van-button square type="danger" class="right-delet btn-gradient" @click="deleteGoodSole(goods,index)">删除</van-button>
                                     </template>
                                     <div class="goods-list">
                                         <div class="s-flex ai-ct MT20">
@@ -58,17 +33,14 @@
                                             <div class="img-box MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}" style="flex: none;"
                                                  @click="toGood(goods.goods.goods_id)"></div>
                                             <div class="goods-msg flex-1 s-flex flex-dir jc-bt">
-                                                <p class="elli-2 fs22 co-333 goods-name" @click="toGood(goods.id)">{{goods.goods.name}}</p>
-                                                <!--增值费 价格-->
-                                                <!--<cartCost :goods_info="goods" @last_money="lastMoney($event, goods)" @unusual="getData"></cartCost>-->
-
+                                                <p class="elli-2 fs22 co-333 goods-name" @click="toGood(goods.goods.id)">{{goods.goods.name}}</p>
                                                 <div class="s-flex ai-fe jc-bt">
                                                     <!--价格 数量-->
                                                     <form-price :price="goods.goods.price" :unit="goods.goods.unit"
                                                                 unit_color="#333" weight="600">
                                                     </form-price>
 
-                                                    <van-stepper v-model="goods.buy_number" :min="1" :max="goods.goods.can_quota === 1? goods.goods.quota_number : goods.goods.total" />
+                                                    <van-stepper v-model="goods.buy_number" :before-change="(value) => changeUpdate(value,goods,index)" :min="1" :max="goods.goods.can_quota === 1? goods.goods.quota_number : goods.goods.total" />
                                                 </div>
                                             </div>
                                         </div>
@@ -99,7 +71,7 @@
                                         <div class="invalid-sign">失效</div>
                                     </div>
                                     <div class="img-box s-flex ai-ct jc-ct MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}"
-                                         @click="goods.invalid_type=='out_of_stock' || goods.invalid_type=='promote_change' ? toGood(goods.id) : ''"
+                                         @click="goods.invalid_type=='out_of_stock' || goods.invalid_type=='promote_change' ? toGood(goods.goods.id) : ''"
                                     >
                                         <img v-if="goods.invalid_type=='out_of_stock'" class="nogood" src="@/assets/images/cart/nogood.png" alt="">
                                     </div>
@@ -166,7 +138,7 @@
         <div class="footer-box" v-if="hasLogin && shopList.length > 0" :class="[hasBack ? 'breathe' : '']">
             <div v-if="!editAll" class="footer-content s-flex ai-ct bg-fff jc-bt" :class="[hasBack ? 'footer-act breathe' : '']">
                 <div class="s-flex ai-ct">
-                    <div v-if="all_isSelect(shopList)" class="no-check M20 check-grey"></div>
+                    <div v-if="all_isSelect" class="no-check M20 check-grey"></div>
                     <div
                         v-else-if="selectAll"
                         class="iconfont checkbox M20"
@@ -178,9 +150,9 @@
                 </div>
                 <section class="to-buy co-999 fs24 btn-gradient" @click="toBuy">去结算({{goods_count < 100 ? goods_count : '99+'}})</section>
             </div>
-            <div v-else class="s-flex ai-ct bg-fff jc-bt" :class="[hasBack ? 'footer-act' : '']">
+            <div v-else class="footer-content s-flex ai-ct bg-fff jc-bt" :class="[hasBack ? 'footer-act' : '']">
                 <section class="s-flex ai-ct">
-                    <div v-if="all_isSelect(shopList)" class="no-check M20 check-grey"></div>
+                    <div v-if="all_isSelect" class="no-check M20 check-grey"></div>
                     <div
                         v-else-if="selectAll"
                         class="iconfont checkbox M20"
@@ -236,10 +208,9 @@
 import {onMounted, ref, computed , getCurrentInstance} from 'vue'
 import {useRouter , useRoute} from 'vue-router'
 import {
-    cartAxios,
+    cartAxios, changeNumberAxios,
     deleteAxios,
     editByGoodsAxios,
-    editByShopAxios,
     emptyInvalidAxios, getCouponAxios,
     getDataAxios, getZhiRecommendAxios,
     newAddAttensionAxios, placeOrderAxios, usercouponAddAxios
@@ -257,7 +228,6 @@ const isLoading = ref(false) // 下拉刷新
 const is_placeholder = ref(true)
 const hasBack = ref(false)
 const editAll = ref(false) //判断是否是最上方的编辑
-const noData = ref(false) //暂无数据
 const hasLogin = ref(true)
 const selectAll = ref(false)
 // 优惠券
@@ -299,49 +269,18 @@ const getData = () => {
     })
 }
 
-// 店铺按钮是否可以操作
-const shop_isSelect = (value) => {
-    let flag_child = true
-    value.forEach((child) => {
-        if (!child.shop_select) {
-            flag_child = false
-        }
-    })
-
-    return flag_child
-}
-
 // 全选按钮是否可以操作
-const all_isSelect = (value) => {
-    return true
-    let flag = true
-    value.forEach((item) => {
-        let flag_child = true
-        item.goods.forEach((child) => {
-            if (!child.reselect) {
-                flag_child = false
-            }
-        })
-        if (!flag_child) {
-            flag = false
-        }
-    })
-
+const all_isSelect = computed(() => {
+    let flag = !shopList.value.length
     return flag
-}
+})
 
 // 单个删除
-const deleteGoodSole = (rec_id, shop_index, index) => {
-    deleteAxios({'rec_id': rec_id}).then(res => {
+const deleteGoodSole = (goods,index) => {
+    deleteAxios({ids:[goods.id]}).then(res => {
         if (res.code == 200) {
-            if (shopList.value[shop_index].goods.length == 1) {
-                shopList.value.splice(shop_index, 1)
-            } else {
-                shopList.value[shop_index].goods.splice(index, 1)
-            }
-
+            shopList.value.splice(index,1)
             countTotal()
-
         } else if (res.code == 403) {
             // 去登录
             appRoute('login')
@@ -353,16 +292,8 @@ const deleteGoodSole = (rec_id, shop_index, index) => {
 
 // 批量删除
 const deleteGoodMass = () => {
-    let str = ''
-    let count = 0
-    shopList.value.forEach((item) => {
-        item.goods.forEach((child) => {
-            if (child.is_pay == 1) {
-                str += !str ? child.rec_id : ','+child.rec_id
-                count++
-            }
-        })
-    })
+    let str = shopList.value.filter(item => item.is_check === 1).map(item => item.id);
+    let count = str.length
 
     if (count == 0) {
         showToast('请选择商品')
@@ -372,7 +303,7 @@ const deleteGoodMass = () => {
     cns.$dialog.confirm({
         message: '确定要将选中的'+count+'个商品删除吗？'
     }).then(() => {
-        deleteAxios({'rec_id': str})
+        deleteAxios({'ids': str})
             .then((res) => {
                 if (res.code == 200) {
                     getData()
@@ -387,16 +318,11 @@ const deleteGoodMass = () => {
 }
 
 // 单个移入关注
-const toAttentionSole = (rec_id, shop_index, index) => {
-    newAddAttensionAxios({'rec_id': rec_id})
+const toAttentionSole = (goods,index) => {
+    newAddAttensionAxios({ids: [goods.id]})
         .then((res) => {
             if (res.code == 200) {
-                if (shopList.value[shop_index].goods.length == 1) {
-                    shopList.value.splice(shop_index, 1)
-                } else {
-                    shopList.value[shop_index].goods.splice(index, 1)
-                }
-
+                shopList.value.splice(index, 1)
                 countTotal()
                 showToast('移入关注成功！')
 
@@ -406,21 +332,15 @@ const toAttentionSole = (rec_id, shop_index, index) => {
             } else {
                 showToast(res.message)
             }
+        }).catch(err=>{
+            console.log(err)
         })
 }
 
 // 批量移入关注
 const toAttentionMass = () => {
-    let str = ''
-    let count = 0
-    shopList.value.forEach((item) => {
-        item.goods.forEach((child) => {
-            if (child.is_pay == 1) {
-                str += !str ? child.rec_id : ','+child.rec_id
-                count++
-            }
-        })
-    })
+    let str = shopList.value.filter(item => item.is_check === 1).map(item => item.id);
+    let count = str.length
 
     if (count == 0) {
         showToast('请选择商品')
@@ -430,7 +350,7 @@ const toAttentionMass = () => {
     cns.$dialog.confirm({
         message: '确定要将选中的'+count+'个商品移入关注吗？'
     }).then(() => {
-        newAddAttensionAxios({'rec_id': str})
+        newAddAttensionAxios({ids: str})
             .then((res) => {
                 if (res.code == 200) {
                     getData()
@@ -443,25 +363,6 @@ const toAttentionMass = () => {
                 }
             })
     })
-}
-
-// 切换店铺选择
-const chooseShop = (item) => {
-    item.shop_select = !item.shop_select
-    item.goods.forEach((child) => {
-        child.is_pay = item.shop_select && !child.reselect ? '1' : '0'
-    })
-    editByShopAxios({seller_id: item.seller_id, is_pay: item.shop_select ? '1' : '0'})
-        .then((res) => {
-            if (res.code == 200) {
-                countTotal()
-            } else if (res.code == 403) {
-                // 去登录
-                appRoute('login')
-            } else {
-                showToast(res.message)
-            }
-        })
 }
 
 // 切换商品的选择
@@ -484,23 +385,15 @@ const chooseGoods = (item) => {
 
 // 获取 结算价格 结算数量 是否全选 店铺是否选中
 const countTotal = () => {
-    let flag = true
     let totalPrice = 0
     let goodsCount = 0
-    shopList.value.forEach((item) => {
-        let flag_child = true
+    shopList.value.forEach(item => {
         if(item.is_check === 1){
-            typeof item.buy_number
-            totalPrice += item.buy_number
-            goodsCount++
-        }else{
-            flag = false
-            flag_child = false
+            totalPrice += Number(item.buy_number) * Number(item.goods.price)
         }
-        item.shop_select = flag_child
     })
 
-    selectAll.value = flag
+    selectAll.value = shopList.value.every(item => item.is_check)
     if (Number(totalPrice) < 0) {
         total_price.value = 0.00
     } else {
@@ -509,23 +402,38 @@ const countTotal = () => {
     goods_count.value = goodsCount
 }
 
+//
+const changeUpdate = (value,goods,index) => {
+    changeNumberAxios({id:goods.id,goods_id:goods.goods.id,goods_sku_id:goods.goods_sku_id,buy_number:value}).then(res => {
+        if (res.code == 200) {
+            goods.buy_number = value
+            countTotal()
+            return true
+        } else if (res.code == 403) {
+            return false
+            // 去登录
+            appRoute('login')
+        } else {
+            return false
+            showToast(res.message)
+        }
+    })
+}
+
 // 全选
 const selectAllGoods = () => {
-    editByGoodsAxios({goods_id: 0, is_pay: !selectAll.value ? '1' : '0'})
+    editByGoodsAxios({goods_id: 0, is_check: selectAll.value?0:1,goods_sku_id:0})
         .then((res) => {
             if (res.code == 200) {
                 selectAll.value = !selectAll.value
-
                 let totalPrice = 0
                 let goodsCount = 0
 
-                shopList.value.forEach((item) => {
-                    item.shop_select = selectAll.value
-                    item.goods.forEach((child) => {
-                        child.is_pay = selectAll.value && !child.reselect ? '1' : '0'
-                        totalPrice += selectAll.value && !child.reselect ? child.subtotal : 0
-                        goodsCount += selectAll.value && !child.reselect ? 1 : 0
-                    })
+                shopList.value.forEach(item => {
+                    item.is_check = selectAll.value?1:0
+                    if(item.is_check === 1){
+                        totalPrice += Number(item.buy_number) * Number(item.goods.price)
+                    }
                 })
 
                 if (Number(totalPrice) < 0) {
@@ -533,8 +441,7 @@ const selectAllGoods = () => {
                 } else {
                     total_price.value = totalPrice.toFixed(2)
                 }
-                total_price.value = goodsCount
-
+                goods_count.value = goodsCount
             } else if (res.code == 403) {
                 // 去登录
                 appRoute('login')
@@ -542,30 +449,6 @@ const selectAllGoods = () => {
                 showToast(res.message)
             }
         })
-}
-
-
-
-// 最终价格
-const lastMoney = (e, item) => {
-    if (e.is_select) {
-        item.is_pay = '1' // 加减数量的时候选中该商品
-    }
-
-    if (e.last_money) {
-        item.goods_price = e.last_money
-    }
-
-    if (e.subtotal) {
-        item.subtotal = e.subtotal
-    }
-    if (e.sku&&e.sku.sku_desc) {
-        item.sku_desc = e.sku.sku_desc
-        item.sku_id = e.sku.sku_id
-    }
-
-    item.gift = e.gift
-    countTotal()
 }
 
 // 清空失效宝贝
@@ -585,7 +468,7 @@ const clearInvalid = () => {
                     showToast(res.message)
                 }
             })
-    })
+    }).catch(() => {})
 }
 
 const getRecommend = () => {
@@ -634,11 +517,6 @@ const toLogin = () => {
     appRoute('login')
 }
 
-// 去店铺
-const toShop = (id) => {
-    appRoute('store_index', {}, {seller_id: id})
-}
-
 // 去商品详情
 const toGood = (id) => {
     appRoute('good', {}, {goods_id: id})
@@ -646,18 +524,7 @@ const toGood = (id) => {
 
 // 找相似
 const findSimilar = (cat_id, cat_name) => {
-    // if(this.$platform.is_app()) {
-    //     this.$platform.appRouteTo('/search?keywords='+cat_id)
-    // } else {
-    //     setTimeout(() => {
-    //         appRoute('search', {}, {cat_id: cat_id, keywords: cat_name, search_source: '购物车找相似', search_type: '手动搜索'})
-    //     },150)
-    // }
-}
-
-// 优惠券切换
-const coupleChange = (id) => {
-    coupon_tab.value = id
+    appRoute('search', {cat_id: cat_id, keywords: cat_name}, {})
 }
 
 // 结算
@@ -757,6 +624,13 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+    .checkbox {
+        width: 0.34rem;
+        height: 0.34rem;
+        border-radius: 50%;
+        background: url("https://cdn.toodudu.com/uploads/2021/02/20/select-icon.png") 0 0/100% 100%;
+        margin: 0 0.3rem 0 0;
+    }
     .cart-container{
         :deep(.van-button){
             height: 100%;
@@ -926,13 +800,7 @@ onMounted(() => {
                         color: var(--red-color);
                     }
                 }
-                .checkbox {
-                    width: 0.34rem;
-                    height: 0.34rem;
-                    border-radius: 50%;
-                    background: url("https://cdn.toodudu.com/uploads/2021/02/20/select-icon.png") 0 0/100% 100%;
-                    margin: 0 0.3rem 0 0;
-                }
+
                 .goods-box{
                     padding-bottom: 0.3rem;
                     border-bottom: 1px solid var(--page-bg-color);
