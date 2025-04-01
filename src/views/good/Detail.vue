@@ -1,6 +1,6 @@
 <template>
-	<div class="good-detail" :style="{background: (placeholder ? '#fff' : '#F2F2F2'), height: goodsInfo.is_delete===1?'100vh':'auto',paddingBottom:(!!!goodsInfo.is_delete&&!goodsInfo.is_on_sale)?'0.9rem':0}">
-		<template v-if="goodsInfo.is_delete===1">
+	<div class="good-detail" :style="{background: (placeholder ? '#fff' : '#F2F2F2'), height: 'auto',paddingBottom:(!goodsInfo.status)?'0.9rem':0}">
+		<template v-if="!goodsInfo.status&&!placeholder">
 			<common-header title="商品过期不存在"></common-header>
 			<div class="no-data text-center" style="padding-top: 0.5rem;">
 				<img src="@/assets/images/good/no-data-shop.png" alt="" style="width: 4rem;">
@@ -12,14 +12,14 @@
 					<div class="item-tit2 s-flex ai-ct jc-bt" v-if="recommend&&recommend.length > 0">
 						<div class="s-flex ai-ct">
 							<span class="tit-sign" style="width: 0.08rem;height: 0.3rem;background: linear-gradient(270deg, #F64651 0%, var(--red-color) 99%);margin-right: 0.1rem;border-radius: 0.04rem;"></span>
-							<div class="co-333 fs32 fw-b">{{ recommendTitle }}</div>
+							<div class="co-333 fs32 fw-b">为您推荐</div>
 						</div>
 					</div>
 					<div class="recommend-box s-flex flex-wrap" style="padding: 0;">
 						<div class="recommend-item" v-for="(item, index) in recommend" :key="index"
 						     style="border-radius: 0.2rem;overflow: hidden;" @click="reToDetail(item)">
 							<div class="recommend-item-img">
-								<van-image :src="item.goods_thumb" class="re-img">
+								<van-image :src="item.thumb" class="re-img">
 									<template v-slot:loading>
 										<img src="@/assets/images/common/no-pic.png" alt="" class="re-img">
 									</template>
@@ -31,10 +31,10 @@
 							</div>
 							<div class="MT10" style="padding: 0 0.15rem;">
 								<div class="item-name fs26 co-333 elli-2">
-									<span class="fs22 co-fff is-ziying" v-if="item.ziying_sign" :class="{ def: item.is_ziying == 0 }">{{ item.ziying_sign }}</span>{{ item.goods_name }}
+									{{ item.goods_name }}
 								</div>
 								<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct jc-bt">
-									<form-price :price="item.shop_price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
+									<form-price :price="item.price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
 								</div>
 							</div>
 						</div>
@@ -56,8 +56,7 @@
 							</swiper>
 						</div>
 					</div>
-					<img src="@/assets/images/good/attention.png" alt="" style="width: 0.4rem;" @click="attention" v-if="isAttention">
-					<img src="@/assets/images/good/attention-no.png" alt="" style="width: 0.4rem;" @click="attention" v-else>
+					<em class="iconfont co-333" style="font-size: 21px;display:block;width: 21px;"></em>
 				</div>
 			</van-sticky>
 			<div class="nav" :style="{opacity: opacity}" v-if="isShowHeader">
@@ -65,8 +64,10 @@
 					<a href="javascript:" :class="{'active': active=='goods'}" @click="onScrollGoods">
 						<span>商品</span>
 					</a>
-					<a href="javascript:" :class="{'active': active=='detail'}" @click="onScrollDetail"
-					   v-if="goodsInfo.is_on_sale==1">
+					<a href="javascript:" :class="{'active': active=='comment'}" @click="onScrollComment" v-if="goodsInfo.status==1">
+						<span>评价</span>
+					</a>
+					<a href="javascript:" :class="{'active': active=='detail'}" @click="onScrollDetail" v-if="goodsInfo.status==1">
 						<span>详情</span>
 					</a>
 					<a href="javascript:" :class="{'active': active=='recommend'}"
@@ -80,11 +81,11 @@
 				<div class="goods">
 					<!--轮播图-->
 					<div class="swiper-box">
-						<template v-if="banner.video&&goodTab == 0">
+						<template v-if="banner.video&&banner.video.url&&goodTab == 0">
 							<div class="play-btn">
-								<img src="@/assets/images/good/good-video-play.png" @click="router.push({name:'goodPlay',query:{url:banner.video}})">
+								<img src="@/assets/images/good/good-video-play.png" @click="router.push({name:'goodPlay',query:{url:banner.video.url}})">
 							</div>
-							<van-image :src="imgUrls[0].url" v-if="imgUrls&&imgUrls.length">
+							<van-image :src="banner.images[0]" v-if="banner&&banner.images.length">
 								<template v-slot:loading>
 									<img src="@/assets/images/common/no-pic.png" alt="">
 								</template>
@@ -94,8 +95,8 @@
 							</van-image>
 						</template>
 						<van-swipe :autoplay="3000" indicator-color="black" @change="onChangeSwiper" v-else ref="swiperRef">
-							<van-swipe-item v-for="(item, index) in imgUrls" :key="index" @click="lookBig(item.url)">
-								<van-image :src="item.url">
+							<van-swipe-item v-for="(item, index) in banner.images" :key="index" @click="lookBig(item)">
+								<van-image :src="item">
 									<template v-slot:loading>
 										<img src="@/assets/images/common/no-pic.png" alt="">
 									</template>
@@ -105,32 +106,30 @@
 								</van-image>
 							</van-swipe-item>
 							<template #indicator>
-								<div class="indicator-wrap" v-if="imgUrls&&imgUrls.length>1">
-									<div class="custom-indicator" :class="{'indicator-active':swiperIndex == index}" v-for="(item, index) in imgUrls" :key="`swiperIndex-${index}`"></div>
+								<div class="indicator-wrap" v-if="banner.images&&banner.images.length>1">
+									<div class="custom-indicator" :class="{'indicator-active':swiperIndex == index}" v-for="(item, index) in banner.images" :key="`swiperIndex-${index}`"></div>
 								</div>
 							</template>
 						</van-swipe>
 						<div class="main-btn-wrap">
-							<div :class="{active:goodTab == 0}" v-if="banner.video" @click="goodTab = 0">视频</div>
+							<div :class="{active:goodTab == 0}" v-if="banner.video.url" @click="goodTab = 0">视频</div>
 							<div :class="{active:goodTab == 1}" @click="changeToImg">图集</div>
 						</div>
 					</div>
 					<div style="position: relative;top: -0.4rem;border-radius: 0.34rem 0.34rem 0 0;overflow: hidden;margin-bottom: -0.4rem;">
 						<!--        已删除/已下架        -->
-						<div class="price-on-sale-no bg-fff" style="padding: 0.35rem 0.2rem 0.15rem;" v-if="goodsInfo.is_on_sale==0||goodsInfo.is_delete==1">
-							暂无报价
-						</div>
+						<div class="price-on-sale-no bg-fff" style="padding: 0.35rem 0.2rem 0.15rem;" v-if="goodsInfo.status==0">暂无报价</div>
 						<!--普通商品多规格-非拼团-->
-						<div class="bg-fff" style="padding-bottom: 0.1rem;padding-top: 0.3rem;" v-else-if="goodsInfo.act_type == 9&&goodsInfo.is_set_sku==1">
-							<skuSelect :list="skuParamList" :main_img="imgUrls[0].url" :http_ing="isSkuIng" @select="updateSkuFirst"></skuSelect>
+						<div class="bg-fff" style="padding-bottom: 0.1rem;padding-top: 0.3rem;" v-else-if="goodsInfo.sku_params&&goodsInfo.sku_params.spec_values.length">
+							<skuSelect :list="skuParamList" :mainImg="banner.images[0]" :httpIng="isSkuIng" @select="updateSkuFirst"></skuSelect>
 							<div class="bg-pink price-ladder new" style="width: 100%;background: none;padding: 0 0.2rem;">
 								<div class="s-flex flex-wrap ladder-style jc-bt ai-fs">
 									<div class="duan s-flex ai-ct">
 										<p style="padding: 0;">
-											<form-price :price="goodsInfo.shop_price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
+											<form-price :price="goodsInfo.price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
 										</p>
 										<p class="fs24 co-red" style="margin-left: 0.3rem;">
-											起订量{{ goodsInfo.min_number }}{{ goodsInfo.unit }}
+											{{ goodsInfo.label }}
 										</p>
 									</div>
 								</div>
@@ -138,267 +137,128 @@
 						</div>
 						<div class="shop-box">
 							<!--优惠券新-->
-							<div class="coupon_box s-flex ai-ct fs20" @click="couponPopup=true" v-if="discountList.is_show&&goodsInfo.is_on_sale">
+							<div class="coupon_box s-flex ai-ct fs20" @click="couponPopup=true" v-if="couponList.length&&goodsInfo.status">
 								<div class="flex-1 elli-1 flex-wrap" style="overflow: hidden;">
-									<span class="coupon elli-1" style="color: var(--red-color);" v-for="item in discountList.short_desc_list">{{ item }}</span>
+									<span class="coupon elli-1" style="color: var(--red-color);">优惠券</span>
 								</div>
 								<span class="get-more">详情<i></i></span>
 							</div>
-							<!--自营/商家直营 新板块-->
-							<!--<div style="padding-top: 0.2rem;" v-if="slogan">-->
-							<!--	<div class="small-fun s-flex ai-ct jc-bt">-->
-							<!--		<div class="s-flex ai-ct">-->
-							<!--			<div class="sign">-->
-							<!--				<span class="is-ziying" :class="{ def: slogan.is_self != '1' }">{{ slogan.name }}</span>-->
-							<!--			</div>-->
-							<!--			<p class="fs24 co-333" @click="goUrl(slogan.url)">{{ slogan.value }}<em class="iconfont" style="font-size: 0.22rem;color: #333;margin-left: 0.04rem;">&#xe773;</em></p>-->
-							<!--		</div>-->
-							<!--	</div>-->
-							<!--</div>-->
 							<!--商品名称-->
-							<p class="shop-name">{{ goodsInfo.goods_name }}</p>
+							<p class="shop-name">{{ goodsInfo.name }}</p>
 							<!--副标题-->
-							<p class="goods-desc fs24 co-red" v-if="goodsInfo.goods_subtitle">
-								{{ goodsInfo.goods_subtitle }}</p>
+							<p class="goods-desc fs24 co-red" v-if="goodsInfo.sub_name">
+								{{ goodsInfo.sub_name }}
+							</p>
 						</div>
 					</div>
 				</div>
-				<template v-if="goodsInfo.is_on_sale&&goodsInfo.is_delete==0">
-					<template v-for="(floor,floorIndex) in floors">
-						<div style="padding: 0 0.2rem;" class="border-wrap" :key="floor.mId" v-if="floor.mId == 'base'">
-							<!--已选/地址/物流/服务/活动/我要供货-->
-							<section class="MT10 bg-fff goods-other">
-								<div class="s-flex ai-ct jc-bt" @click="openSpecCard" v-if="goodsInfo.is_set_sku == 1">
-									<template
-										v-if="(goodsInfo.is_set_sku == 1&&specName.length)||(!goodsInfo.is_set_sku&&(repositorys_record.name||payTypes_record.name))">
-										<div class="s-flex ai_fs">
-											<div class="other-name">已 选</div>
-											<div class="other-cont fs26">
-												<template v-if="goodsInfo.is_set_sku == 1">
-													<span v-for="(spec,speci) in specName" class="co-333">{{ spec }}<template
-														v-if="speci<=specName.length-2&&specName.length>1">;</template></span>
-												</template>
-											</div>
-										</div>
-										<div class="s-flex ai-ct">
-											<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
-										</div>
-									</template>
-									<template v-else>
-										<div class="s-flex ai-ct">
-											<div class="other-name">选 择</div>
-											<div class="other-cont select fs26 s-flex flex-wrap"
-											     style="width: fit-content;height: 0.58rem;overflow: hidden;">
-												<template v-if="goodsInfo.is_set_sku == 1">
-													<span
-														v-for="item in skuParamList[0].values">{{ item.name }}</span>
-												</template>
-											</div>
-										</div>
-										<div class="s-flex ai-ct" style="width: fit-content;">
-											<span class="fs24 co-666 MR10" style="white-space: nowrap;"
-											      v-if="goodsInfo.is_set_sku == 1">共有{{
-													paramNum
-												}}种{{ skuParamList[0].name }}可选</span>
-											<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
-										</div>
-									</template>
-								</div>
-								<div class="s-flex ai_fs jc-bt" @click="changeAddress">
-									<div class="s-flex ai_fs">
-										<div class="other-name">配 送</div>
-										<div class="other-cont">
-											<div class="s-flex ai-ct fs26" style="width: auto;">
-												<img src="@/assets/images/good/location.png"
-												     alt="" style="position: relative;top: 0;">{{ limitAddress }}
-											</div>
-										</div>
-									</div>
-									<div class="s-flex ai-ct">
-										<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
-									</div>
-								</div>
-								<div class="s-flex ai_fs jc-bt" v-if="ship">
-									<div class="s-flex ai_fs">
-										<div class="other-name">物 流</div>
-										<div class="other-cont s-flex ai-ct fs26">
-											<h5 class="fs26 co-333">{{ ship.price }}<span
-												class="fs26 co-999">（最终以结算时为准）</span></h5>
-										</div>
-									</div>
-									<div class="s-flex ai-ct">
-									</div>
-								</div>
-								<div class="s-flex ai_fs jc-bt" @click="openPopup('servicePopup',floor.data.service)"
-								     v-if="floor.data.service">
-									<div class="s-flex ai_fs">
-										<div class="other-name">服 务</div>
-										<div class="other-cont s-flex flex-wrap">
-											<div class="s-flex ai-ct fs26 elli-1"
-											     v-for="item in floor.data.service.items"><img
-												src="@/assets/images/good/service.png"
-												alt="">{{ item.title }}
-											</div>
-										</div>
-									</div>
-									<div class="s-flex ai-ct">
-										<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
-									</div>
-								</div>
-							</section>
-						</div>
-						<div style="padding: 0 0.2rem;" class="border-wrap" :key="floor.mId" v-if="floor.mId == 'shop'">
-							<!--店铺-->
-							<section class="MT10 shop-msg bg-fff">
-								<div class="s-flex jc-bt ai-ct store-head">
-									<div class="s-flex ai-ct" style="width: 5rem;flex: none;">
-										<div class="logo-box s-flex ai-ct jc-ct">
-											<img class="shop-logo" :src="floor.data.shop_logo || '/src/assets/images/good/shop_default.png'">
-										</div>
-										<div style="width: 3.7rem;flex: none;">
-											<p class="flex-1 elli-1 fs32 co-333 fw-b">{{ floor.data.shop_name }}</p>
-											<div class="star-level s-flex ai-ct"
-											     v-if="floor.data.shop_type||floor.data.rank">
-												<span class="is-ziying" :class="{def:floor.data.is_self != '1'}" v-if="floor.data.shop_type">{{ floor.data.shop_type }}</span>
-												<shop-rate :rank="floor.data.rank" v-if="floor.data.rank"></shop-rate>
-											</div>
-											<div class="store-num s-flex ai-ct" v-if="floor.data.open_time||floor.data.concern">
-												<span v-if="floor.data.open_time">{{ floor.data.open_time }}</span>
-												<i v-if="floor.data.open_time&&floor.data.concern" style="font-style: normal;">|</i>
-												<span v-if="floor.data.concern">{{ floor.data.concern }}</span>
-											</div>
-										</div>
-									</div>
-									<div>
-										<div @click="toShop" class="enter-store-btn">进店</div>
-									</div>
-								</div>
-								<template v-for="item in floor.data.items">
-									<div class="store-prop" v-if="item.mId == 'category'||item.mId == 'place'">
-										<div class="s-flex ai_fs">
-                                            <span class="s-flex ai-ct" style="white-space: nowrap;">
-                                                <img src="@/assets/images/good/class.png" alt="" v-if="item.mId == 'category'"><img src="@/assets/images/good/location-g.png" alt="" v-if="item.mId == 'place'">{{ item.name }}
-                                            </span>
-											<p class="fs26 co-333">{{ item.desc }}</p>
-										</div>
-									</div>
-								</template>
-								<!--推荐-->
-								<div class="recommend store-recomend" v-if="floor.data.show_recommend_list == '1'&&shopRecommend.length" style="padding-top: 0.2rem;">
-									<div class="re-tit s-flex ai-ct jc-bt">
-										<span class="fs28 co-333 fw-b">店铺推荐</span>
-										<span class="fs28 co-999" @click="toShop">查看全部<em class="iconfont co-999" style="font-size: 0.26rem;margin-left: 0.1rem;">&#xe773;</em></span>
-									</div>
-									<template v-if="shopRecommend.length<=6">
-										<div class="recommend-box s-flex flex-wrap">
-											<div class="recommend-item" v-for="(item, index) in shopRecommend"
-											     :key="index" @click="reToDetail(item)" v-if="index<6">
-												<div class="recommend-item-img">
-													<van-image :src="item.goods_thumb" class="re-img">
-														<template v-slot:loading>
-															<img
-																src="@/assets/images/common/no-pic.png"
-																alt="" class="re-img">
-														</template>
-														<template v-slot:error>
-															<img
-																src="@/assets/images/common/no-pic.png"
-																alt="" class="re-img">
-														</template>
-													</van-image>
-												</div>
-												<div class="MT10">
-													<div class="item-name fs24 co-333 elli-2">{{ item.goods_name }}
-													</div>
-													<div>
-														<form-price :price="item.shop_price" :sign_size="30"
-														            :DF_size="30" :INT_size="30" unit_color="#333"
-														            weight="bold"></form-price>
-													</div>
-												</div>
-											</div>
-										</div>
-									</template>
-									<template v-else>
-										<van-swipe class="home_gg1" :autoplay="3000" indicator-color="var()--red-color"
-										           style="padding-bottom: 0.1rem;">
-											<van-swipe-item :key="`tj1${index}`"
-											                v-for="(recommend,index) in shopRecommendNew">
-												<div class="recommend-box s-flex flex-wrap">
-													<div class="recommend-item" v-for="(item, index) in recommend"
-													     :key="index" @click="reToDetail(item)" v-if="index<6">
-														<div class="recommend-item-img">
-															<van-image :src="item.goods_thumb" class="re-img">
-																<template v-slot:loading>
-																	<img
-																		src="@/assets/images/common/no-pic.png"
-																		alt="" class="re-img">
-																</template>
-																<template v-slot:error>
-																	<img
-																		src="@/assets/images/common/no-pic.png"
-																		alt="" class="re-img">
-																</template>
-															</van-image>
-														</div>
-														<div class="MT10">
-															<div class="item-name fs24 co_343434 elli-2">
-																{{ item.goods_name }}
-															</div>
-															<div>
-																<form-price :price="item.shop_price" :sign_size="30"
-																            :DF_size="30" :INT_size="30"
-																            unit_color="#333"
-																            weight="bold"></form-price>
-															</div>
-														</div>
-													</div>
-												</div>
-											</van-swipe-item>
-										</van-swipe>
-									</template>
-								</div>
-							</section>
-						</div>
-					</template>
-				</template>
 				<div style="padding: 0 0.2rem;" class="border-wrap">
-					<template v-if="goodsInfo.is_on_sale&&goodsInfo.is_delete==0">
+					<!--已选/地址/物流/服务-->
+					<section class="MT10 bg-fff goods-other">
+						<div class="s-flex ai-ct jc-bt" @click="openSpecCard" v-if="skuParamList.length">
+							<template v-if="specName.length">
+								<div class="s-flex ai_fs">
+									<div class="other-name">已 选</div>
+									<div class="other-cont fs26">
+										<span v-for="(spec,speci) in specName" class="co-333">{{ spec }}<template v-if="speci<=specName.length-2&&specName.length>1">;</template></span>
+									</div>
+								</div>
+								<div class="s-flex ai-ct">
+									<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
+								</div>
+							</template>
+							<template v-else>
+								<div class="s-flex ai-ct">
+									<div class="other-name">选 择</div>
+									<div class="other-cont select fs26 s-flex flex-wrap"
+									     style="width: fit-content;height: 0.58rem;overflow: hidden;">
+										<span v-for="item in skuParamList[0].values">{{ item.name }}</span>
+									</div>
+								</div>
+								<div class="s-flex ai-ct" style="width: fit-content;">
+									<span class="fs24 co-666 MR10" style="white-space: nowrap;" v-if="skuParamList.length">共有{{paramNum }}种{{ skuParamList[0].name }}可选</span>
+									<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
+								</div>
+							</template>
+						</div>
+						<div class="s-flex ai_fs jc-bt" @click="changeAddress">
+							<div class="s-flex ai_fs">
+								<div class="other-name">配 送</div>
+								<div class="other-cont">
+									<div class="s-flex ai-ct fs26" style="width: auto;">
+										<img src="@/assets/images/good/location.png" alt="" style="position: relative;top: -1px;">
+										<span>{{ limitAddress }} 地址</span>
+									</div>
+								</div>
+							</div>
+							<div class="s-flex ai-ct">
+								<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
+							</div>
+						</div>
+					</section>
+				</div>
+				<div style="padding: 0 0.2rem;" class="border-wrap" v-if="evaluate.length">
+					<!--评价-->
+					<div class="comment MT10 bg-fff" ref="commentRef" id="comment">
+						<!--商品评价-->
+						<div class="item-tit2 s-flex ai-ct jc-bt" @click="toEvaluate('good')">
+							<div class="s-flex ai-ct">
+								<div class="co-333 fs32 fw-b">评价</div>
+							</div>
+							<div class="co-999 s-flex ai-ct">
+								<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
+							</div>
+						</div>
+						<div class="eva-class">
+							<span>价格隔离 <i>1</i></span>
+						</div>
+						<div class="eva-list-wrap">
+							<div class="eva-list" v-for="(item,index) in [1,2,3]" :style="{borderBottom: 'none'}">
+								<div class="users s-flex jc-bt ai-ct">
+									<div class="user-left s-flex ai-ct">
+										<div style="width:0.66rem;height:0.66rem;border-radius:100%;border:0.02rem solid #E5E5E5;overflow: hidden;margin-right: 0.14rem;" class="s-flex ai-ct jc-ct">
+											<img class="user-img" :src="item.portrait" alt="">
+										</div>
+										<div>
+											<span class="user-name fs28 co-333" style="margin-bottom: 0.06rem;display: inline-block;">{{item.nickname }}<i class="fs28 co-999" style="font-style: normal;" v-if="item.is_anonymous=='1'">(匿名）</i></span>
+											<shop-rate :rank="item.rank"></shop-rate>
+										</div>
+									</div>
+								</div>
+								<div class="content fs28 co-333" style="line-height: 0.4rem;padding: 0.1rem 0;word-break: break-all;">
+									{{ item.content }}
+								</div>
+								<div class="img-box s-flex flex-wrap" v-if="item.images.length">
+									<van-image
+										width="2.18rem"
+										height="2.18rem"
+										v-for="(childItem,childIndex) in item.images"
+										:key="`${index}_${childIndex}`"
+										:src="childItem"
+										@click="lookBigImg(item, childIndex)"
+									></van-image>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="padding: 0 0.2rem;" class="border-wrap">
+					<template v-if="goodsInfo.status">
 						<div class="good-attr attr-title">
 							<p>商品详情</p>
 						</div>
 						<div class="good-attr bg-fff" style="padding-bottom: 0.26rem;">
 							<h4 class="fs32 co-333 fw-b" style="padding: 0.3rem 0 0.2rem;">产品参数</h4>
-							<div style="padding-bottom: 0.1rem;" v-if="goodsAttr && goodsAttr.standard.length>0">
-								<p v-for="item in goodsAttr.standard"><span>{{ item.attr_name }}</span>{{ item.attr_value }}</p>
+							<div style="padding-bottom: 0.1rem;" v-if="goodsAttr && goodsAttr.length>0">
+								<p v-for="item in goodsAttr"><span>{{ item.name }}</span>{{ item.value }}</p>
 							</div>
-							<div class="more-attr s-flex jc-ct" v-if="goodsAttr.custom&&goodsAttr.custom.length">
+							<div class="more-attr s-flex jc-ct">
 								<div class="fs28 co-333" @click="openPopup('propPopup')">更多详细参数<em class="iconfont co-999" style="font-size: 0.26rem;">&#xe773;</em></div>
-							</div>
-						</div>
-						<div class="store-coupon bg-fff MT10" style="padding-bottom: 0.26rem;" v-if="storeCoupons.length">
-							<h4 class="fs32 co-333 fw-b" style="padding: 0.3rem 0 0.2rem;">店铺优惠券</h4>
-							<div class="coupon-wrap">
-								<div class="coupon-item s-flex ai-ct jc-bt" v-for="item in storeCoupons" :class="{active:item.max_limit}">
-									<div style="height: 100%;">
-										<p>{{ item.name }}</p>
-										<div>
-											<form-price :price="item.money" :sign_size="24" :INT_size="44" :DF_size="24" color="#E12A61"></form-price>
-										</div>
-										<h6>{{ item.desc }}</h6>
-									</div>
-									<!--  去店铺  -->
-									<div style="width: 1em;" v-if="item.max_limit" @click="toShop">
-										{{ item.max_limit_text }}
-									</div>
-									<!--  领取  -->
-									<div style="width: 1em;" v-else @click="getCoupon(item)">{{ item.btn.name }}</div>
-								</div>
 							</div>
 						</div>
 						<div class="detail MT10 bg-fff" ref="detailRef" id="detail">
 							<div class="content">
-								<div class="goods-attr-last vhtml" v-html="goodsInfo.goods_desc" style="padding: 0.3rem 0;"></div>
+								<div class="goods-attr-last vhtml" v-html="goodsInfo.content" style="padding: 0.3rem 0;"></div>
 							</div>
 						</div>
 						<div class="detail MT10 bg-fff" style="padding: 0.2rem;">
@@ -406,26 +266,14 @@
 								<!--售后服务-->
 								<div class="MT10 bg-fff customer-service">
 									<p class="co-333 fs32 MB20" style="font-weight: bold">售后保障</p>
-									<div v-if="goodsInfo.customer_service == ''" class="fs24">暂无数据</div>
+									<div v-if="!goodsInfo.customer_service" class="fs24">暂无数据</div>
 									<div class='fs24 vhtml goods-attr-sale' v-else v-html="goodsInfo.customer_service"></div>
 								</div>
 							</div>
 						</div>
-						<div class="detail MT10 bg-fff" v-if="priceDesc&&priceDesc.is_show == '1'" style="padding-bottom: 0.3rem;">
-							<div class="item-tit2 s-flex ai-ct jc-bt">
-								<div class="s-flex ai-ct">
-									<div class="co-333 fs32 fw-b">{{ priceDesc.title }}</div>
-								</div>
-							</div>
-							<!--价格说明-->
-							<div class="bg-fff customer-service price-text fs22" style="line-height: 0.4rem;" v-html="priceDesc.content.replace(/\n|\r\n/g,'<br>')"></div>
-						</div>
 					</template>
-					<template v-if="!goodsInfo.is_on_sale">
+					<template v-if="!goodsInfo.status">
 						<div class="goods-gray MT10">商品已下架</div>
-					</template>
-					<template v-else-if="!goodsInfo.is_alone_sale">
-						<div class="goods-alone MT10">抱歉，该商品不支持单独购买</div>
 					</template>
 					<!--推荐-->
 					<div class="recommend" ref="recommendRef" id="recommend" style="padding: 0;">
@@ -433,31 +281,27 @@
 							<div class="s-flex ai-ct">
 								<span class="tit-sign"
 								      style="width: 0.08rem;height: 0.3rem;background: linear-gradient(270deg, #F64651 0%, var(--red-color) 99%);margin-right: 0.1rem;border-radius: 0.04rem;"></span>
-								<div class="co-333 fs32 fw-b">{{ recommendTitle }}</div>
+								<div class="co-333 fs32 fw-b">为您推荐</div>
 							</div>
 						</div>
 						<div class="recommend-box s-flex flex-wrap" style="padding: 0;">
-							<div class="recommend-item" v-for="(item, index) in recommend" :key="index"
-							     style="border-radius: 0.2rem;overflow: hidden;" @click="reToDetail(item)">
+							<div class="recommend-item" v-for="(item, index) in recommend" :key="index" style="border-radius: 0.2rem;overflow: hidden;" @click="reToDetail(item)">
 								<div class="recommend-item-img">
-									<van-image :src="item.goods_thumb" class="re-img">
+									<van-image :src="item.thumb" class="re-img">
 										<template v-slot:loading>
-											<img src="@/assets/images/common/no-pic.png" alt=""
-											     class="re-img">
+											<img src="@/assets/images/common/no-pic.png" alt="" class="re-img">
 										</template>
 										<template v-slot:error>
-											<img src="@/assets/images/common/no-pic.png" alt=""
-											     class="re-img">
+											<img src="@/assets/images/common/no-pic.png" alt="" class="re-img">
 										</template>
 									</van-image>
 								</div>
 								<div class="MT10" style="padding: 0 0.15rem;">
 									<div class="item-name fs26 co-333 elli-2">
-										<span class="fs22 co-fff is-ziying" v-if="item.ziying_sign" :class="{ def: item.is_ziying == 0 }">{{ item.ziying_sign }}</span>{{ item.goods_name }}
+										{{ item.goods_name }}
 									</div>
 									<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct jc-bt">
-										<form-price :price="item.shop_price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
-										<span v-if="item.goods_type" class="goods_type" :class="{'qihuo':item.goods_type == '期货'}">{{ item.goods_type }}</span>
+										<form-price :price="item.price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
 									</div>
 								</div>
 							</div>
@@ -468,12 +312,15 @@
 				<footer class="breathe">
 					<section class="footer-menu s-flex">
 						<div class="s-flex bg-fff" style="width: 3.36rem;">
-							<div class="openShop flex-1 s-flex flex-dir ai-ct jc-ct breathe" @click="toShop">
-								<div><img class="footer-icon1" src="@/assets/images/good/shop.png"/></div>
-								<p class="co-333 fs24">进店</p>
+							<div class="openShop flex-1 s-flex flex-dir ai-ct jc-ct breathe" @click="attention">
+								<div>
+									<img src="@/assets/images/good/attention.png" alt="" style="width: 0.4rem;" v-if="isAttention">
+									<img src="@/assets/images/good/attention-no.png" alt="" style="width: 0.4rem;" v-else>
+								</div>
+								<p class="co-333 fs24">{{ isAttention ? '取消收藏' : '收藏' }}</p>
 							</div>
-							<a @click="showChatActionFunc('shop')"
-							   class="attention flex-1 s-flex flex-dir ai-ct jc-ct breathe">
+
+							<a @click="showChatActionFunc('shop')" class="attention flex-1 s-flex flex-dir ai-ct jc-ct breathe">
 								<div><img class="footer-icon2" src="@/assets/images/good/good-service.png"/></div>
 								<p class="co-333 fs24">客服</p>
 							</a>
@@ -486,24 +333,21 @@
 							</div>
 						</div>
 						<div class="buying-box s-flex ai-ct jc-ct flex-1">
-							<div class="breathe" v-if="goodsInfo.is_on_sale == 0">
-								<div class="onsale-btn fs32 buying fw-b"
-								     @click="appRoute('search',{},{defkeywords:category.cat_name,keywords:category.cat_name,cat_id:category.cat_id})">
-									去看看相似商品
+							<div class="breathe" v-if="goodsInfo.status == 0">
+								<div class="sell-out fs32 buying fw-b">
+									已下架
 								</div>
 							</div>
-							<div class="breathe" v-else-if="goodsInfo.goods_number == 0">
+							<div class="breathe" v-else-if="goodsInfo.total == 0">
 								<div class="sell-out fs32 buying fw-b">
 									已售罄
 								</div>
 							</div>
 							<div v-else class="s-flex breathe">
-								<div class="add-car fs32 buying MR10" :class="{'buying09':isLimit}"
-								     @click="setShoppingCard(2)">
+								<div class="add-car fs32 buying MR10" @click="setShoppingCard(2)">
 									<span class="fs32 fw-b">加入购物车</span>
 								</div>
-								<div class="to-buy fs32 buying" @click="setShoppingCard(1)"
-								     :class="{'buying09':isLimit}">
+								<div class="to-buy fs32 buying" @click="setShoppingCard(1)">
 									<span class="fs32 fw-b">立即购买</span>
 								</div>
 							</div>
@@ -567,12 +411,11 @@
 		<shoppingCard
 			:choose_attrs="chooseAttr"
 			:address_id="pageInfo.address_id"
-			:shop_info="shopInfo"
 			:goods_info="goodsInfo"
 			:shopping_type="shoppingType"
 			:init_flag="initFlag"
 			:is_select_spec="isSelectSpec"
-			:sku_id="skuId"
+			sku_id=""
 			:sku_shop_price="skuShopPrice"
 			:group_last_price="groupLastPrice"
 			:sku_param_list="skuParamList"
@@ -582,32 +425,7 @@
 			@unusual="unusual"
 		></shoppingCard>
 		<!--大图查看-->
-		<van-image-preview v-model="showPreviewer" :startPosition="startIndex" :images="imgUrlBig"
-		                   :showIndex="showIndex"></van-image-preview>
-		<van-popup
-			v-model:show="servicePopup"
-			round
-			position="bottom"
-			:close-on-click-overlay="false"
-			duration="0.5"
-			:style="{ 'max-height': '10.12rem','min-height': '5rem', overflow: 'hidden', background: 'linear-gradient(180deg, #FEE5A2 0%, #FEF1C8 100%)',overflow: 'visible', 'padding-bottom': 'constant(safe-area-inset-bottom)','padding-bottom': 'env(safe-area-inset-bottom)'}">
-			<div class="card-wrap" style="padding-bottom: 0.2rem;">
-				<div class="close-btn" @click="servicePopup = false">
-					<i class="iconfont co-000">&#xea13;</i>
-				</div>
-				<div class="service-title">
-					<h3>{{ serviceData.title }}</h3>
-					<p>{{ serviceData.subhead }}</p>
-				</div>
-				<div class="service-cont" v-if="serviceData.items&&serviceData.items.length">
-					<div v-for="item in serviceData.items">
-						<img :src="item.icon" alt="">
-						<h4>{{ item.title }}</h4>
-						<p>{{ item.content }}</p>
-					</div>
-				</div>
-			</div>
-		</van-popup>
+		<van-image-preview v-model="showPreviewer" :startPosition="startIndex" :images="imgUrlBig" :showIndex="showIndex"></van-image-preview>
 		<van-popup
 			v-model:show="propPopup"
 			round
@@ -623,12 +441,10 @@
 					<h3>产品参数</h3>
 				</div>
 				<div class="prop-cont" v-if="goodsAttr">
-					<div class="s-flex ai-fs" v-for="item in goodsAttr.standard"><span
-						class="fs26 co-999">{{ item.attr_name }}</span>
-						<p class="co-333 fs26">{{ item.attr_value }}</p></div>
-					<div class="s-flex ai-fs" v-for="item in goodsAttr.custom"><span
-						class="fs26 co-999">{{ item.attr_name }}</span>
-						<p class="co-333 fs26">{{ item.attr_value }}</p></div>
+					<div class="s-flex ai-fs" v-for="item in goodsAttr">
+						<span class="fs26 co-999">{{ item.name }}</span>
+						<p class="co-333 fs26">{{ item.value }}</p>
+					</div>
 				</div>
 			</div>
 		</van-popup>
@@ -645,16 +461,9 @@
 						<i class="iconfont">&#xea13;</i>
 					</div>
 					<div class="goods-popup-title">
-						<h3>优惠</h3>
+						<h3>优惠券</h3>
 					</div>
 					<div style="max-height:8.8rem;overflow-y:auto;">
-						<template v-if="discountListIn.length">
-							<p class="co-333 fs30 ML20" style="line-height: 1;margin-bottom: 0.3rem;">促销</p>
-							<section class="MB20 s-flex fs24 discount ai_fs" v-for="item in discountListIn">
-								<span class="act-name">{{ item.title }}</span>
-								<span class="co-333 fs20" style="line-height: 0.32rem;">{{ item.desc }}</span>
-							</section>
-						</template>
 						<p class="co-333 fs30 ML20 s-flex ai-ct" style="line-height: 1;margin-bottom: 0.3rem;font-size: 0.3rem;" v-if="couponList&&couponList.length"><img src="@/assets/images/good/new-coupon-title.png" alt="" style="width: 0.33rem;margin-right: 0.1rem;">可领取优惠券</p>
 						<div class="list_box" style="padding: 0 0.4rem 0.3rem;">
 							<div class="coupon_list" :class="[item.show_limit? 'coupon-mit' : '']" v-for="(item,index) in couponList">
@@ -671,13 +480,12 @@
 									<div style="padding: 0 0.2rem;width: 4.6rem;" class="s-flex ai-ct jc-bt">
 										<div style="padding: 0.3rem 0 0.2rem;line-height: 0.4rem;">
 											<h4 class="elli-1 fs24 fw-b" style="color: #E12A61;">{{ item.name }}</h4>
-											<p class="fs20 co-999" v-if="item.end_time&&item.start_time">
-												{{ item.start_time }} - {{ item.end_time }}</p>
-											<p class="fs20 co-666 s-flex ai-ct" v-if="item.limit_info&&item.limit_info.length" @click="changeShowInfo(index)">
-												详细信息
-												<em class="iconfont" v-if="!item.show_limit">&#xe67a;</em>
-												<em class="iconfont" v-else>&#xe61e;</em>
-											</p>
+											<p class="fs20 co-999" v-if="item.end_time&&item.start_time">{{ item.start_time }} - {{ item.end_time }}</p>
+											<!--<p class="fs20 co-666 s-flex ai-ct" v-if="item.limit_info&&item.limit_info.length" @click="changeShowInfo(index)">-->
+											<!--	详细信息-->
+											<!--	<em class="iconfont" v-if="!item.show_limit">&#xe67a;</em>-->
+											<!--	<em class="iconfont" v-else>&#xe61e;</em>-->
+											<!--</p>-->
 										</div>
 										<div>
 											<span class="coupon-btn" v-if="!item.max_limit" @click="getCoupon(item)">点击领取</span>
@@ -685,9 +493,9 @@
 										</div>
 									</div>
 								</div>
-								<div class="fs20 co-999" style="padding: 0.2rem 0.24rem;line-height: 0.26rem;" v-if="item.show_limit&&item.limit_info&&item.limit_info.length">
-									<p v-for="info in item.limit_info" class="fs20 co-999 elli-1">{{ info }}</p>
-								</div>
+								<!--<div class="fs20 co-999" style="padding: 0.2rem 0.24rem;line-height: 0.26rem;" v-if="item.show_limit&&item.limit_info&&item.limit_info.length">-->
+								<!--	<p v-for="info in item.limit_info" class="fs20 co-999 elli-1">{{ info }}</p>-->
+								<!--</div>-->
 							</div>
 						</div>
 					</div>
@@ -788,6 +596,7 @@
 import {ref, reactive, onMounted, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {useGoodStore} from "@/stores";
+import { getGoodData } from '@/api/good'
 import $ from 'jquery'
 import shoppingCard from '@/components/shoppingCard/shoppingCard'
 import skuSelect from './SkuSelect.vue'
@@ -800,8 +609,8 @@ const goodStore = useGoodStore()
 const swiperRef = ref(null)
 const recommendRef = ref(null)
 const detailRef = ref(null)
+const commentRef = ref(null)
 // 响应式数据
-const category = ref({})
 const searchWordList = ref([])
 const swiperOptions = reactive({
 	direction: 'vertical',
@@ -818,26 +627,17 @@ const swiperOptions = reactive({
 	}
 })
 const banner = ref({})
-const discountList = ref({})
-const discountListIn = ref([])
-const storeCoupons = ref([])
-const priceDesc = ref({})
-const slogan = ref({})
-const floors = ref([])
+const evaluate = ref([])
 const showRemove = ref(false)
 const removeAddressId = ref(null)
 const goodTab = ref(1)
 const swiperIndex = ref(0)
-const parentId = ref(0)
 const fromPath = ref('')
-const goodsId = ref(7419)
+const goodsNo = ref(7419)
 const opacity = ref(0)
 const active = ref('good')
 const nodata = ref(false)
 const goodsInfo = ref({})
-const shopInfo = ref({})
-const imgUrl = ref([])
-const imgUrls = ref([])
 const isAttention = ref(false)
 const couponList = ref([])
 const addressPopup = ref(false)
@@ -861,27 +661,23 @@ const imgUrlBig = ref([])
 const isShowHeader = ref(true)
 const addressList = ref([])
 const pageInfo = ref({})
-const isLimit = ref(false)
 const limitAddress = ref('')
-const ship = ref(null)
 const isSelectSpec = ref(false)
 const paramNum = ref(0)
 const skuParamList = ref([])
 const specId = ref([])
 const specName = ref([])
 const specNameNo = ref([])
-const skuId = ref('')
 const skuShopPrice = ref('')
 const isSkuIng = ref(false)
 const chatType = ref('shop')
 const showChatAction = ref(false)
 const chatActions = ref([])
-const servicePopup = ref(false)
-const serviceData = ref({})
 const propPopup = ref(false)
-const shopRecommend = ref([])
-const shopRecommendNew = ref([])
 
+const toEvaluate = (type)=> {
+	cns.appRoute('evaluate', {}, {'no': goodsNo, type})
+}
 // 方法
 const changeShowInfo = (index) => {
 	let data = couponList.value[index]
@@ -895,20 +691,17 @@ const selectSku = (data) => {
 	}
 	if (data.sku) {
 		goodsInfo.value.shop_price = data.sku.shop_price
-		goodsInfo.value.group_price = data.sku.group_price
-		skuId.value = data.sku ? data.sku.id : ''
 	}
 }
 
 const updateSkuFirst = (item) => {
 	isSkuIng.value = true
 	var info = {
-		goods_id: goodsInfo.value.goods_id,
+		goods_no: goodsInfo.value.goods_no,
 		spec_id: item.id
 	}
 	cns.$http.doPost("v4/goods/updateSkuParamById", info).then((res) => {
 		if (res.code == 200) {
-			skuId.value = res.data.sku ? res.data.sku.id : ''
 			if (res.data.param) {
 				skuParamList.value = res.data.param
 			}
@@ -969,11 +762,13 @@ const clickAddOrRemoveAddressSure = () => {
 }
 
 const openPopup = (type, data) => {
-	if (type == 'servicePopup') {
-		serviceData.value = data
-	}
-	servicePopup.value = type === 'servicePopup'
 	propPopup.value = type === 'propPopup'
+}
+
+const lookBigImg = (item, idx) => {
+	startIndex.value = idx
+	imgUrlBig.value = item.images
+	showPreviewer.value = true
 }
 
 const changeToImg = () => {
@@ -1026,7 +821,7 @@ const changeAddress = () => {
 }
 
 const lookBig = (url) => {
-	imgUrlBig.value = imgUrl.value
+	imgUrlBig.value = banner.value.images
 	startIndex.value = imgUrlBig.value.findIndex(item => item === url)
 	showIndex.value = true
 	showPreviewer.value = true
@@ -1050,13 +845,16 @@ const handleScroll = () => {
 	}
 
 	// 当滚动距离不小于200时，获取三个部分的顶部位置-44
+	let commentTop = commentRef.value && commentRef.value.offsetTop - 44
 	let detailTop = detailRef.value && detailRef.value.offsetTop - 44
 	let recommendTop = recommendRef.value && recommendRef.value.offsetTop - 44
 	let recommendHeight = recommendRef.value && recommendRef.value.offsetHeight
 
 	// 计算滚动距离在哪个区间，修改active.value对应的样式名
-	if (scrollTopVal < detailTop) {
+	if (scrollTopVal < commentTop) {
 		if (active.value != 'goods') active.value = 'goods'
+	} else if (scrollTopVal >= commentTop && scrollTopVal < detailTop) {
+		if (active.value != 'comment') active.value = 'comment'
 	} else if (scrollTopVal >= detailTop && scrollTopVal < recommendTop) {
 		if (active.value != 'detail') active.value = 'detail'
 	} else if (scrollTopVal >= recommendTop) {
@@ -1071,6 +869,11 @@ const handleScroll = () => {
 
 const onScrollGoods = () => {
 	window.scrollTo({top: 0, behavior: "smooth"})
+}
+
+const onScrollComment = () => {
+	if (!opacity.value) return
+	window.scrollTo({top: commentRef.value.offsetTop - 44, behavior: "smooth"})
 }
 
 const onScrollDetail = () => {
@@ -1088,35 +891,8 @@ const onScrollRecommend = () => {
 	window.scrollTo({top: recommendRef.value.offsetTop - 44, behavior: "smooth"})
 }
 
-const getImage = (data) => {
-	if (data.length <= 0) {
-		imgUrls.value = []
-		return false
-	}
-
-	let arr = []
-	data.forEach((item, index) => {
-		let img = new Image()
-		img.src = item
-		let obj = {}
-		obj.url = item
-		imgUrls.value[index] = obj
-		img.onload = () => {
-			imgUrls.value[index].wt = img.width
-			imgUrls.value[index].ht = img.height
-
-			let ratioT = 1
-			let ratio = img.width / img.height
-			let temp
-			ratio <= 1 ? temp = 'h' : (ratio >= ratioT ? temp = 'w' : temp = 'h')
-			imgUrls.value[index].sign100 = temp
-		}
-		arr.push(img)
-	})
-}
-
 const attention = () => {
-	cns.$http.doPost("v3/collect/goods/attentionOrCancelGood", {"goods_id": goodsInfo.value.goods_id})
+	cns.$http.doPost("v3/collect/goods/attentionOrCancelGood", {"goods_no": goodsInfo.value.goods_no})
 		.then((res) => {
 			if (res.code == 200) {
 				isAttention.value = res.data.isAttention > 0
@@ -1142,9 +918,6 @@ const closeChooseAttrFun = (data) => {
 }
 
 const openSpecCard = () => {
-	if (isLimit.value) {
-		return
-	}
 	cns.$http.doGet('v3/user/checkLogin')
 		.then(res => {
 			if (res.code == 200 && res.data.is_login) {
@@ -1158,9 +931,6 @@ const openSpecCard = () => {
 }
 
 const setShoppingCard = (type, id) => {
-	if (isLimit.value) {
-		return
-	}
 	cns.$http.doGet('v3/user/checkLogin')
 		.then(res => {
 			if (res.code == 200 && res.data.is_login) {
@@ -1183,19 +953,15 @@ const unusual = () => {
 	goodStore.setBuyNumber(-1)
 	getData()
 }
-const toShop = () => {
-	cns.appRoute('store_index', {seller_id: shopInfo.value.seller_id})
-}
-
 const reToDetail = (data) => {
-	cns.appRoute('good', {goods_id: data.goods_id})
+	cns.appRoute('good', {goods_no: data.goods_no})
 }
 const toCart = () => {
 	cns.appRoute('cart', {hasBack: true})
 }
 
 const getCoupon = (item) => {
-	cns.$http.doPost('v3/usercoupon/add', {seller_id: shopInfo.value.seller_id, id: item.coupon_id})
+	cns.$http.doPost('v3/usercoupon/add', {id: item.coupon_id})
 		.then((res) => {
 			if (res.code == 200) {
 				cns.$toast('领取成功！')
@@ -1210,7 +976,7 @@ const getCoupon = (item) => {
 }
 
 const getZhiRecommend = () => {
-	cns.$http.doGet('v4/goods/hotSale', {goods_id: goodsId.value, page: pageRecommend.value}).then(res => {
+	cns.$http.doGet('v4/goods/hotSale', {goods_no: goodsNo.value, page: pageRecommend.value}).then(res => {
 		if (res.code == 200) {
 			if (pageRecommend.value == 1) {
 				recommend.value = res.data.data
@@ -1237,7 +1003,7 @@ const getZhiRecommend = () => {
 const showChatActionFunc = (type) => {
 	if (type == 'shop') {
 		chatActions.value = [
-			{name: shopInfo.value.kf_tel}
+			{name: '010-6668888'}
 		]
 	}
 	chatType.value = type
@@ -1247,7 +1013,7 @@ const showChatActionFunc = (type) => {
 const clickOnlineCustomerServer = (action, index) => {
 	cns.$dialog.alert({
 		title: '热线电话',
-		message: shopInfo.value.kf_tel,
+		message: '010-6668888',
 	}).then(() => {
 	})
 }
@@ -1272,125 +1038,87 @@ const detailBig = () => {
 }
 
 const getData = () => {
-	const info = {
-		'goods_id': goodsId.value,
-		'parent_id': parentId.value,
-		'sku_id': skuId.value
-	}
-	cns.$http.doGet('v4/goods', info)
-		.then((res) => {
-			if (res.code == 200) {
-				placeholder.value = false
-				searchWordList.value = res.data.header.search_word_list
-				if (searchWordList.value.length && searchWordList.value.length == 1) {
-					swiperOptions.loop = false
-					swiperOptions.autoplay = false
-				}
-				banner.value = res.data.banner
-				discountList.value = res.data.discount_list
-				storeCoupons.value = res.data.store_coupons
-				priceDesc.value = res.data.price_desc
-				slogan.value = res.data.slogan
-				category.value = res.data.category
-				floors.value = res.data.floors
-				skuParamList.value = res.data.sku_param_list.param ? res.data.sku_param_list.param : []
-				if (skuParamList.value.length) {
-					paramNum.value = 1
-				}
-				skuParamList.value.length && skuParamList.value.forEach((d, i) => {
-					d.values.forEach(s => {
-						if (s.selected) {
-							specName.value.push(s.name)
-							specId.value.push(s.id)
-						}
-					})
-				})
-				skuShopPrice.value = res.data.sku_param_list.sku ? res.data.sku_param_list.sku.shop_price : ''
-				/**商品信息**/
-				goodsInfo.value = res.data.goods
-				if (res.data.banner.video) {
-					goodTab.value = 0
-				}
-				// ******待后端补到外层
-				/**店铺信息**/
-				shopInfo.value = res.data.store
-				/**优惠券**/
-				couponList.value = res.data.discount_list.popup_data.coupon_list
-				couponList.value.length && couponList.value.forEach((d, i) => {
-					d.show_limit = false
-				})
-				discountListIn.value = res.data.discount_list.popup_data.discount_list
-				/**规格参数**/
-				goodsAttr.value = res.data.goods_attr
-				/**购物车数量**/
-				carNum.value = res.data.cart_number
-				// 轮播图图片按比例展示
-				let newImg = res.data.banner.goods_gallery, arr = []
-				for (let i = 0; i < newImg.length; i++) {
-					if (newImg[i].img_url) {
-						arr.push(newImg[i].img_url)
-					} else {
-						arr.push(newImg[i].thumb_url)
-					}
-				}
-				imgUrl.value = arr
-				getImage(arr)
-
-				// 是否关注
-				isAttention.value = res.data.header.collect_goods
-
-				nextTick(() => {
-
-					if ($(".goods-attr-last [style]")) {
-						$(".goods-attr-last [style]").css('position', 'static')
-						$(".goods-attr-last [style]").css('z-index', 0)
-					}
-					// 设置商品介绍的图片样式
-					if ($("p:has(img)").length > 0) {
-						$("p:has(img)").css({'font-size': '0', 'line-height': 'unset'})
-					}
-
-					// 查看大图
-					detailBig()
-					// 滚到顶
-					window.scrollTo({top: 0})
-				})
-				if (goodsInfo.value.is_on_sale == 0 || goodsInfo.value.is_delete == 1) {
-					loadRecommend.value = false
-					getZhiRecommend()
-				}
-			}else {
-				placeholder.value = false
-				imgUrls.value = []
-				goodsInfo.value = {}
-				shopInfo.value = {}
-				couponList.value = {}
-				goodsAttr.value = {}
-				carNum.value = 0
-				recommend.value = {}
-
-				nextTick(() => {
-					// 滚到顶
-					window.scrollTo({top: 0})
-				})
-			}
-		})
-	cns.$http.getNotLoading('v4/goods/shopRecommend', {'goods_id': goodsId.value}).then(res => {
+	getGoodData(goodsNo.value).then((res) => {
 		if (res.code == 200) {
-			shopRecommend.value = res.data
-			if (shopRecommend.value.length > 6 && shopRecommend.value.length <= 12) {
-				shopRecommendNew.value = [shopRecommend.value.slice(0, 6), shopRecommend.value.slice(6)]
-			} else if (shopRecommend.value.length > 12) {
-				shopRecommendNew.value = [shopRecommend.value.slice(0, 6), shopRecommend.value.slice(6, 12), shopRecommend.value.slice(12)]
+			placeholder.value = false
+			// searchWordList.value = res.data.header.search_word_list
+			//if (searchWordList.value.length && searchWordList.value.length == 1) {
+			//	swiperOptions.loop = false
+			//	swiperOptions.autoplay = false
+			//}
+			banner.value = res.data.banner
+
+			recommend.value = res.data.center.recommend
+			/**商品信息**/
+			goodsInfo.value = res.data.center
+			evaluate.value = res.data.center.evaluate
+			skuParamList.value = res.data.center.sku_params ? res.data.center.sku_params.spec_values : []
+			if (skuParamList.value.length) {
+				paramNum.value = 1
 			}
+			skuParamList.value.length && skuParamList.value.forEach((d, i) => {
+				d.values.forEach(s => {
+					if (s.selected) {
+						specName.value.push(s.name)
+						specId.value.push(s.id)
+					}
+				})
+			})
+
+			if (res.data.banner.video.url) {
+				goodTab.value = 0
+			}
+			/**优惠券**/
+			couponList.value = res.data.center.coupon_list || []
+			couponList.value.length && couponList.value.forEach((d, i) => {
+				d.show_limit = false
+			})
+			/**规格参数**/
+			goodsAttr.value = res.data.center.parameters
+			/**购物车数量**/
+			carNum.value = res.data.bottom.cart_number
+
+			// 是否关注
+			isAttention.value = res.data.bottom.can_collect
+
+			nextTick(() => {
+
+				if ($(".goods-attr-last [style]")) {
+					$(".goods-attr-last [style]").css('position', 'static')
+					$(".goods-attr-last [style]").css('z-index', 0)
+				}
+				// 设置商品介绍的图片样式
+				if ($("p:has(img)").length > 0) {
+					$("p:has(img)").css({'font-size': '0', 'line-height': 'unset'})
+				}
+
+				// 查看大图
+				detailBig()
+				// 滚到顶
+				window.scrollTo({top: 0})
+			})
+			if (goodsInfo.value.status == 0) {
+				loadRecommend.value = false
+				getZhiRecommend()
+			}
+		}else {
+			placeholder.value = false
+			goodsInfo.value = {}
+			couponList.value = []
+			goodsAttr.value = []
+			carNum.value = 0
+			recommend.value = []
+
+			nextTick(() => {
+				// 滚到顶
+				window.scrollTo({top: 0})
+			})
 		}
 	})
 }
 
 onMounted(() => {
-	parentId.value = route.query.parent_id
-	goodsId.value = route.query.goods_id
-	skuId.value = route.query.sku_id
+	goodsNo.value = route.query.goods_no
 	// 如果从新增收货地址来的，则打开选择收货地址
 	if (fromPath.value == 'address_add') {
 		changeAddress()
@@ -1799,11 +1527,51 @@ router.beforeEach((to, from, next) => {
 	margin-right: 0.16rem;
 }
 
+.eva-list {
+	border-bottom: 1px solid #E5E5E5;
+	padding-bottom: 0.3rem;
+	padding-top: 0.3rem;
+}
+
+.eva-list-wrap .eva-list:first-of-type {
+	padding-top: 0.2rem;
+}
+
+.eva-list :deep(.van-image) {
+	border-radius: 0.2rem;
+	overflow: hidden;
+	margin-right: 0.06rem;
+	margin-bottom: 0.06rem;
+}
+
 :deep(.van-image img) {
 	width: 100%;
 	height: 100%;
 }
 
+.eva-list .img-box :deep(.van-image:nth-of-type(3n+3)) {
+	margin-right: 0;
+}
+
+.eva-class {
+	span {
+		height: 0.5rem;
+		border-radius: 0.25rem;
+		line-height: 0.5rem;
+		padding: 0 0.2rem;
+		font-size: 0.24rem;
+		background: #FDEFEF;
+		color: var(--red-color);
+		display: inline-block;
+		margin-right: 0.2rem;
+		margin-bottom: 0.1rem;
+
+		i {
+			font-style: normal;
+			color: var(--red-color);
+		}
+	}
+}
 .user-img {
 	max-width: 100%;
 	max-height: 100%;
@@ -1882,7 +1650,7 @@ router.beforeEach((to, from, next) => {
 
 .goods-header .view-input {
 	height: 0.6rem;
-	width: 5.1rem;
+	width: 6rem;
 	line-height: 0.6rem;
 	padding: 0 0.2rem;
 	background-color: #F4F4F4;

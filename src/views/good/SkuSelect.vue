@@ -4,7 +4,7 @@
             <span class="fs28 co-666" style="width: 2em;margin-right: 0.18rem;flex: none;" v-if="list[0]">{{list[0].values.length}}种可选</span>
             <div class="sku-wrap s-flex ai-ct" v-if="list[0]">
                 <div class="sku-item" :class="{active:item.selected,'no-number':item.hidden}" v-for="(item,index) in list[0].values" @click="selectSku(item,index)">
-                    <img :src="item.thumb?item.thumb:main_img" alt="">
+                    <img :src="item.thumb?item.thumb:mainImg" alt="">
                     <p class="elli-1">{{ item.name }}</p>
                 </div>
             </div>
@@ -20,20 +20,20 @@
             type: Array,
             default: () => []
         },
-        main_img: {
+        mainImg: {
             type: String,
             default: ''
         },
-        http_ing: {
+        httpIng: {
             type: Boolean,
             default: false
         }
     })
 
     const emit = defineEmits(['select'])
-
+    console.log(props.mainImg)
     const selectSku = (item, index) => {
-        if (item.selected || item.hidden || props.http_ing) {
+        if (item.selected || item.hidden || props.I) {
             return
         }
         emit('select', item)
