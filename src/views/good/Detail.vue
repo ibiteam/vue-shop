@@ -120,17 +120,22 @@
 						<!--        已删除/已下架        -->
 						<div class="price-on-sale-no bg-fff" style="padding: 0.35rem 0.2rem 0.15rem;" v-if="goodsInfo.status==0">暂无报价</div>
 						<!--普通商品多规格-非拼团-->
-						<div class="bg-fff" style="padding-bottom: 0.1rem;padding-top: 0.3rem;" v-else-if="goodsInfo.sku_params&&goodsInfo.sku_params.spec_values.length">
-							<skuSelect :list="skuParamList" :mainImg="banner.images[0]" :httpIng="isSkuIng" @select="updateSkuFirst"></skuSelect>
+						<div class="bg-fff" style="padding-bottom: 0.1rem;padding-top: 0.3rem;" v-else="">
+							<template v-if="goodsInfo.sku_params&&goodsInfo.sku_params.spec_values.length">
+								<skuSelect :list="skuParamList" :mainImg="banner.images[0]" :httpIng="isSkuIng" @select="updateSkuFirst"></skuSelect>
+							</template>
 							<div class="bg-pink price-ladder new" style="width: 100%;background: none;padding: 0 0.2rem;">
 								<div class="s-flex flex-wrap ladder-style jc-bt ai-fs">
 									<div class="duan s-flex ai-ct">
 										<p style="padding: 0;">
-											<form-price :price="goodsInfo.price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
+											<form-price :price="skuShopPrice.price ? skuShopPrice.price : goodsInfo.price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
 										</p>
-										<p class="fs24 co-red" style="margin-left: 0.3rem;">
-											{{ goodsInfo.label }}
-										</p>
+										<template v-if="skuShopPrice.integral">
+											<p class="co-333 fs30" style="margin: 0 0.08rem;"> + </p>
+											<span class="co-red fs50 fw-b">{{ skuShopPrice.integral }}</span>
+											<span class="co-333 co-red" style="margin-left: 0.05rem;">积分</span>
+										</template>
+										<p class="fs24 co-red" style="margin-left: 0.3rem;">{{ goodsInfo.label }}</p>
 									</div>
 								</div>
 							</div>
@@ -185,8 +190,8 @@
 							<div class="s-flex ai_fs">
 								<div class="other-name">配 送</div>
 								<div class="other-cont">
-									<div class="s-flex ai-ct fs26" style="width: auto;">
-										<img src="@/assets/images/good/location.png" alt="" style="position: relative;top: -1px;">
+									<div class="s-flex ai-ct fs26" style="width: auto;line-height: normal;">
+										<img src="@/assets/images/good/location.png" alt="" style="position: relative;top: 0;">
 										<span>{{ limitAddress }} 地址</span>
 									</div>
 								</div>
@@ -409,16 +414,16 @@
 		</template>
 		<!--购物弹框-->
 		<shoppingCard
-			:choose_attrs="chooseAttr"
-			:address_id="pageInfo.address_id"
-			:goods_info="goodsInfo"
-			:shopping_type="shoppingType"
-			:init_flag="initFlag"
-			:is_select_spec="isSelectSpec"
-			sku_id=""
-			:sku_shop_price="skuShopPrice"
-			:group_last_price="groupLastPrice"
-			:sku_param_list="skuParamList"
+			:chooseAttrs="chooseAttr"
+			:addressId="pageInfo.address_id"
+			:goodsInfo="goodsInfo"
+			:mainImg="banner.images&&banner.images[0]"
+			:shoppingType="shoppingType"
+			:initFlag="initFlag"
+			:isSelectSpec="isSelectSpec"
+			:sku_id="skuId"
+			:skuShopPrice="skuShopPrice"
+			:skuParamList="skuParamList"
 			@closeChooseAttr="closeChooseAttrFun"
 			@changeCar="changeCar"
 			@selectSku="selectSku"
@@ -599,6 +604,7 @@ import {useGoodStore} from "@/stores";
 import { getGoodData } from '@/api/good'
 import $ from 'jquery'
 import shoppingCard from '@/components/shoppingCard/shoppingCard'
+import { Swiper, SwiperSlide } from 'swiper/vue';
 import skuSelect from './SkuSelect.vue'
 import shopRate from './ShopRate.vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
@@ -650,7 +656,6 @@ const recommend = ref([])
 const recommendTitle = ref('')
 const bottomlineRecommend = ref(false)
 const pageRecommend = ref(1)
-const groupLastPrice = ref(0)
 const initFlag = ref(0)
 const placeholder = ref(true)
 const loadRecommend = ref(true)
@@ -667,8 +672,11 @@ const paramNum = ref(0)
 const skuParamList = ref([])
 const specId = ref([])
 const specName = ref([])
-const specNameNo = ref([])
-const skuShopPrice = ref('')
+const skuShopPrice = ref({
+	price:'',
+	integral:''
+})
+const skuId = ref('')
 const isSkuIng = ref(false)
 const chatType = ref('shop')
 const showChatAction = ref(false)
@@ -686,53 +694,17 @@ const changeShowInfo = (index) => {
 }
 
 const selectSku = (data) => {
-	if (data.param) {
-		skuParamList.value = data.param
-	}
-	if (data.sku) {
-		goodsInfo.value.shop_price = data.sku.shop_price
+	if (data) {
+		goodsInfo.value.price = data.price
 	}
 }
 
-const updateSkuFirst = (item) => {
-	isSkuIng.value = true
-	var info = {
-		goods_no: goodsInfo.value.goods_no,
-		spec_id: item.id
-	}
-	cns.$http.doPost("v4/goods/updateSkuParamById", info).then((res) => {
-		if (res.code == 200) {
-			if (res.data.param) {
-				skuParamList.value = res.data.param
-			}
-			if (skuParamList.value.length) {
-				paramNum.value = 1
-			}
-			skuParamList.value.length && skuParamList.value.forEach((d, i) => {
-				specNameNo.value.push(d.name)
-				if (d.values.length && i == 0) {
-					paramNum.value = d.values.length
-				}
-			})
-			specName.value = []
-			skuParamList.value.length && skuParamList.value.forEach((d) => {
-				d.values.forEach(s => {
-					if (s.selected) {
-						specName.value.push(s.name)
-						specId.value.push(s.id)
-					}
-				})
-			})
-			skuShopPrice.value = res.data.sku ? res.data.sku.shop_price : ''
-			if (res.data.sku) {
-				goodsInfo.value.shop_price = res.data.sku.shop_price
-			}
-			isSkuIng.value = false
-		} else {
-			cns.$toast(res.message)
-			isSkuIng.value = false
-		}
-	})
+const updateSkuFirst = (item, skuParamListProp, specNameProp, specIdProp) => {
+	skuParamList.value = [...skuParamListProp]
+	specName.value = [...specNameProp]
+	specId.value = [...specIdProp]
+	skuShopPrice.value.price = item.price
+	skuShopPrice.value.integral = item.integral
 }
 
 const clickKeywords = (item) => {
@@ -913,35 +885,33 @@ const closeChooseAttrFun = (data) => {
 	chooseAttr.value = false
 	shoppingType.value = 1
 	if (isSelectSpec.value) {
-		specName.value = data.spec_name
+		specName.value = data.specName
 	}
 }
 
 const openSpecCard = () => {
-	cns.$http.doGet('v3/user/checkLogin')
-		.then(res => {
-			if (res.code == 200 && res.data.is_login) {
-				initFlag.value++
-				isSelectSpec.value = true
-				chooseAttr.value = true
-			} else {
-				cns.appRoute('login')
-			}
-		})
+	cns.$public.checkUserLogin().then((value) => {
+		if(value){
+			initFlag.value++
+			isSelectSpec.value = true
+			chooseAttr.value = true
+		}else {
+			cns.appRoute('login')
+		}
+	})
 }
 
-const setShoppingCard = (type, id) => {
-	cns.$http.doGet('v3/user/checkLogin')
-		.then(res => {
-			if (res.code == 200 && res.data.is_login) {
-				isSelectSpec.value = false
-				shoppingType.value = type
-				initFlag.value++
-				chooseAttr.value = true
-			} else {
-				cns.appRoute('login')
-			}
-		})
+const setShoppingCard = (type) => {
+	cns.$public.checkUserLogin().then((value) => {
+		if(value){
+			isSelectSpec.value = false
+			shoppingType.value = type
+			initFlag.value++
+			chooseAttr.value = true
+		}else {
+			cns.appRoute('login')
+		}
+	})
 }
 const changeCar = (e) => {
 	carNum.value = e
@@ -1038,7 +1008,7 @@ const detailBig = () => {
 }
 
 const getData = () => {
-	getGoodData(goodsNo.value).then((res) => {
+	getGoodData(goodsNo.value, skuId.value).then((res) => {
 		if (res.code == 200) {
 			placeholder.value = false
 			// searchWordList.value = res.data.header.search_word_list
@@ -1055,6 +1025,9 @@ const getData = () => {
 			skuParamList.value = res.data.center.sku_params ? res.data.center.sku_params.spec_values : []
 			if (skuParamList.value.length) {
 				paramNum.value = 1
+				skuId.value = res.data.center.sku_params.sku_item.id
+				skuShopPrice.value.price = res.data.center.sku_params.sku_item.price || ''
+				skuShopPrice.value.integral = res.data.center.sku_params.sku_item.integral || ''
 			}
 			skuParamList.value.length && skuParamList.value.forEach((d, i) => {
 				d.values.forEach(s => {
@@ -1063,6 +1036,9 @@ const getData = () => {
 						specId.value.push(s.id)
 					}
 				})
+				if (d.values.length && i == 0) {
+					paramNum.value = d.values.length
+				}
 			})
 
 			if (res.data.banner.video.url) {
@@ -1119,6 +1095,7 @@ const getData = () => {
 
 onMounted(() => {
 	goodsNo.value = route.query.goods_no
+	skuId.value = route.query.sku_id
 	// 如果从新增收货地址来的，则打开选择收货地址
 	if (fromPath.value == 'address_add') {
 		changeAddress()
@@ -2025,7 +2002,7 @@ router.beforeEach((to, from, next) => {
 	padding: 0.06rem 0;
 }
 
-.price-ladder .ladder-style .co-red {
+.price-ladder .ladder-style p.co-red {
 	height: 0.4rem;
 	line-height: 0.4rem;
 	background: #FEECEC;
@@ -2343,7 +2320,7 @@ router.beforeEach((to, from, next) => {
 
 //限制编译器详情最大宽度，防止超出750
 :deep(.vhtml *) {
-	max-width: 100% !important;
+	width: 100% !important;
 	box-sizing: border-box !important;
 }
 

@@ -34,7 +34,7 @@
 					</van-field>
 				</div>
 				<div style="margin: 0.7rem 0.45rem 0.3rem;">
-					<van-button round block type="info" native-type="submit" id="login_btn">
+					<van-button round block type="info" native-type="submit">
 						登 录
 					</van-button>
 				</div>
@@ -48,8 +48,8 @@
 					placeholder="请输入手机号"
 				/>
 				<div style="margin: 0.7rem 0.45rem 0.3rem;">
-					<van-button round block type="info" native-type="submit" id="login_btn">
-						{{ loginType ? '登 录' : '登 录' }}
+					<van-button round block type="info" native-type="submit">
+						下一步
 					</van-button>
 				</div>
 			</van-form>

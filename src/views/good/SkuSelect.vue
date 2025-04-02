@@ -31,7 +31,6 @@
     })
 
     const emit = defineEmits(['select'])
-    console.log(props.mainImg)
     const selectSku = (item, index) => {
         if (item.selected || item.hidden || props.I) {
             return
@@ -61,7 +60,7 @@
     .sku-wrap{width: calc(7.5rem - 0.98rem - 2em);overflow: auto;}
     .sku-wrap .sku-item{margin-right: 0.2rem;flex:none;width: 1.2rem;border: 1px solid transparent;height: 1.2rem;border-radius: 0.2rem;overflow: hidden;position: relative;border: 1px solid #fff;}
     .sku-wrap .sku-item.active{border: 1px solid var(--red-color);}
-    .sku-wrap .sku-item.no-number:after{position: absolute;color:ar(--red-color);font-size:0.2rem;text-align:center;line-height:1.2rem;content: '无货';width: 100%;height: 100%;left: 0;top: 0;background: rgba(118,118,118,0.6);z-index: 9;}
+    .sku-wrap .sku-item.no-number:after{position: absolute;color:var(--red-color);font-size:0.2rem;text-align:center;line-height:1.2rem;content: '无货';width: 100%;height: 100%;left: 0;top: 0;background: rgba(118,118,118,0.6);z-index: 9;}
     .sku-wrap .sku-item:last-of-type{margin-right: 0;}
     .sku-wrap .sku-item img{width: 1.2rem;height: 1.2rem;}
     .sku-wrap .sku-item p{background: rgba(0,0,0,0.7);height: 0.4rem;line-height: 0.4rem;color: #fff;text-align: center;font-size: 0.2rem;position: absolute;bottom: 0;left: 0;width: 100%;}
