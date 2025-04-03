@@ -1,7 +1,7 @@
 import $env from './env'
 import $http from './http'
 import { useConfigStore } from "@/stores/index.js"
-import { Toast } from "vant";
+import constant from "@/utils/constant.js";
 
 function openVConsole() {
     if (($env.isTest() || $env.isDev())) {
@@ -255,7 +255,7 @@ const initShopConfig = () => {
 function requestLogin() {
     return new Promise(resolve => {
         $http.doGet('v1/auth/check_login').then(res=>{
-            if (res.code == 200) {
+            if (constant.isSuccessCode(res)) {
                 resolve(res.data.is_login)
             } else {
                 resolve(false)

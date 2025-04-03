@@ -354,7 +354,7 @@
 	            }else {
 		            cns.$toast(res.message)
 	            }
-            } else if (res.code == 404) {
+            } else {
                 chooseAttr.value = false
                 cns.$toast({
                     message: res.message,
@@ -362,8 +362,6 @@
                         emit('unusual')
                     }
                 })
-            } else {
-                cns.$toast(res.message)
             }
         })
     }
@@ -460,7 +458,7 @@
 							if (cns.$constant.isSuccessCode(ret)) {
 								cns.$toast(ret.message)
 								emit('changeCar', ret.data.number)
-							} else if (ret.code == 404) {
+							} else {
 								chooseAttr.value = false
 								cns.$toast({
 									message: ret.message,
@@ -468,8 +466,6 @@
 										emit('unusual')
 									}
 								})
-							} else {
-								cns.$toast(ret.message)
 							}
 						})
 					}
@@ -477,7 +473,7 @@
 
             } else if (cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login')
-            } else if (res.code == 404) {
+            } else {
                 chooseAttr.value = false
                 cns.$toast({
                     message: res.message,
@@ -485,8 +481,6 @@
                         emit('unusual')
                     }
                 })
-            }else {
-                cns.$toast(res.message)
             }
         })
     }
