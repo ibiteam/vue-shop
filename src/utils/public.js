@@ -254,7 +254,7 @@ const initShopConfig = () => {
 /** 校验用户是否登录 **/
 function requestLogin() {
     return new Promise(resolve => {
-        $http.doGet('v1/auth/check-login').then(res=>{
+        $http.doGet('v1/auth/check/login').then(res=>{
             if (res.code == 200) {
                 resolve(res.data.is_login)
             } else {
@@ -270,7 +270,7 @@ async function checkUserLogin() {
     return is_login
 }
 function isLogin() {
-    $http.getNotLoading('v1/auth/check-login').then(res=>{
+    $http.getNotLoading('v1/auth/check/login').then(res=>{
         let is_login = false
         if (res.data && res.data.is_login) {
             is_login = res.data.is_login

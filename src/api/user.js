@@ -1,7 +1,7 @@
 import $http from '@/utils/http'
 
 export function accountLogin(data) {
-    return $http.doPost('v1/auth/login-by-password', data)
+    return $http.doPost('v1/auth/login/password', data)
 }
 
 export function checkPhone(phone) {
@@ -9,7 +9,7 @@ export function checkPhone(phone) {
 }
 
 export function registerOrPhoneLogin({info, action, is_register}) {
-    const URL = action == 'register' ? is_register == 0 ? 'v1/auth/login-register-by-phone' : 'v1/auth/register-by-phone' : 'v1/auth/login-by-phone'
+    const URL = 'v1/auth/login/phone'
     return $http.doPost(URL, info)
 }
 
@@ -24,7 +24,7 @@ export function sendCode(info) {
 }
 
 export function updatePassword(info, action) {
-    const URL = action == 'password-forget' ? 'v1/auth/forget-password' : 'v1/auth/edit-password'
+    const URL = action == 'password-forget' ? 'v1/auth/forget/password' : 'v1/auth/edit/password'
     if(action == 'password-edit') delete info.phone
     return $http.doPost(URL, info)
 }

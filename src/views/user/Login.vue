@@ -67,7 +67,7 @@ import md5 from 'js-md5'
 import {ref, onMounted, getCurrentInstance, computed} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import {useConfigStore} from '@/stores'
-import { accountLogin, checkPhone} from "@/api/user.js";
+import { accountLogin } from "@/api/user.js";
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -134,21 +134,7 @@ const onSubmitPhone = (values) => {
 		cns.$toast('请输入正确的手机号码')
 		return
 	}
-	checkPhone(phone.value).then(res=>{
-		isRegistered.value = res.data.is_register
-		if (res.data.is_register) {
-			goToPhone()
-		} else {
-			cns.$dialog.confirm({
-				message: '该手机号未注册,是否创建账号？',
-				confirmButtonText: '同意',
-				cancelButtonText: '不同意'
-			}).then(() => {
-				goToPhone()
-			}).catch(() => {
-			})
-		}
-	})
+	goToPhone()
 }
 
 const goToPhone = () => {
@@ -164,7 +150,7 @@ const goToPhone = () => {
 	} else {
 		redirect = 'ucenter'
 	}
-	cns.appRoute('phone', {phone: phone.value, action: isRegistered.value?'login':'register', redirect: redirect, query_page: JSON.stringify(query), is_registered: isRegistered.value}, 'replace')
+	cns.appRoute('phone', {phone: phone.value, action: 'login', redirect: redirect, query_page: JSON.stringify(query)}, 'replace')
 }
 
 onMounted(() => {

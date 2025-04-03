@@ -36,7 +36,6 @@
 <script setup>
 	import {useConfigStore} from '@/stores'
 	const configStore = useConfigStore()
-	import { checkPhone } from "@/api/user";
 
     import { ref, onMounted, getCurrentInstance, computed } from 'vue'
     import { useRouter } from 'vue-router'
@@ -57,24 +56,12 @@
             return
         }
 
-        checkPhone(phone.value).then(res => {
-            if (res.code == 200) {
-                sessionStorage.setItem('can_send_code', true)
-                let params = {
-                    phone: phone.value,
-                    action: 'register'
-                }
-                cns.appRoute('phone', params, params)
-            } else {
-                cns.$dialog.confirm({
-                    message: '该手机号已注册，是否直接登录？',
-                    confirmButtonText: '立即登录', 
-                    cancelButtonText: '继续注册'
-                }).then(() => {
-                    cns.appRoute('login', {}, {}, 'replace')
-                }).catch(() => {})
-            }
-        }).catch(() => {})
+	    sessionStorage.setItem('can_send_code', true)
+	    let params = {
+		    phone: phone.value,
+		    action: 'login'
+	    }
+	    cns.appRoute('phone', params)
     }
 
     onMounted(() => {

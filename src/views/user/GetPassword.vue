@@ -48,7 +48,7 @@
 	import md5 from "js-md5";
     import { ref, watch, onMounted, getCurrentInstance } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
-	import { checkPhone, sendCode, updatePassword } from "@/api/user";
+	import { sendCode, updatePassword } from "@/api/user";
 
 	const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -118,17 +118,7 @@
 	    values.new_password = md5(values.new_password)
 	    values.new_password_confirmation = md5(values.new_password_confirmation)
 	    values.phone = route.query.phone ? route.query.phone : phone.value
-		if(!route.query.phone){
-			checkPhone(route.query.phone ? route.query.phone : phone.value).then(res => {
-				if (res.code == 200 && res.data.is_register) {
-					submitPassword(values)
-				} else {
-					cns.$toast('该手机号未注册，请重新输入')
-				}
-			})
-		}else {
-			submitPassword(values)
-		}
+	    submitPassword(values)
 
     }
 	const submitPassword = (values) => {

@@ -89,9 +89,9 @@ const codeSubmit = () => {
 		phone: phone.value,
 		code: phoneCode.value
 	}
-	registerOrPhoneLogin({info, action: action.value, is_register: route.query.is_registered}).then(res => {
+	registerOrPhoneLogin({info, action: action.value}).then(res => {
 		if (res.code == 200) {
-			cns.$toast(action.value == 'login' ? '登录成功' : '注册成功')
+			cns.$toast(res.message)
 			cns.$cookies.set('m-token', res.data.token, res.data.expires_at)
 			let redirect = route.query.redirect
 			let query = route.query.query_page ? JSON.parse(route.query.query_page) : {}
@@ -114,7 +114,6 @@ onMounted(() => {
 	phone.value = route.query.phone
 	action.value = route.query.action
 	phone_hide.value = cns.$public.getPrivacyPhone(route.query.phone)
-	title.value = action.value == 'login' ? '手机号快捷登录' : '手机快速注册'
 	if (sessionStorage.getItem('can_send_code')) {
 	    sendPhoneCode()
 	} else if (fromPath.value.name) {
