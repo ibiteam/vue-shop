@@ -81,7 +81,7 @@ const getListData = () => {
     getRedPackListAxios(info.value).then((res) => {
         loading.value = false
         finished.value = false
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             if (res.data.list.data.length >0) {
                 Array.from(res.data.list.data, (item) => {
                     item.isShowDesc = false
@@ -111,7 +111,7 @@ const getListData = () => {
             } else {
                 noDataShow.value = true
             }
-        } else if (res.code == 403) {
+        } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login', {}, {}, 'replace')
         } else {
             cns.$toast(res.message);
@@ -135,7 +135,7 @@ const loadMore = () => {
     if (redPackList.value.length >= 10) {
         getRedPackListAxios({page:page.value}).then((res) => {
             loading.value= false
-            if (res.code == 200) {
+            if (cns.$constant.isSuccessCode(res)) {
                 if (res.data.data.length > 0) {
                     Array.from(res.data.data, (item) => {
                         item.isShowDesc = false
@@ -165,7 +165,7 @@ const loadMore = () => {
                 }
             } else if(res.code == 404 && res.message === "no data !") {
                 finished.value = true
-            } else if(res.code == 403) {
+            } else if(cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login', {}, {}, 'replace')
             } else {
                 cns.$toast(res.message)

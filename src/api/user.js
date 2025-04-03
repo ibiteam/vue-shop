@@ -30,7 +30,7 @@ export function updatePassword(info, action) {
 }
 
 export function verifyPhone(info) {
-    return $http.doPost('v3/primary/phone', info)
+    return $http.doPost('v1/primary/phone', info)
 }
 
 export function updatePhone(info) {

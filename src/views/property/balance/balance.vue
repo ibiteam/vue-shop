@@ -54,15 +54,15 @@ onMounted(() => {
 
 const getUserBalance = () => {
   getUserData().then(res => {
-    if (res.code == 200) {
+    if (cns.$constant.isSuccessCode(res)) {
       userInfo.value = res.data;
       getBalanceAxios({mobile: userInfo.mobile_phone}).then(ret => {
-        if (ret.code == 200) {
+        if (cns.$constant.isSuccessCode(ret)) {
           if (ret.data.info.length == 0) {
             noDataShow.value = true;
           }
           balanceInfo.value = ret.data;
-        } else if (ret.code == 403) {
+        } else if (cns.$constant.isUnLoginCode(ret)) {
           cns.appRoute('login')
         } else {
           balanceInfo.total_money_app = 0;
@@ -70,7 +70,7 @@ const getUserBalance = () => {
           noDataShow.value = true;
         }
       })
-    } else if (res.code == 403) {
+    } else if (cns.$constant.isUnLoginCode(res)) {
       cns.appRoute('login', {}, {}, 'replace')
     } else {
       cns.$toast(res.message);

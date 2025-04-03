@@ -76,7 +76,7 @@ onMounted(() => {
 })
 const getUserInfo = () => {
     getUserInfoAxios().then(res => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             page_loading.value = true
             is_modify.value = res.data.is_modify
             nickname.value = res.data.nickname||'未设置昵称'
@@ -84,7 +84,7 @@ const getUserInfo = () => {
             user_name.value = res.data.user_name
             editNickname.value = res.data.nickname
             editUsername.value = res.data.user_name
-        } else if (res.code == 401) {
+        } else if (cns.$constant.isUnLoginCode(res)) {
             // 去登录
             cns.appRoute('login')
         }else {
@@ -115,7 +115,7 @@ const afterRead = (file) => {
         auth: 0
     };
     uploadFileAxios(info).then(res => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             updatePortrait(res.data.url);
         } else {
             cns.$toast('上传失败，请重试')
@@ -126,7 +126,7 @@ const afterRead = (file) => {
 }
 const updatePortrait = (url) => {
     updatePortraitAxios(url).then(res => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             cns.$toast('修改成功')
         }
         portrait.value = url;
@@ -175,7 +175,7 @@ const updateUserName = () => {
         return
     }
     updateUserNameAxios(editUsername.value).then(res => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             cns.$toast('修改成功')
             showUsername.value = false
             setTimeout(() => {
@@ -210,7 +210,7 @@ const updateNickname = () => {
         return
     }
     updateNickNameAxios(editNickname.value).then(res => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             cns.$toast('修改成功')
             showNickname.value = false
             setTimeout(() => {
@@ -270,6 +270,9 @@ const updateNickname = () => {
         }
         .logo-cell.van-cell {
             padding: 0.2rem 0.3rem;
+        }
+        .van-cell--clickable:active{
+            background: unset;
         }
     }
     .logo-img {

@@ -50,12 +50,12 @@ onMounted(() => {
 const getUserInfo = () => {
     getUserInfoAxios().then(res => {
         page_loading.value = true
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             nickname.value = res.data.nickname||'未设置昵称'
             portrait.value = res.data.avatar
             user_name.value = res.data.user_name
             is_login.value = true
-        } else if (res.code == 401) {
+        } else if (cns.$constant.isUnLoginCode(res)) {
             is_login.value = false
         }else {
             cns.$toast(res.message)
@@ -76,7 +76,7 @@ const handleClickRouterLinkBefore = async(data) => {
 }
 const logOut = () => {
     logOutAxios().then(res => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             cns.$cookies.remove('app_token')
             localStorage.removeItem('wxUserInfo')
             localStorage.setItem('wxlogout','true')
@@ -131,6 +131,9 @@ const logOut = () => {
             height: 0.45rem;
             display: inline-block;
         }
+    }
+    .van-cell--clickable:active{
+        background: unset;
     }
 }
 

@@ -1,7 +1,7 @@
 <template>
     <div class="login-wrap">
         <common-header :title="title" :is_show_more="false"></common-header>
-        <div class="phone-tip" v-if="phoneType == 'phone-bind'">绑定后可提高账号安全性，下次还可用该手机号进行登录</div>
+        <div class="phone-tip" v-if="phoneType == 'phone-verify'">绑定后可提高账号安全性，下次还可用该手机号进行登录</div>
         <div class="login-form">
             <van-form @submit="onSubmitGet">
                 <van-field
@@ -53,7 +53,7 @@ const phone = ref('')
 const code = ref('')
 const codeDisabled = ref(true)
 const isFirst = ref(true)
-const phoneType = ref('phone-bind')
+const phoneType = ref('phone-verify')
 const title = ref('绑定手机号')
 const second = ref(0)
 const timer = ref(null)
@@ -115,7 +115,7 @@ const doVerifyPhone = (values) => {
 const submitPhone = (values) => {
     updatePhone(values, phoneType.value).then(res => {
         if (cns.$constant.isSuccessCode(res)) {
-            if (phoneType.value == 'phone-update') {
+            if (phoneType.value == 'phone-edit') {
                 cns.$toast('修改手机号成功！请重新登录账号。')
                 cns.$cookies.remove('m-token')
                 setTimeout(() => {
@@ -164,12 +164,12 @@ const submitSendCode = (info)=>{
 }
 
 onMounted(() => {
-    phoneType.value = route.query.type?route.query.type:'phone-bind'
+    phoneType.value = route.query.type?route.query.type:'phone-verify'
     if (route.query.phone) {
         phone.value = cns.$public.getPrivacyPhone(route.query.phone)
         isVeryPhone.value = false
     }
-    title.value = phoneType.value == 'phone-update' ? '修改手机号' : '绑定手机号'
+    title.value = phoneType.value == 'phone-edit' ? '修改手机号' : '绑定手机号'
 })
 </script>
 

@@ -94,7 +94,7 @@ const getListData = () => {
     getCouponListAxios({page:page.value}).then((res) => {
         loading.value = false
         finished.value = false
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             is_can_exchange.value = res.data.is_can_exchange == '0' ? true : false
             if (res.data.data.length >0) {
                 Array.from(res.data.data, (item) => {
@@ -125,7 +125,7 @@ const getListData = () => {
             } else {
                 noDataShow.value = true
             }
-        } else if (res.code == 403) {
+        } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login', {}, {}, 'replace')
         } else {
             cns.$toast(res.message);
@@ -152,7 +152,7 @@ const handleClickExchange = () => {
 
 const couponExchange = () => {
     couponExchangeAxios({coupon_sn: coupon_sn.value}).then((res) => {
-        if (res.code == 200){
+        if (cns.$constant.isSuccessCode(res)){
             cns.$toast("优惠券兑换成功")
             setTimeout(() => {
                 page.value = 1
@@ -164,7 +164,7 @@ const couponExchange = () => {
                 // getListData()
                 document.body.scrollTop=document.documentElement.scrollTop=0
             }, 3000)
-        } else if (res.code == 403) {
+        } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login', {}, {}, 'replace')
         } else if (res.code == 1008) {
             cns.$toast(res.message)
@@ -192,7 +192,7 @@ const loadMore = () => {
     if (couponList.value.length >= 10) {
         getCouponListAxios({page:page.value}).then((res) => {
             loading.value= false
-            if (res.code == 200) {
+            if (cns.$constant.isSuccessCode(res)) {
                 if (res.data.data.length > 0) {
                     Array.from(res.data.data, (item) => {
                         item.isShowDesc = false
@@ -222,7 +222,7 @@ const loadMore = () => {
                 }
             } else if(res.code == 404 && res.message === "no data !") {
                 finished.value = true
-            } else if(res.code == 403) {
+            } else if(cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login', {}, {}, 'replace')
             } else {
                 cns.$toast(res.message)

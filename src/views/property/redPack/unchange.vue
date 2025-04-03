@@ -96,7 +96,7 @@ const getListData = () => {
         loading.value = false
         finished.value = false
         stateText.value = '仅显示近一年的红包数据'
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             if (res.data.list.data.length > 0) {
                 Array.from(res.data.list.data, (item) => {
                     item.isShowDesc = false
@@ -127,7 +127,7 @@ const getListData = () => {
                 noDataShow.value = true
             }
             bonusCount.value = res.data.bonusCount
-        } else if (res.code == 403) {
+        } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login', {}, {}, 'replace')
         } else {
             cns.$toast(res.message)
@@ -163,7 +163,7 @@ const loadMore = () =>{
     if (redPackList.value.length >= 10) {
         couponUnchangeListAxios(info.value).then((res) => {
             loading.value = false
-            if (res.code == 200) {
+            if (cns.$constant.isSuccessCode(res)) {
                 if (res.data.list.data.length > 0) {
                     Array.from(res.data.list.data, (item) => {
                         item.isShowDesc = false
@@ -193,7 +193,7 @@ const loadMore = () =>{
                 }
             } else if (res.code == 404 && res.message === "no data !") {
                 finished.value = true
-            } else if (res.code == 403) {
+            } else if (cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login', {}, {}, 'replace')
             } else {
                 cns.$toast(res.message)

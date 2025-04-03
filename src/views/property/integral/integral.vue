@@ -87,7 +87,7 @@ onMounted(() => {
 
 const getPageData = () => {
     getIntegralListAxios(info.value).then((res) => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             nextTick(function () {
                 total.value = res.data.data.total
                 if (res.data.data.data.length > 0) {
@@ -102,7 +102,7 @@ const getPageData = () => {
                 all.value = res.data.all;
                 info.page = 2;
             });
-        } else if (res.code == 403) {
+        } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login', {}, {}, 'replace')
         } else {
             cns.$toast(res.message);
@@ -124,14 +124,14 @@ const loadMore = () =>{
     if (integralList.value.length < total.value) {
         getIntegralListAxios(info.value).then((res) => {
             loading.value = false;
-            if (res.code == 200) {
+            if (cns.$constant.isSuccessCode(res)) {
                 if (res.data.data.data.length > 0) {
                     integralList.value = integralList.value.concat(res.data.data.data);
                 } else {
                     finished.value = true;
                 }
                 info.page++;
-            } else if (res.code == 403) {
+            } else if (cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login', {}, {}, 'replace')
             } else {
                 loading.value = false;

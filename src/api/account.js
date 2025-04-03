@@ -7,7 +7,7 @@ export function getUserInfoAxios() {
 
 // 上传图片
 export function uploadFileAxios(info) {
-    return $http.doPost('upload', info)
+    return $http.doPost('v1/upload', info)
 }
 
 // 更换头像

@@ -146,7 +146,7 @@ const loadData = () => {
     type:0
   };
   collectGoodsAxios(info).then((res) => {
-    if (res.code == 200) {
+    if (cns.$constant.isSuccessCode(res)) {
       good_list.value = res.data
       pagination.value = res.mate.pagination;
       pagination.page++
@@ -157,7 +157,7 @@ const loadData = () => {
       if (res.data.length < 10) {
         bottomline.value = true;
       }
-    } else if (res.code == 403) {
+    } else if (cns.$constant.isUnLoginCode(res)) {
       cns.appRoute('login')
     } else {
       cns.$toast(res.message)
@@ -173,7 +173,7 @@ const loadMore = () =>{
   if (good_list.value.length >= 10) {
     loading.value = true;
     collectGoodsAxios(info).then((res) => {
-      if (res.code == 200) {
+      if (cns.$constant.isSuccessCode(res)) {
         bottomline.value = res.data.length < 10 ? true : false;
         pagination.value = res.mate.pagination;
         if (pagination.page == 0) {
@@ -205,7 +205,7 @@ const unFollow = () => {
     return
   }
   eidtCollectGoodsAxios(info).then((res) => {
-    if (res.code == 200) {
+    if (cns.$constant.isSuccessCode(res)) {
       checkFlag.value = false;
       checkGoodsAllFlag.value = false
       checkGoodsResult.value = [];
