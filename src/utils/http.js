@@ -33,7 +33,7 @@ axios.defaults.baseURL = import.meta.env.VITE_APP_URL
 axios.defaults.headers.Accept = 'application/json'
 axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
 axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest'
-axios.defaults.headers['Access-From'] = 'h5'
+axios.defaults.headers['source'] = 'H5'
 
 function createParams(params = {}) {
     if (Object.prototype.toString.call(params).slice(8, -1) != 'FormData') {

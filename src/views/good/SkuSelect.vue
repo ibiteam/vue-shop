@@ -32,7 +32,7 @@
 
     const emit = defineEmits(['select'])
     const selectSku = (item, index) => {
-        if (item.selected || item.hidden || props.I) {
+        if (item.selected || props.httpIng) {
             return
         }
         emit('select', item)

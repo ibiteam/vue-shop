@@ -21,6 +21,11 @@
                             <template v-else-if="goodsInfo.price">
                                 <form-price :price="goodsInfo.price.toString().replace('￥','')" :sign_size="28" :DF_size="30" :INT_size="50" weight="bold"></form-price>
                             </template>
+	                        <template v-if="skuPrice.integral || goodsInfo.integral">
+		                        <span class="co-333 fs40" style="margin: 0 0.08rem;"> + </span>
+		                        <span class="co-red fs50 fw-b">{{ skuPrice.integral || goodsInfo.integral }}</span>
+		                        <span class="co-red" style="margin-left: 0.05rem;">{{ goodsInfo.integral_name || '积分' }}</span>
+	                        </template>
                         </p>
                         <p class="fs24 co-999 MT10">
                             <span class="co-333 fs24">商品库存：</span>{{ goodsNumber }}
@@ -63,11 +68,14 @@
                     </div>
                     <div class="s-flex">
                         <span class="iconfont jian" @click="jian" :class="{'hui': buyNumber <= minNumber || maxNumber == 0 }">&#xe633;</span>
-                        <input type="number" ref="numinputRef" v-model="buyNumberValue" @input="changeBuyNum" :class="{'no-click': goodsInfo.increase_type==1}">
-                        <span class="iconfont jia" @click="jia" :class="{'hui': (maxNumber == 0 || buyNumber >= maxNumber || (buyNumber >= goodsInfo.limit_number && goodsInfo.limit_number > 0 ))}">&#xe6aa;</span>
+                        <input type="number" ref="numinputRef" v-model="buyNumberValue" @input="changeBuyNum">
+                        <span class="iconfont jia" @click="jia" :class="{'hui': (maxNumber == 0 || buyNumber >= maxNumber || (buyNumber >= goodsInfo.quota_number && goodsInfo.quota_number > 0 ))}">&#xe6aa;</span>
                     </div>
                 </div>
-                <div class="spec-btn">
+	            <div class="choose-btn" v-if="!isSelectSpec">
+		            <span class="fs32 fw-b" @click="toShop('1')">确定</span>
+	            </div>
+                <div class="spec-btn" v-else>
                     <span class="fs32 fw-b add-car" @click="toShop('2')">加入购物车</span>
                     <span class="fs32 fw-b now-buy" @click="toShop('1')">立即购买</span>
                 </div>
@@ -92,8 +100,11 @@
             default: ''
         },
         skuShopPrice: {
-            type: String,
-            default: ''
+	        type: Object,
+	        default: () => ({
+		        price: '',
+		        integral: ''
+	        })
         },
         chooseAttrs: {
             type: Boolean,
@@ -114,6 +125,10 @@
             type: Number,
             default: -1
         },
+	    isSelectSpec:{
+		    type: Boolean,
+		    default: false
+	    },
 	    mainImg: {
             type: String,
             default: ''
@@ -137,22 +152,19 @@
     const isSkuIng = ref(false)
     const skuPrice = ref({
 	    price: '',
+	    integral: ''
     })
     const thumbUrl = ref('')
     const numinputRef = ref(null)
 
     // 计算属性
     const buyNumber = computed(() => goodStore.buyNumber)
-    
-    const buyNumberValue = computed({
-        get: () => buyNumber.value,
-        set: (newVal) => goodStore.setBuyNumber(Number(newVal))
-    })
 
+    const buyNumberValue = ref(buyNumber.value)
     // 监听属性
     watch(() => props.skuShopPrice, (newVal) => {
-		console.log(newVal)
         skuPrice.value.price = newVal.price
+        skuPrice.value.integral = newVal.integral
     }, {deep : true})
 
     watch(chooseAttr, (newVal) => {
@@ -217,7 +229,7 @@
         if (skuParamList.value.length && skuId.value) {
 	        count(skuPrice.value.price)
         }
-    })
+    }, {deep : true})
 
     watch(() => props.goodsInfo, (newVal) => {
         minNumber.value = 1
@@ -275,7 +287,7 @@
                 nextTick(() => {
                     isSkuIng.value = false
                 })
-                emit('selectSku', {item:res.data, skuParamListProp: skuParamList, specNameProp: specName, specIdProp: specId})
+                emit('selectSku', {item:res.data, skuParamListProp: skuParamList.value, specNameProp: specName.value, specIdProp: specId.value})
             } else {
                 cns.$toast(res.message)
                 isSkuIng.value = false
@@ -288,11 +300,12 @@
         if (!isSelectAllSku()) {
             return false
         }
-        if (buyNumber.value <= minNumber.value || maxNumber.value == 0) {
+        if (buyNumberValue.value <= minNumber.value || maxNumber.value == 0) {
             cns.$toast('该商品最小起订量是' + minNumber.value + props.goodsInfo.unit)
             return false
         }
-	    goodStore.setBuyNumber(buyNumber.value - 1)
+	    buyNumberValue.value = buyNumberValue.value - 1
+	    goodStore.setBuyNumber(buyNumberValue)
         examine()
     }
 
@@ -301,11 +314,12 @@
         if (!isSelectAllSku()) {
             return false
         }
-        if (buyNumber.value >= maxNumber.value || maxNumber.value == 0) {
+        if (buyNumberValue.value >= maxNumber.value || maxNumber.value == 0) {
             cns.$toast('数量超出库存或者限购范围了~')
             return false
         }
-	    goodStore.setBuyNumber(buyNumber.value + 1)
+	    buyNumberValue.value = buyNumberValue.value + 1
+	    goodStore.setBuyNumber(buyNumberValue)
         examine()
     }
 
@@ -316,15 +330,14 @@
             return false
         }
         if (buyNumberValue.value.toString().indexOf('.') > -1) {
-	        goodStore.setBuyNumber(Number(buyNumberValue.value.toString().replace(/\./g, '')))
-        } else {
-            goodStore.setBuyNumber(buyNumberValue.value)
+	        buyNumberValue.value = buyNumberValue.value.toString().replace(/\./g, '')
         }
-
+	    goodStore.setBuyNumber(buyNumberValue.value)
         timer.value && clearInterval(timer.value)
         timer.value = setTimeout(() => {
             if (buyNumberValue.value == '' || buyNumberValue.value <= 0) {
-                goodStore.setBuyNumber(minNumber.value > maxNumber.value ? maxNumber.value : minNumber.value)
+	            buyNumberValue.value = minNumber.value > maxNumber.value ? maxNumber.value : minNumber.value
+                goodStore.setBuyNumber(buyNumberValue.value)
             }
             examine()
         }, 1000)
@@ -332,9 +345,9 @@
 
     // 检查数量和活动异常
     const examine = () => {
-	    checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumber.value}).then((res) => {
+	    checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumberValue.value}).then((res) => {
             if (res.code === 200) {
-                maxNumber.value = res.data.total
+                maxNumber.value = props.goodsInfo.can_quota ? props.goodsInfo.quota_number : res.data.total ? res.data.total : 0
 	            goodsNumber.value = res.data.total
 	            if(res.data.can_buy){
 		            count()
@@ -409,67 +422,59 @@
             if (isLoading.value) {
                 return false
             }
-            if (buyNumber.value == 0) {
+            if (buyNumberValue.value == 0) {
                 cns.$toast("数量不能为0~")
                 return
             }
 
 	        isLoading.value = true
-			checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumber.value}).then((res) => {
-                isLoading.value = false
-                if (res.code == 200) {
-	                const info = {
-		                no: props.goodsInfo.no,
-		                goods_number: buyNumber.value,
-		                sku_id: skuId.value
-	                }
-                    cns.$http.doPost("v3/cart/store", info)
-                        .then((ret) => {
-                            chooseAttr.value = false
-                            if (ret.code == 200) {
-                                cns.$toast(ret.message)
-                                emit('changeCar', ret.data.number)
-                            } else if (ret.code == 404) {
-                                chooseAttr.value = false
-                                cns.$toast({
-                                    message: ret.message,
-                                    onClose: () => {
-                                        emit('unusual')
-                                    }
-                                })
-                            } else {
-                                cns.$toast(ret.message)
-                            }
-                        })
-                } else if (res.code == 404) {
-                    chooseAttr.value = false
-                    cns.$toast({
-                        message: res.message,
-                        onClose: () => {
-                            emit('unusual')
-                        }
-                    })
-                } else {
-                    cns.$toast(res.message)
-                }
-            })
+	        checkNumberAndGoOrder(shopType)
         }
     }
 
-    const checkNumberAndGoOrder = (shopType) => {
-		checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumber.value}).then((res) => {
+    const checkNumberAndGoOrder = (type) => {
+		checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumberValue.value}).then((res) => {
+			isLoading.value = false
             if (res.code === 200) {
-                let info = {
-                    no: props.goodsInfo.no,
-                    goods_number: buyNumber.value ? buyNumber.value : "",
-                    address_id: props.addressId,
-                    sku_id: skuId.value,
-                    goods_price: count(skuId.value ? skuPrice.value.price : props.goodsInfo.price) // goods_price 商品价格必填
-                }
-                //打开下单页面
-                setTimeout(() => {
-                    cns.appRoute('active_checkout', {}, info)
-                }, 150)
+				if(res.data.can_buy){
+					if(type == 1){
+						let info = {
+							no: props.goodsInfo.no,
+							goods_number: buyNumber.value ? buyNumber.value : "",
+							address_id: props.addressId,
+							sku_id: skuId.value,
+							goods_price: count(skuId.value ? skuPrice.value.price : props.goodsInfo.price) // goods_price 商品价格必填
+						}
+						//打开下单页面
+						setTimeout(() => {
+							cns.appRoute('active_checkout', {}, info)
+						}, 150)
+					}else {
+						const info = {
+							no: props.goodsInfo.no,
+							goods_number: buyNumber.value,
+							sku_id: skuId.value
+						}
+						cns.$http.doPost("v3/cart/store", info).then((ret) => {
+							chooseAttr.value = false
+							if (ret.code == 200) {
+								cns.$toast(ret.message)
+								emit('changeCar', ret.data.number)
+							} else if (ret.code == 404) {
+								chooseAttr.value = false
+								cns.$toast({
+									message: ret.message,
+									onClose: () => {
+										emit('unusual')
+									}
+								})
+							} else {
+								cns.$toast(ret.message)
+							}
+						})
+					}
+				}
+
             } else if (res.code == 403) {
                 cns.appRoute('login')
             } else if (res.code == 404) {
@@ -683,6 +688,18 @@
         background-color: var(--page-bg-color);
         text-align: center;
         border-radius: 0.08rem;
+    }
+    .choose-btn {
+	    width: 6.5rem;
+	    height: 0.8rem;
+	    text-align: center;
+	    margin: 0.2rem auto 0.2rem;
+	    display: flex;
+	    flex-direction: column;
+	    justify-content: center;
+	    background: linear-gradient(to right, #F71212, #FA6060);
+	    color: #fff;
+	    border-radius: 0.4rem;
     }
     .spec-btn{
         width: 6.5rem;

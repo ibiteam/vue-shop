@@ -122,7 +122,7 @@
 						<!--普通商品多规格-非拼团-->
 						<div class="bg-fff" style="padding-bottom: 0.1rem;padding-top: 0.3rem;" v-else="">
 							<template v-if="goodsInfo.sku_params&&goodsInfo.sku_params.spec_values.length">
-								<skuSelect :list="skuParamList" :mainImg="banner.images[0]" :httpIng="isSkuIng" @select="updateSkuFirst"></skuSelect>
+								<skuSelect :list="skuParamList" :mainImg="banner.images[0]" :httpIng="isSkuIng" @select="selectSkuFirst"></skuSelect>
 							</template>
 							<div class="bg-pink price-ladder new" style="width: 100%;background: none;padding: 0 0.2rem;">
 								<div class="s-flex flex-wrap ladder-style jc-bt ai-fs">
@@ -130,10 +130,10 @@
 										<p style="padding: 0;">
 											<form-price :price="skuShopPrice.price ? skuShopPrice.price : goodsInfo.price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
 										</p>
-										<template v-if="skuShopPrice.integral">
-											<p class="co-333 fs30" style="margin: 0 0.08rem;"> + </p>
-											<span class="co-red fs50 fw-b">{{ skuShopPrice.integral }}</span>
-											<span class="co-333 co-red" style="margin-left: 0.05rem;">积分</span>
+										<template v-if="skuShopPrice.integral || goodsInfo.integral">
+											<p class="co-333 fs40" style="margin: 0 0.08rem;"> + </p>
+											<span class="co-red fs50 fw-b">{{ skuShopPrice.integral || goodsInfo.integral }}</span>
+											<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ goodsInfo.integral_name || '积分' }}</span>
 										</template>
 										<p class="fs24 co-red" style="margin-left: 0.3rem;">{{ goodsInfo.label }}</p>
 									</div>
@@ -202,30 +202,30 @@
 						</div>
 					</section>
 				</div>
-				<div style="padding: 0 0.2rem;" class="border-wrap" v-if="evaluate.length">
+				<div style="padding: 0 0.2rem;" class="border-wrap" v-if="evaluate.items.length">
 					<!--评价-->
 					<div class="comment MT10 bg-fff" ref="commentRef" id="comment">
 						<!--商品评价-->
 						<div class="item-tit2 s-flex ai-ct jc-bt" @click="toEvaluate('good')">
 							<div class="s-flex ai-ct">
-								<div class="co-333 fs32 fw-b">评价</div>
+								<div class="co-333 fs32 fw-b">评价({{evaluate.total}})</div>
 							</div>
 							<div class="co-999 s-flex ai-ct">
 								<em class="iconfont co-333" style="font-size: 0.28rem;">&#xe773;</em>
 							</div>
 						</div>
 						<div class="eva-class">
-							<span>价格隔离 <i>1</i></span>
+							<span v-for="tag in evaluate.tag_data">{{ tag.name }} <i>{{ tag.value }}</i></span>
 						</div>
 						<div class="eva-list-wrap">
-							<div class="eva-list" v-for="(item,index) in [1,2,3]" :style="{borderBottom: 'none'}">
+							<div class="eva-list" v-for="(item,index) in evaluate.items" :style="{borderBottom: 'none'}">
 								<div class="users s-flex jc-bt ai-ct">
 									<div class="user-left s-flex ai-ct">
 										<div style="width:0.66rem;height:0.66rem;border-radius:100%;border:0.02rem solid #E5E5E5;overflow: hidden;margin-right: 0.14rem;" class="s-flex ai-ct jc-ct">
-											<img class="user-img" :src="item.portrait" alt="">
+											<img class="user-img" :src="item.avatar" alt="">
 										</div>
 										<div>
-											<span class="user-name fs28 co-333" style="margin-bottom: 0.06rem;display: inline-block;">{{item.nickname }}<i class="fs28 co-999" style="font-style: normal;" v-if="item.is_anonymous=='1'">(匿名）</i></span>
+											<span class="user-name fs28 co-333" style="margin-bottom: 0.06rem;display: inline-block;">{{item.nickname }}<i class="fs28 co-999" style="font-style: normal;" v-if="item.is_anonymous">(匿名）</i></span>
 											<shop-rate :rank="item.rank"></shop-rate>
 										</div>
 									</div>
@@ -430,7 +430,7 @@
 			@unusual="unusual"
 		></shoppingCard>
 		<!--大图查看-->
-		<van-image-preview v-model="showPreviewer" :startPosition="startIndex" :images="imgUrlBig" :showIndex="showIndex"></van-image-preview>
+		<van-image-preview v-model:show="showPreviewer" :startPosition="startIndex" :images="imgUrlBig" :showIndex="showIndex"></van-image-preview>
 		<van-popup
 			v-model:show="propPopup"
 			round
@@ -601,7 +601,7 @@
 import {ref, reactive, onMounted, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {useGoodStore} from "@/stores";
-import { getGoodData } from '@/api/good'
+import { getGoodData, goodsCollect } from '@/api/good'
 import $ from 'jquery'
 import shoppingCard from '@/components/shoppingCard/shoppingCard'
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -633,7 +633,10 @@ const swiperOptions = reactive({
 	}
 })
 const banner = ref({})
-const evaluate = ref([])
+const evaluate = ref({
+	items: [],
+	tag_data: []
+})
 const showRemove = ref(false)
 const removeAddressId = ref(null)
 const goodTab = ref(1)
@@ -693,9 +696,9 @@ const changeShowInfo = (index) => {
 	couponList.value[index] = data
 }
 
-const selectSku = (data) => {
-	if (data) {
-		goodsInfo.value.price = data.price
+const selectSku = ({item, skuParamListProp, specNameProp, specIdProp}) => {
+	if (item) {
+		updateSkuFirst(item, skuParamListProp, specNameProp, specIdProp)
 	}
 }
 
@@ -707,6 +710,21 @@ const updateSkuFirst = (item, skuParamListProp, specNameProp, specIdProp) => {
 	skuShopPrice.value.integral = item.integral
 }
 
+const selectSkuFirst = (item)=>{
+	skuParamList.value.forEach((sku,i) => {
+		if(i == 0){
+			sku.values.forEach((spec, j) => {
+				if (spec.id == item.id) {
+					spec.selected = true
+				} else {
+					spec.selected = false
+				}
+			})
+		}
+	})
+	specName.value[0] = item.name
+	specId.value[0] = item.id
+}
 const clickKeywords = (item) => {
 	cns.appRoute('search_history', {placeholder: item.keywords, url: item.url})
 }
@@ -833,10 +851,10 @@ const handleScroll = () => {
 		if (active.value != 'recommend') active.value = 'recommend'
 	}
 
-	if (loadRecommend.value && scrollTopVal > recommendTop - window.innerHeight - 100 + recommendHeight && !bottomlineRecommend.value) {
-		loadRecommend.value = false
-		getZhiRecommend()
-	}
+	//if (loadRecommend.value && scrollTopVal > recommendTop - window.innerHeight - 100 + recommendHeight && !bottomlineRecommend.value) {
+	//	loadRecommend.value = false
+	//	getZhiRecommend()
+	//}
 }
 
 const onScrollGoods = () => {
@@ -864,21 +882,16 @@ const onScrollRecommend = () => {
 }
 
 const attention = () => {
-	cns.$http.doPost("v3/collect/goods/attentionOrCancelGood", {"goods_no": goodsInfo.value.goods_no})
-		.then((res) => {
-			if (res.code == 200) {
-				isAttention.value = res.data.isAttention > 0
-				if (isAttention.value) {
-					cns.$toast('添加成功')
-				} else {
-					cns.$toast('取消关注成功')
-				}
-			} else if (res.code == 403) {
-				cns.appRoute('login')
-			} else {
-				cns.$toast(res.message)
-			}
-		})
+	goodsCollect({no: goodsInfo.value.goods_no, value: !isAttention.value}).then((res) => {
+		if (res.code == 200) {
+			isAttention.value = !isAttention.value
+			cns.$toast(res.message)
+		} else if (res.code == 403) {
+			cns.appRoute('login', {}, 'replace')
+		} else {
+			cns.$toast(res.message)
+		}
+	})
 }
 
 const closeChooseAttrFun = (data) => {
@@ -945,30 +958,30 @@ const getCoupon = (item) => {
 		})
 }
 
-const getZhiRecommend = () => {
-	cns.$http.doGet('v4/goods/hotSale', {goods_no: goodsNo.value, page: pageRecommend.value}).then(res => {
-		if (res.code == 200) {
-			if (pageRecommend.value == 1) {
-				recommend.value = res.data.data
-				recommendTitle.value = res.data.title
-			} else {
-				recommend.value.push(...res.data.data)
-			}
-			if (res.data.on_last_page) {
-				bottomlineRecommend.value = true
-			} else {
-				bottomlineRecommend.value = false
-			}
-			nextTick(() => {
-				loadRecommend.value = true
-			})
-			pageRecommend.value++
-		} else {
-			bottomlineRecommend.value = true
-			cns.$toast(res.message)
-		}
-	})
-}
+//const getZhiRecommend = () => {
+//	cns.$http.doGet('v4/goods/hotSale', {goods_no: goodsNo.value, page: pageRecommend.value}).then(res => {
+//		if (res.code == 200) {
+//			if (pageRecommend.value == 1) {
+//				recommend.value = res.data.data
+//				recommendTitle.value = res.data.title
+//			} else {
+//				recommend.value.push(...res.data.data)
+//			}
+//			if (res.data.on_last_page) {
+//				bottomlineRecommend.value = true
+//			} else {
+//				bottomlineRecommend.value = false
+//			}
+//			nextTick(() => {
+//				loadRecommend.value = true
+//			})
+//			pageRecommend.value++
+//		} else {
+//			bottomlineRecommend.value = true
+//			cns.$toast(res.message)
+//		}
+//	})
+//}
 
 const showChatActionFunc = (type) => {
 	if (type == 'shop') {
@@ -1073,10 +1086,10 @@ const getData = () => {
 				// 滚到顶
 				window.scrollTo({top: 0})
 			})
-			if (goodsInfo.value.status == 0) {
-				loadRecommend.value = false
-				getZhiRecommend()
-			}
+			//if (goodsInfo.value.status == 0) {
+			//	loadRecommend.value = false
+			//	getZhiRecommend()
+			//}
 		}else {
 			placeholder.value = false
 			goodsInfo.value = {}
