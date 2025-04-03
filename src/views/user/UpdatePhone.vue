@@ -42,7 +42,7 @@
 <script setup>
 import { ref, watch, onMounted, getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {checkPhone, sendCode, verifyPhone, updatePhone} from "@/api/user";
+import { sendCode, verifyPhone, updatePhone} from "@/api/user";
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -91,29 +91,9 @@ const onSubmitGet = (values) => {
     }
     values.phone = route.query.phone ? route.query.phone : phone.value
     if (isVeryPhone.value){//绑定手机号
-        if(!route.query.phone){
-            checkPhone(phone.value).then(res => {
-                if (res.code == 200 && res.data.is_register) {
-                    cns.$toast('该手机号已被注册，请重新输入')
-                } else {
-                    submitPhone(values)
-                }
-            })
-        }else {
-            submitPhone(values)
-        }
+        submitPhone(values)
     }else{//验证手机号
-        if(!route.query.phone){
-            checkPhone(phone.value).then(res => {
-                if (res.code == 200 && res.data.is_register) {
-                    doVerifyPhone(values)
-                } else {
-                    cns.$toast('该手机号未注册，请重新输入')
-                }
-            })
-        }else {
-            doVerifyPhone(values)
-        }
+        doVerifyPhone(values)
     }
 }
 const doVerifyPhone = (values) => {
@@ -166,17 +146,7 @@ const sendPhoneCode = () => {
         phone: route.query.phone ? route.query.phone : phone.value,
         action: phoneType.value
     }
-    if(!route.query.phone){
-        checkPhone(phone.value).then(res => {
-            if (res.code == 200 && res.data.is_register) {
-                submitSendCode(info)
-            } else {
-                cns.$toast('该手机号未注册，请重新输入')
-            }
-        })
-    }else {
-        submitSendCode(info)
-    }
+    submitSendCode(info)
 }
 
 const submitSendCode = (info)=>{
