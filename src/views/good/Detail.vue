@@ -736,7 +736,7 @@ const clickDeleteAddress = (item, index) => {
 
 const clickAddOrRemoveAddressSure = () => {
 	cns.$http.postNotLoading('v3/address/delete', {address_id: removeAddressId.value}).then(res => {
-		if (res.code == 200) {
+		if (cns.$constant.isSuccessCode(res)) {
 			const index = addressList.value.findIndex(item => item.address_id == removeAddressId.value)
 			addressList.value.splice(index, 1)
 			showRemove.value = false
@@ -794,7 +794,7 @@ const clickAddressBack = (address_id) => {
 const changeAddress = () => {
 	cns.$http.doPost("v3/address/list", {}).then(res => {
 		addressPopup.value = true
-		if (res.code == 200) {
+		if (cns.$constant.isSuccessCode(res)) {
 			if (res.data.length > 0) {
 				addressList.value = res.data
 				nodata.value = false
@@ -802,7 +802,7 @@ const changeAddress = () => {
 				addressList.value = []
 				nodata.value = true
 			}
-		} else if (res.code == 403) {
+		} else if (cns.$constant.isUnLoginCode(res)) {
 			cns.appRoute('login', {}, 'replace')
 		} else {
 			cns.$toast(res.message)
@@ -883,10 +883,10 @@ const onScrollRecommend = () => {
 
 const attention = () => {
 	goodsCollect({no: goodsInfo.value.goods_no, value: !isAttention.value}).then((res) => {
-		if (res.code == 200) {
+		if (cns.$constant.isSuccessCode(res)) {
 			isAttention.value = !isAttention.value
 			cns.$toast(res.message)
-		} else if (res.code == 403) {
+		} else if (cns.$constant.isUnLoginCode(res)) {
 			cns.appRoute('login', {}, 'replace')
 		} else {
 			cns.$toast(res.message)
@@ -946,11 +946,11 @@ const toCart = () => {
 const getCoupon = (item) => {
 	cns.$http.doPost('v3/usercoupon/add', {id: item.coupon_id})
 		.then((res) => {
-			if (res.code == 200) {
+			if (cns.$constant.isSuccessCode(res)) {
 				cns.$toast('领取成功！')
 				item.max_limit = !!res.data.status
 				item.btn.url = res.data.searchUrl
-			} else if (res.code == 403) {
+			} else if (cns.$constant.isUnLoginCode(res)) {
 				cns.appRoute('login')
 			} else {
 				cns.$toast(res.message)
@@ -960,7 +960,7 @@ const getCoupon = (item) => {
 
 //const getZhiRecommend = () => {
 //	cns.$http.doGet('v4/goods/hotSale', {goods_no: goodsNo.value, page: pageRecommend.value}).then(res => {
-//		if (res.code == 200) {
+//		if (cns.$constant.isSuccessCode(res)) {
 //			if (pageRecommend.value == 1) {
 //				recommend.value = res.data.data
 //				recommendTitle.value = res.data.title
@@ -1022,7 +1022,7 @@ const detailBig = () => {
 
 const getData = () => {
 	getGoodData(goodsNo.value, skuId.value).then((res) => {
-		if (res.code == 200) {
+		if (cns.$constant.isSuccessCode(res)) {
 			placeholder.value = false
 			// searchWordList.value = res.data.header.search_word_list
 			//if (searchWordList.value.length && searchWordList.value.length == 1) {
@@ -1090,7 +1090,7 @@ const getData = () => {
 			//	loadRecommend.value = false
 			//	getZhiRecommend()
 			//}
-		}else {
+		} else {
 			placeholder.value = false
 			goodsInfo.value = {}
 			couponList.value = []

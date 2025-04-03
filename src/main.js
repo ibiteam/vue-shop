@@ -9,6 +9,7 @@ import $http from '@/utils/http'
 import $public from '@/utils/public'
 import $dialog from '@/utils/dialog'
 import { toast } from '@/utils/toast'
+import constant from "@/utils/constant";
 import App from './App.vue'
 import router from './router'
 import VueCookies from 'vue3-cookies'
@@ -30,6 +31,7 @@ app.config.globalProperties.$public = $public
 app.config.globalProperties.$http = $http
 app.config.globalProperties.$dialog = $dialog
 app.config.globalProperties.$toast = toast
+app.config.globalProperties.$constant = constant
 app.config.globalProperties.appRoute = appRoute
 app.component('CommonHeader', CommonHeader)
 app.component('CommonImage', CommonImage)

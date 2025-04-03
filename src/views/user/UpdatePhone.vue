@@ -98,7 +98,7 @@ const onSubmitGet = (values) => {
 }
 const doVerifyPhone = (values) => {
     verifyPhone(values).then(res => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             isVeryPhone.value = true
             isFirst.value = true
             second.value = 0
@@ -114,7 +114,7 @@ const doVerifyPhone = (values) => {
 }
 const submitPhone = (values) => {
     updatePhone(values, phoneType.value).then(res => {
-        if (res.code == 200) {
+        if (cns.$constant.isSuccessCode(res)) {
             if (phoneType.value == 'phone-update') {
                 cns.$toast('修改手机号成功！请重新登录账号。')
                 cns.$cookies.remove('m-token')
@@ -152,7 +152,7 @@ const sendPhoneCode = () => {
 const submitSendCode = (info)=>{
     sendCode(info).then(ret => {
         isFirst.value = false
-        if (ret.code == 200) {
+        if (cns.$constant.isSuccessCode(ret)) {
             second.value = 60
             countTime()
             cns.$toast('短信已经发送')

@@ -73,7 +73,7 @@ const sendPhoneCode = () => {
 	}
 	sendCode(info).then(res => {
 		sessionStorage.removeItem('can_send_code')
-		if (res.code == 200) {
+		if (cns.$constant.isSuccessCode(res)) {
 			cns.$toast('短信已经发送')
 			countTime()
 		} else {
@@ -90,7 +90,7 @@ const codeSubmit = () => {
 		code: phoneCode.value
 	}
 	registerOrPhoneLogin({info, action: action.value}).then(res => {
-		if (res.code == 200) {
+		if (cns.$constant.isSuccessCode(res)) {
 			cns.$toast(res.message)
 			cns.$cookies.set('m-token', res.data.token, res.data.expires_at)
 			let redirect = route.query.redirect

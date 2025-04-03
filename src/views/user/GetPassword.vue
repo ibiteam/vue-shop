@@ -123,7 +123,7 @@
     }
 	const submitPassword = (values) => {
 		updatePassword(values, passwordType.value).then(res => {
-			if (res.code == 200) {
+			if (cns.$constant.isSuccessCode(res)) {
 				if (passwordType.value == 'password-edit') {
 					cns.$toast('修改密码成功！请重新登录账号。')
 					cns.$cookies.remove('m-token')
@@ -157,7 +157,7 @@
 	    }
 		if(!route.query.phone){
 			checkPhone(phone.value).then(res => {
-				if (res.code == 200 && res.data.is_register) {
+				if (cns.$constant.isSuccessCode(res) && res.data.is_register) {
 					submitSendCode(info)
 				} else {
 					cns.$toast('该手机号未注册，请重新输入')
@@ -171,7 +171,7 @@
 	const submitSendCode = (info)=>{
 		sendCode(info).then(ret => {
 			isFirst.value = false
-			if (ret.code == 200) {
+			if (cns.$constant.isSuccessCode(ret)) {
 				second.value = 60
 				countTime()
 				cns.$toast('短信已经发送')

@@ -276,7 +276,7 @@
 	    if (isSkuIng.value) return;
 	    isSkuIng.value = true
 	    updateSku({no: props.goodsInfo.no, unique: specId.value.join('_')}).then((res) => {
-            if (res.code == 200) {
+            if (cns.$constant.isSuccessCode(res)) {
 	            goodsNumber.value = Number(res.data.number)
 	            maxNumber.value = props.goodsInfo.can_quota ? props.goodsInfo.quota_number : goodsNumber.value ? goodsNumber.value : 0 // 当前可用库存
 	            count(res.data.price)
@@ -346,7 +346,7 @@
     // 检查数量和活动异常
     const examine = () => {
 	    checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumberValue.value}).then((res) => {
-            if (res.code === 200) {
+            if (cns.$constant.isSuccessCode(res)) {
                 maxNumber.value = props.goodsInfo.can_quota ? props.goodsInfo.quota_number : res.data.total ? res.data.total : 0
 	            goodsNumber.value = res.data.total
 	            if(res.data.can_buy){
@@ -435,7 +435,7 @@
     const checkNumberAndGoOrder = (type) => {
 		checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumberValue.value}).then((res) => {
 			isLoading.value = false
-            if (res.code === 200) {
+            if (cns.$constant.isSuccessCode(res)) {
 				if(res.data.can_buy){
 					if(type == 1){
 						let info = {
@@ -457,7 +457,7 @@
 						}
 						cns.$http.doPost("v3/cart/store", info).then((ret) => {
 							chooseAttr.value = false
-							if (ret.code == 200) {
+							if (cns.$constant.isSuccessCode(ret)) {
 								cns.$toast(ret.message)
 								emit('changeCar', ret.data.number)
 							} else if (ret.code == 404) {
@@ -475,7 +475,7 @@
 					}
 				}
 
-            } else if (res.code == 403) {
+            } else if (cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login')
             } else if (res.code == 404) {
                 chooseAttr.value = false

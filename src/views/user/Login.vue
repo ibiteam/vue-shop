@@ -109,7 +109,7 @@ const loginPassword = () => {
 		'password': md5(password.value),
 	}
 	accountLogin(data).then(res => {
-		if (res.code == 200) {
+		if (cns.$constant.isSuccessCode(res)) {
 			cns.$cookies.set('m-token', res.data.token, res.data.expires_at)
 			let redirect = route.query.redirect
 			if (redirect) {
