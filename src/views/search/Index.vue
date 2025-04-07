@@ -19,45 +19,20 @@
                 <div class="search-filter s-flex backF bg-fff">
                     <div class="filter-item" :class="{ active : searchType == '' }" @click="searchTypeChange('')">综合排序
                     </div>
+	                <div class="filter-item" :class="{ active : searchType == 'time_desc'}"
+	                     @click="searchTypeChange('time_desc')">最新
+	                </div>
                     <div class="filter-item" :class="{ active : searchType == 'sale_desc'}"
                          @click="searchTypeChange('sale_desc')">销量
                     </div>
-                    <div class="filter-item filter-price s-flex"
-                         :class="{ active : searchType == 'price_asc' || searchType == 'price_desc' }"
-                         @click="searchTypeChange('price')">
+                    <div class="filter-item filter-price s-flex" :class="{ active : searchType == 'price_asc' || searchType == 'price_desc' }" @click="searchTypeChange('price')">
                         <span>价格</span>
-                        <div>
+                        <div style="width: 20px;">
                             <em class="iconfont" :class="{ active : searchType == 'price_asc' }">&#xe6b2;</em>
                             <em class="iconfont" :class="{ active : searchType == 'price_desc' }">&#xebbe;</em>
                         </div>
                     </div>
-                    <div class="filter-item filter-select" :class="{ active : searchType == 'select' }"
-                         @click="searchTypeChange('select')">
-                        <span>{{(minPrice||maxPrice)?'已':''}}筛选 <em
-                            class="iconfont">&#xe68d;</em></span>
-                    </div>
                 </div>
-                <van-popup v-model:show="selectShow" position="right" round
-                           :style="{ height: '100%',width:'90%' }">
-                    <div class="select-wrap">
-                        <div class="brand-dropdown price MB20" style="padding-top: 0.2rem;height: 1.6rem;">
-                            <h4>价格区间</h4>
-                            <div class="form-price">
-                                <van-field v-model="minPrice" type="number" placeholder="最低价"
-                                           format-trigger="onBlur"/>
-                                <span>-</span>
-                                <van-field v-model="maxPrice" type="number" placeholder="最高价"
-                                           format-trigger="onBlur"/>
-                            </div>
-                        </div>
-                        <div class="brand-dropdown" style="height: calc(100vh - 2rem);">
-                            <div class="brand-btns s-flex">
-                                <div class="reset" @click="clickResetSelect">重置</div>
-                                <div class="confirm" @click="clickConfirmSelect">确定</div>
-                            </div>
-                        </div>
-                    </div>
-                </van-popup>
             </div>
         </van-sticky>
         <div class="search-list" :class="{'wrap-row':rank}"
@@ -77,8 +52,8 @@
                 </van-sticky>
                 <div class="search-dl">
                     <div class="search-dd flex-pack-justify flex-wrap s-flex">
-                        <div class="search-li" v-for="(item, index) in searchList" :class="{'type-row':rank,hf:isHf}"
-                             @click="routerGoodsDetail(item.goods_id)"
+                        <div class="search-li" v-for="(item, index) in searchList" :class="{'type-row':rank}"
+                             @click="routerGoodsDetail(item.no)"
                              :key="item.id">
                             <div>
                                 <div class="search-img">
@@ -133,21 +108,15 @@ import searchType2 from '@/assets/images/search/search_type_row_1.png'
 const route = useRoute();
 const router = useRouter();
 
-const isHf = ref(false);
 const keywords = ref(route.query.keywords);
-const keywordList = ref([]);
 const rank = ref(false)
 const searchType = ref('')
-const selectShow = ref(false)
 const info = reactive({
     cat_id: route.query.cat_id,
     keywords: route.query.keywords,
     page: 1,
     sort_type: null,
 })
-const minPrice = ref('')
-const maxPrice = ref('')
-
 const loading = ref(false)
 const finished = ref(false)
 
@@ -168,13 +137,12 @@ const setTop = () => {
     document.documentElement.scrollTop = document.body.scrollTop = 0;
 }
 
-const routerGoodsDetail = (id) => {
-    let params = {'goods_id': id}
-    let query = {'goods_id': id}
-    appRoute('good', params, query)
+const routerGoodsDetail = (no) => {
+    let query = {'goods_no': no}
+    appRoute('good', query)
 }
 
-const searchData = (first) => {
+const searchData = () => {
     Object.assign(info,{
         ...info,
         page:1,
@@ -247,54 +215,20 @@ const loadMore = () => {
         finished.value = false;
     }
 }
-
-const clickResetSelect = () => {
-    minPrice.value = ''
-    maxPrice.value = ''
-    Object.assign(info,{
-        ...info,
-        min_price:'',
-        max_price:'',
-        page:1,
-        sort_type:null
-    })
-    searchType.value = ''
-    searchData()
-}
-
-const clickConfirmSelect = () => {
-    if (Number(maxPrice.value) < Number(minPrice.value)) {
-        showToast('最高价不能小于最低价')
-        return
-    }
-    selectShow.value = false
-    let ids = []
-    Object.assign(info,{
-        ...info,
-        min_price:minPrice.value,
-        max_price:maxPrice.value,
-    })
-    searchData()
-}
-
 /***************************店铺数据部分  ****************/
 const searchTypeChange = (type) => {
     if(searchType.value == type) return false
     if (type == 'price') {
         searchType.value = searchType.value == 'price_asc' ? 'price_desc' : 'price_asc'
-    } else if (type != 'select') {
+    } else {
         searchType.value = type
     }
     Object.assign(info,{
         ...info,
         sort_type:searchType.value
     })
-    if (type == 'select') {
-        selectShow.value = true
-    } else {
-        searchList.value = []
-        searchData()
-    }
+	searchList.value = []
+	searchData()
 
 }
 /** 点击显示搜索历史 **/
@@ -317,19 +251,17 @@ watch(route, (value) => {
             cat_id:value.query.cat_id,
         })
         rank.value = false
-        minPrice.value = ''
-        maxPrice.value = ''
         listNoData.value = false
         searchList.value = []
         finished.value = false
         loading.value = false
-        searchData('first')
+        searchData()
     }
 })
 
 // 生命周期钩子
 onMounted(() => {
-    searchData('first')
+    searchData()
     document.querySelector('body').setAttribute('style', 'background-color: var(--page-bg-color)');
     window.addEventListener('scroll',scrolls)
 });
@@ -624,14 +556,14 @@ onBeforeUnmount(() => {
         &::after {
             content: '';
             width: 0.55rem;
-            height: 0.06rem;
+            height: 0.05rem;
             background: var(--main-color);
             background-size: 100% 100%;
             position: absolute;
             left: 0;
             right: 0;
             margin: auto;
-            bottom: -0.1rem;
+            bottom: -0.2rem;
         }
 
         font-weight: bold;
@@ -811,7 +743,7 @@ onBeforeUnmount(() => {
     .search-list .search-dl .search-dd .search-li .search-gname {
         height: 0.60rem;
         line-height: 0.30rem;
-        padding: 0.05rem 0.15rem 0.1rem;
+        padding: 0.05rem 0.2rem 0.1rem;
         margin-top: 0.08rem;
         font-size: 0.24rem;
         color: var(--color-text);
@@ -821,7 +753,7 @@ onBeforeUnmount(() => {
 
     .search-list .search-dl .search-dd .search-li .search-view-price {
         display: inline-block;
-        padding: 0 0.1rem;
+        padding: 0 0.2rem;
         margin: 0.05rem 0;
         font-size: 0.26rem;
         color: #f61d4a;

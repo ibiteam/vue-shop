@@ -88,6 +88,7 @@
     import { ref, computed, watch, nextTick, onMounted, getCurrentInstance } from 'vue'
     import { useGoodStore } from "@/stores";
 	import { updateSku, checkNumber } from '@/api/good'
+    import { addGoodsToCart } from '@/api/cart'
 	const cns = getCurrentInstance().appContext.config.globalProperties
 
     const goodStore = useGoodStore()
@@ -438,7 +439,7 @@
 					if(type == 1){
 						let info = {
 							no: props.goodsInfo.no,
-							goods_number: buyNumber.value ? buyNumber.value : "",
+							goods_number: buyNumberValue.value ? buyNumberValue.value : "",
 							address_id: props.addressId,
 							sku_id: skuId.value,
 							goods_price: count(skuId.value ? skuPrice.value.price : props.goodsInfo.price) // goods_price 商品价格必填
@@ -449,11 +450,11 @@
 						}, 150)
 					}else {
 						const info = {
-							no: props.goodsInfo.no,
-							goods_number: buyNumber.value,
-							sku_id: skuId.value
+							goods_no: props.goodsInfo.no,
+							buy_number: buyNumberValue.value,
+							goods_sku_id: skuId.value || 0
 						}
-						cns.$http.doPost("v3/cart/store", info).then((ret) => {
+						addGoodsToCart(info).then((ret) => {
 							chooseAttr.value = false
 							if (cns.$constant.isSuccessCode(ret)) {
 								cns.$toast(ret.message)
@@ -517,7 +518,6 @@
         padding: 0.4rem 0.2rem 0.02rem 2.7rem;
         box-sizing: border-box;
         display: flex;
-        align-items: flex-end;
     }
     .choose-price>img {
         width: 2rem;

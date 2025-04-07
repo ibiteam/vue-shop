@@ -36,27 +36,7 @@
                          @click="handleSearchConfirm(item)">
                         <template v-if="item">{{item}}</template>
                     </div>
-                    <div class="history-more keywords-item van-ellipsis"
-                         v-if="is_show_list_more"
-                         :class="{ 'history-more-noright': !is_open_list }"
-                         @click="handleClickShowMoreKeywords"
-                    >
-                        <em class="iconfont" style="font-size: 0.40rem;">{{ is_open_list ? '&#xe6b2;' : '&#xe604;' }}</em>
-                    </div>
                 </div>
-            </div>
-            <!--搜索发现列表-->
-            <div class="search-history-keywords search-history-find" v-if="searchFind && searchFind.length">
-                <div class="title s-flex ai-ct" ref="keywordTitle">
-                    <label class="flex-1">搜索发现</label>
-                    <em class="iconfont" style="font-size: 0.32rem;" @click="is_show_find = !is_show_find">{{ is_show_find ? '&#xe681;' : '&#xe67d;' }}</em>
-                </div>
-                <div class="keywords-list s-flex ai-ct" v-if="is_show_find">
-                    <div class="keywords-item van-ellipsis" v-for="(item, index) in searchFind" :key="index" @click="handleClickSearchFindItem(item)">
-                        <template v-if="item.web_path">{{item.title}}</template>
-                    </div>
-                </div>
-                <p v-else class="co-999" style="text-align: center; padding: 0.40rem 0;">已隐藏搜索发现</p>
             </div>
         </template>
     </div>
@@ -65,11 +45,9 @@
 <script setup>
 import {ref, reactive, watch, computed, onMounted, onBeforeMount, onActivated} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useCookies } from "vue3-cookies";
 import $public from '@/utils/public'
 import {searchKeywordsAxios} from '@/api/search'
 
-const { cookies } = useCookies();
 const router = useRouter();
 const route = useRoute();
 
@@ -79,39 +57,6 @@ const info = reactive({
 });
 const search_keywords_optiosn = ref([]);
 const search_keywords_list = ref([]);
-const search_keywords_all_list = ref([]);
-const search_keywords_over_list = ref([]);
-const is_show_list_more = ref(false);
-const is_open_list = ref(false);
-const is_show_find = ref(true);
-
-
-const searchFind = [
-    {
-        "title": "\u91d1\u7ea2\u77f3",
-        "app_path": "tooduduapp:\/\/toodudu.com\/shopcrop?type=1&title=\u91d1\u7ea2\u77f3",
-        "web_path": "https:\/\/test-tooduduh5.ptdplat.com\/#\/supermarket?type=1&title=\u91d1\u7ea2\u77f3",
-        "mini_url": "\/pages\/zhuanti\/shopcrop?type=1&title=\u91d1\u7ea2\u77f3"
-    },
-    {
-        "title": "\u8367\u5149\u5242",
-        "app_path": "tooduduapp:\/\/toodudu.com\/try_center?title=\u8367\u5149\u5242",
-        "web_path": "https:\/\/test-tooduduh5.ptdplat.com\/#\/try?title=\u8367\u5149\u5242",
-        "mini_url": "\/pages\/try\/list?title=\u8367\u5149\u5242"
-    },
-    {
-        "title": "\u6eb6\u5242",
-        "app_path": "tooduduapp:\/\/toodudu.com\/integral?title=\u6eb6\u5242",
-        "web_path": "https:\/\/test-tooduduh5.ptdplat.com\/#\/integral?title=\u6eb6\u5242",
-        "mini_url": "https:\/\/test-tooduduh5.ptdplat.com\/#\/integral?title=\u6eb6\u5242"
-    },
-    {
-        "title": "\u949b\u767d\u7c89",
-        "app_path": "tooduduapp:\/\/toodudu.com\/goods?goods_id=1218&title=\u949b\u767d\u7c89",
-        "web_path": "https:\/\/test-tooduduh5.ptdplat.com\/#\/good?goods_id=1218&title=\u949b\u767d\u7c89",
-        "mini_url": "\/pages\/good\/detail?goods_id=1218&title=\u949b\u767d\u7c89"
-    }
-]
 
 watch(
     () => info.keywords,
@@ -135,12 +80,12 @@ const handleSearchConfirm = (value) => {
         search_placeholder.value = '';
     }
     const params = {};
-    let list = [];
+    let list = [...search_keywords_list.value];
     if (info.keywords != '') {
         params.keywords = info.keywords;
         info.keywords.trim() && list.unshift(info.keywords);
         list = [...new Set(list)];
-        search_keywords_list.value = list;
+        search_keywords_list.value = list.slice(0, 20); // 关键词只保存前20个
         localStorage.setItem('keywordList', JSON.stringify(search_keywords_list.value));
     }
     router.push({
@@ -163,17 +108,6 @@ const handleClickClearKeywords = () => {
     localStorage.removeItem('keywordList');
 };
 
-const handleClickShowMoreKeywords = () => {
-    is_open_list.value = !is_open_list.value;
-    search_keywords_list.value = is_open_list.value ? search_keywords_all_list.value : search_keywords_over_list.value;
-};
-
-const handleClickSearchFindItem = (item) => {
-    if (item.web_path) {
-        locationUrl(item.web_path);
-    }
-};
-
 onMounted(() => {
     if (route.query) {
         search_placeholder.value = route.query.placeholder || '';
@@ -182,9 +116,8 @@ onMounted(() => {
 });
 
 onBeforeMount(() => {
-    console.log('onBeforeMount')
     if (localStorage.getItem('keywordList')) {
-        search_keywords_all_list.value = search_keywords_list.value = JSON.parse(localStorage.getItem('keywordList'));
+        search_keywords_list.value = JSON.parse(localStorage.getItem('keywordList'));
     }
 });
 </script>

@@ -30,15 +30,20 @@
                                                 ></div>
                                                 <div v-else class="no-check" @click="chooseGoods(goods)"></div>
                                             </div>
-                                            <div class="img-box MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}" style="flex: none;"
-                                                 @click="toGood(goods.goods.goods_id)"></div>
+                                            <div class="img-box MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}" style="flex: none;" @click="toGood(goods.goods.no)"></div>
                                             <div class="goods-msg flex-1 s-flex flex-dir jc-bt">
-                                                <p class="elli-2 fs22 co-333 goods-name" @click="toGood(goods.goods.id)">{{goods.goods.name}}</p>
+                                                <p class="elli-2 fs22 co-333 goods-name" @click="toGood(goods.goods.no)">{{goods.goods.name}}</p>
+                                                <p class="elli-2 fs20 co-666 goods-name" v-if="goods.goods.sku_desc">{{goods.goods.sku_desc}}</p>
                                                 <div class="s-flex ai-fe jc-bt">
                                                     <!--价格 数量-->
-                                                    <form-price :price="goods.goods.price" :unit="goods.goods.unit"
-                                                                unit_color="#333" weight="600">
-                                                    </form-price>
+	                                                <div class="s-flex ai-ct">
+		                                                <form-price :price="goods.goods.price" :unit="goods.goods.unit" unit_color="#333" weight="600"></form-price>
+		                                                <template v-if="goods.goods.integral">
+															<span style="margin: 0 0.04rem;">+</span>
+			                                                <span class="co-red fs30 fw-b">{{goods.goods.integral}}</span>
+			                                                <span class="co-red fs24" style="margin-left: 0.02rem;">积分</span>
+														</template>
+	                                                </div>
 
                                                     <van-stepper v-model="goods.buy_number" :before-change="(value) => changeUpdate(value,goods,index)" :min="1" :max="goods.goods.can_quota === 1? goods.goods.quota_number : goods.goods.total" />
                                                 </div>
@@ -70,21 +75,18 @@
                                     <div class="selectrange">
                                         <div class="invalid-sign">失效</div>
                                     </div>
-                                    <div class="img-box s-flex ai-ct jc-ct MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}"
-                                         @click="goods.invalid_type=='out_of_stock' || goods.invalid_type=='promote_change' ? toGood(goods.goods.id) : ''"
-                                    >
-                                        <img v-if="goods.invalid_type=='out_of_stock'" class="nogood" src="@/assets/images/cart/nogood.png" alt="">
+                                    <div class="img-box s-flex ai-ct jc-ct MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}" @click="goods.goods.invalid_type=='out_of_stock' ? toGood(goods.goods.no) : ''">
+                                        <img v-if="goods.goods.invalid_type=='out_of_stock'" class="nogood" src="@/assets/images/cart/nogood.png" alt="">
                                     </div>
                                     <div class="goods-msg flex-1 s-flex flex-dir jc-bt">
                                         <p class="elli-2 fs22 co-333 goods-name invalid-name"
-                                           @click="goods.invalid_type=='out_of_stock' || goods.invalid_type=='promote_change' ? toGood(goods.goods_id) : ''">{{goods.goods.name}}</p>
+                                           @click="goods.goods.invalid_type=='out_of_stock' ? toGood(goods.goods.no) : ''">{{goods.goods.name}}</p>
                                         <!--失效原因-->
                                         <div class="fs20 co-333">
-                                            {{goods.invalid_type=='is_delete' ? '该商品已不能购买,请联系商家处理哦！' : (goods.invalid_type=='out_of_stock' ? '该商品已售罄,请选购其他商品购买吧！': '该商品的促销模式已改变,请重新选购')}}
+                                            {{goods.goods.invalid_type=='status_not_sale' ? '该商品已下架' : (goods.goods.invalid_type=='out_of_stock' ? '该商品已售罄,请选购其他商品购买吧！': '该商品不支持购买')}}
                                         </div>
                                         <div class="s-flex ai-fe jc-fe">
-                                            <van-button color="#F71111" plain round v-if="goods.invalid_type=='promote_change'" @click="toGood(goods.goods_id)">重选</van-button>
-                                            <van-button color="#F71111" plain round v-else-if="goods.invalid_type=='out_of_stock'" @click="findSimilar(goods.cat_id, goods.goods.name)">找相似</van-button>
+                                            <van-button color="#F71111" plain round v-if="goods.invalid_type=='out_of_stock'" @click="findSimilar(goods.cat_id, goods.goods.name)">找相似</van-button>
                                         </div>
                                     </div>
                                 </div>
@@ -146,24 +148,27 @@
                     ></div>
                     <div v-else class="no-check M20" @click="selectAllGoods"></div>
                     <span class="fs24 sele-all">全选</span>
-                    <span class="ML20 fs28 co-333">合计: <span class="fs22">￥</span>{{total_price.toString().split('.')[0]}}<span class="fs22">.{{total_price.toString().split('.')[1] ? total_price.toString().split('.')[1] : '00'}}</span></span>
+                    <span class="ML20 fs28 co-333">合计:
+	                    <template v-if="total_price || (!total_price && !total_integral)">
+		                     <span class="fs22">￥</span>{{total_price.toString().split('.')[0]}}<span class="fs22">.{{total_price.toString().split('.')[1] ? total_price.toString().split('.')[1] : '00'}}</span>
+	                    </template>
+	                    <template v-if="total_integral">
+		                    <span class="fs22" style="margin: 0 0.02rem;">+</span>
+		                    <span class="fs22">{{total_integral}}</span>积分
+	                    </template>
+                    </span>
                 </div>
                 <section class="to-buy co-999 fs24 btn-gradient" @click="toBuy">去结算({{goods_count < 100 ? goods_count : '99+'}})</section>
             </div>
             <div v-else class="footer-content s-flex ai-ct bg-fff jc-bt" :class="[hasBack ? 'footer-act' : '']">
                 <section class="s-flex ai-ct">
                     <div v-if="all_isSelect" class="no-check M20 check-grey"></div>
-                    <div
-                        v-else-if="selectAll"
-                        class="iconfont checkbox M20"
-                        @click="selectAllGoods"
-                    ></div>
+                    <div v-else-if="selectAll" class="iconfont checkbox M20" @click="selectAllGoods"></div>
                     <div v-else class="no-check M20" @click="selectAllGoods"></div>
                     <span class="fs24 sele-all">全选</span>
                 </section>
                 <section class="s-flex jc-fe ai-ct">
                     <div class="s-flex ai-ct" v-if="invalid_goods && invalid_goods.length>0">
-                        <!--<i class="iconfont" style="color:#F71111">&#xe68b;</i>-->
                         <img src="@/assets/images/cart/clear.png" alt="" style="width:0.24rem;height:0.25rem;">
                         <span class="fs22 ML10" style="color: var(--red-color)" @click="clearInvalid">清空失效宝贝</span>
                     </div>
@@ -172,35 +177,6 @@
                 </section>
             </div>
         </div>
-        <van-popup
-            v-model:show="coupon_popup"
-            round
-            position="bottom"
-            :close-on-click-overlay="false"
-            :style="{ 'height': '6.8rem' }"
-        >
-            <div class="coupon-title flex">
-                <div class="coupon-fixed">
-                    <h3 class="fs32 flex-1 fw-b">优惠券</h3>
-                    <img src="@/assets/images/cart/close.png" alt="" @click="coupon_popup=false">
-                </div>
-            </div>
-            <div class="list-box">
-                <div class="coupon-list" :class="[item.status ? 'coupon-act' : '']" v-for="item in coupon_list" @click="receiveCoupon(item)">
-                    <div class="s-flex ai-ct">
-                        <template v-if="item.status">
-                            <form-price :price="item.money" color="var(--color-text)" sign_size="30" INT_size="60" DF_size="30" class="van-ellipsis" style="max-width: 3.5rem;"></form-price>
-                        </template>
-                        <template v-else>
-                            <form-price :price="item.money" color="var(--red-color)" sign_size="30" INT_size="60" DF_size="30" class="van-ellipsis" style="max-width: 3.5rem;"></form-price>
-                        </template>
-                        <span class="new-guest" v-if="item.is_new_guest == '1'">新客专享</span>
-                    </div>
-                    <p class="limit co-333 fs24">满{{item.min_amount}}{{item.style_type == 3 ? item.unit : '元'}}可用<span class="xian" v-if="item.info">（{{item.info}}）</span></p>
-                    <p class="fs18 co-666">{{item.start_time}}-{{item.end_time}}</p>
-                </div>
-            </div>
-        </van-popup>
     </div>
 </template>
 
@@ -211,9 +187,9 @@ import {
     changeNumberAxios,
     deleteAxios,
     editByGoodsAxios,
-    emptyInvalidAxios, getCouponAxios,
+    emptyInvalidAxios,
     getDataAxios, getZhiRecommendAxios,
-    newAddAttensionAxios, placeOrderAxios, usercouponAddAxios
+    newAddAttensionAxios, placeOrderAxios
 } from "@/api/cart.js";
 import { showToast } from 'vant';
 import RecommendColumn from '@/components/recommendColumn/RecommendColumn'
@@ -230,15 +206,13 @@ const hasBack = ref(false)
 const editAll = ref(false) //判断是否是最上方的编辑
 const hasLogin = ref(true)
 const selectAll = ref(false)
-// 优惠券
-const coupon_popup = ref(false)
-const coupon_list = ref([])
 
 const shopList = ref([])
 const invalid_goods = ref([])
 const recommend = ref([]) // 为你推荐
 
 const total_price = ref(0) // 结算金额
+const total_integral = ref(0) // 结算积分
 const goods_count = ref(0) // 结算数量
 
 const getData = () => {
@@ -250,15 +224,15 @@ const getData = () => {
                 invalid_goods.value = res.data.invalid_carts
                 shopList.value = res.data.valid_carts
                 total_price.value = res.data.total.total_price
+	            total_integral.value = res.data.total.total_integral
                 goods_count.value = res.data.total.check_count
             } else {
                 invalid_goods.value = []
                 shopList.value = []
                 total_price.value = 0
+	            total_integral.value = 0
                 goods_count.value = 0
             }
-
-
             countTotal()
         } else if (res.code == 403) {
             hasLogin.value = false
@@ -369,7 +343,7 @@ const chooseGoods = (item) => {
     item.is_check = item.is_check>0 ? 0 : 1
     selectAll.value = shopList.value.every(item => item.is_check)
 
-    editByGoodsAxios({goods_id: item.id, is_check: item.is_check,goods_sku_id:item.goods_sku_id})
+    editByGoodsAxios({goods_no: item.goods.no, is_check: item.is_check,goods_sku_id:item.goods_sku_id})
         .then((res) => {
             if (res.code == 200) {
                 countTotal()
@@ -385,10 +359,12 @@ const chooseGoods = (item) => {
 // 获取 结算价格 结算数量 是否全选 店铺是否选中
 const countTotal = () => {
     let totalPrice = 0
+    let totalIntegral = 0
     let goodsCount = 0
     shopList.value.forEach(item => {
         if(item.is_check === 1){
             totalPrice += Number(item.buy_number) * Number(item.goods.price)
+	        totalIntegral += Number(item.buy_number) * Number(item.goods.integral)
         }
     })
 
@@ -403,7 +379,7 @@ const countTotal = () => {
 
 //
 const changeUpdate = (value,goods,index) => {
-    changeNumberAxios({id:goods.id,goods_id:goods.goods.id,goods_sku_id:goods.goods_sku_id,buy_number:value}).then(res => {
+    changeNumberAxios({id:goods.id,goods_no:goods.goods.no,goods_sku_id:goods.goods_sku_id,buy_number:value}).then(res => {
         if (res.code == 200) {
             goods.buy_number = value
             countTotal()
@@ -421,17 +397,19 @@ const changeUpdate = (value,goods,index) => {
 
 // 全选
 const selectAllGoods = () => {
-    editByGoodsAxios({goods_id: 0, is_check: selectAll.value?0:1,goods_sku_id:0})
+    editByGoodsAxios({goods_no: 0, is_check: selectAll.value?0:1,goods_sku_id:0})
         .then((res) => {
             if (res.code == 200) {
                 selectAll.value = !selectAll.value
                 let totalPrice = 0
+	            let totalIntegral = 0
                 let goodsCount = 0
 
                 shopList.value.forEach(item => {
                     item.is_check = selectAll.value?1:0
                     if(item.is_check === 1){
                         totalPrice += Number(item.buy_number) * Number(item.goods.price)
+	                    totalIntegral += Number(item.buy_number) * Number(item.goods.integral)
                     }
                 })
 
@@ -481,49 +459,18 @@ const getRecommend = () => {
         })
 }
 
-// 领券
-const getCoupon = (item) => {
-    getCouponAxios({'seller_id': item.seller_id})
-        .then((res) => {
-            if (res.code == 200) {
-                coupon_list.value = res.data.data
-                coupon_popup.value = true
-            } else if (res.code == 403) {
-                appRoute('login')
-            } else {
-                showToast(res.message)
-            }
-        })
-}
-
-// 点击获取优惠券
-const receiveCoupon = (item) => {
-    usercouponAddAxios({seller_id: item.seller_id, id: item.id})
-        .then((res) => {
-            if(res.code == 200) {
-                showToast('领取成功！')
-                item.status = res.data.status
-                getCoupon(item)
-            } else if (res.code == 403) {
-                appRoute('login')
-            }  else {
-                showToast(res.message)
-            }
-        })
-}
-
 const toLogin = () => {
     appRoute('login')
 }
 
 // 去商品详情
-const toGood = (id) => {
-    appRoute('good', {}, {goods_id: id})
+const toGood = (no) => {
+    appRoute('good', {goods_no: no})
 }
 
 // 找相似
 const findSimilar = (cat_id, cat_name) => {
-    appRoute('search', {cat_id: cat_id, keywords: cat_name}, {})
+    appRoute('search', {cat_id: cat_id, keywords: cat_name})
 }
 
 // 结算
@@ -535,42 +482,6 @@ const toBuy = () => {
             } else if (res.code == 403) {
                 // 去登录
                 appRoute('login')
-            } else if (res.code == 1001) {
-                cns.$dialog.confirm({
-                    message: res.message,
-                    confirmButtonText: '去认证',
-                    cancelButtonText: '确认'
-                }).then(() => {
-                    appRoute('company_enter')
-                }).catch(() => {})
-            } else if (res.code == 1002) {
-                showToast({
-                    message: res.message,
-                    duration: 3000,
-                    onClose: () => {
-                        getData()
-                    }
-                })
-            }
-                // else if (res.code == 1003) {
-                //     for(let i = 0; i < res.data.message.length; i++) {
-                //         setTimeout(() => {
-                //             Toast({
-                //                 message: res.data.message[i],
-                //                 duration: 3000,
-                //                 onClose: () => {
-                //                     this.getData()
-                //                 }
-                //             })
-                //         }, i*3000)
-                //     }
-            // }
-            else if (res.code == 1004) {
-                cns.$dialog.alert({
-                    message: res.message
-                }).then(() => {
-                    getData()
-                }).catch(() => {})
             } else {
                 showToast(res.message)
             }
@@ -735,7 +646,7 @@ onMounted(() => {
                 }
             }
             .shop-box-section{
-                padding: 0.38rem 0 0.2rem 0.2rem;
+                padding: 0.2rem 0 0.2rem 0.2rem;
                 margin-top: 0.1rem;
                 border-radius: 0.2rem;
                 &.lose{
@@ -977,67 +888,6 @@ onMounted(() => {
                 color: var(--color-text);
                 font-size: 0.24rem;
                 border: 1px solid #C4C4C4;
-            }
-        }
-        :deep(.van-popup){
-            .coupon-title {
-                height: 1.47rem;
-                font-size: 0.32rem;
-                color: var(--color-text);
-                position: relative;
-                .coupon-fixed {
-                    padding: 0 0.25rem 0;
-                    height: 1.47rem;
-                    line-height: 1.47rem;
-                    font-size: 0.32rem;
-                    color: var(--color-text);
-                    position: fixed;
-                    width: 7.5rem;
-                    box-sizing: border-box;
-                    background: #fff;
-                    border-radius: 0.16rem 0.16rem 0 0;
-                    img {
-                        position: absolute;
-                        right: 0.28rem;
-                        top: 0.43rem;
-                        width: 0.36rem;
-                        height: 0.36rem;
-                    }
-                }
-            }
-            .list-box {
-                padding: 0 0.11rem 0.35rem;
-                .coupon-list {
-                    width: 7.28rem;
-                    height: 1.98rem;
-                    padding: 0.27rem 0 0.2rem 0.48rem;
-                    box-sizing: border-box;
-                    background: url('@/assets/images/cart/coupon-get.png') no-repeat 0 0 / 100% 100%;
-                    margin-bottom: 0.1rem;
-                    &.coupon-act{
-                        background: url('@/assets/images/cart/coupon-have.png') no-repeat 0 0 / 100% 100%;
-
-                    }
-                    .new-guest{
-                        padding: 4px 0.1rem;
-                        margin-left: 0.1rem;
-                        background: linear-gradient(to right, #FCB011, #FDC95E);
-                        border-radius: 0.1rem;
-                        font-size: 0.24rem;
-                        color: #ffffff;
-
-                        &.disabled {
-                            background: linear-gradient(to right, #CCCCCC, #DCDCDC);
-                        }
-                        .price, .limit {
-                            margin-top: 0.04rem;
-                            margin-bottom: 0.08rem;
-                        }
-                        .price, .xian {
-                            color: #F71111;
-                        }
-                    }
-                }
             }
         }
     }

@@ -159,7 +159,7 @@
 				</div>
 				<div style="padding: 0 0.2rem;" class="border-wrap">
 					<!--已选/地址/物流/服务-->
-					<section class="MT10 bg-fff goods-other">
+					<section class="MT20 bg-fff goods-other">
 						<div class="s-flex ai-ct jc-bt" @click="openSpecCard" v-if="skuParamList.length">
 							<template v-if="specName.length">
 								<div class="s-flex ai_fs">
@@ -192,7 +192,7 @@
 								<div class="other-cont">
 									<div class="s-flex ai-ct fs26" style="width: auto;line-height: normal;">
 										<img src="@/assets/images/good/location.png" alt="" style="position: relative;top: 0;">
-										<span>{{ limitAddress }} 地址</span>
+										<span>{{ selectAddress }}</span>
 									</div>
 								</div>
 							</div>
@@ -529,40 +529,36 @@
 					</div>
 					<div class="list_box address-list" style="padding: 0 0.2rem;">
 						<div class="list">
-							<div class="list-item" v-for="(item, index) in addressList" :key="index"
-							     :class="{ active: item.select }">
-								<div class="s-flex ai-ct" @click="clickAddressBack(item.address_id)"
+							<div class="list-item" v-for="(item, index) in addressList" :key="index" :class="{ active: item.select }">
+								<div class="s-flex ai-ct" @click="clickAddressBack(item.id, item)"
 								     style="border-bottom: 1px solid #D8D8D8;padding-bottom: 0.2rem;height: 1.6rem;box-sizing:border-box;">
 									<div class="s-flex flex-1 ai-ct">
 										<div class="address-info flex-1">
 											<p class="elli-2">
 												{{ item.province }}{{ item.city }}{{ item.district }}
-												{{ item.address }}</p>
+												{{ item.address_detail }}</p>
 											<div class="address-name s-flex">
-												<label class="elli-1">{{ item.consignee }}</label>
-												<span>{{ item.mobile.substr(0, 3) + '****' + item.mobile.substr(7) }}</span>
+												<label class="elli-1">{{ item.recipient_name }}</label>
+												<span>{{ item.recipient_phone.substr(0, 3) + '****' + item.recipient_phone.substr(7) }}</span>
 											</div>
 										</div>
 									</div>
 									<div style="width: 0.3rem;flex: none;">
 										<img style="width: 0.26rem;height: 0.19rem;"
 										     src="@/assets/images/good/address-select-g.png"
-										     alt="" v-if="pageInfo.address_id == item.address_id">
+										     alt="" v-if="pageInfo.address_id == item.id">
 									</div>
 								</div>
 								<div class="s-flex ai-ct jc-bt">
 									<div class="s-flex ai-ct">
-										<template v-if="item.used">
-											<img style="width: 0.3rem;height: 0.3rem;margin-right: 0.15rem;"
-											     src="@/assets/images/good/select.png" alt=""
-											     v-if="pageInfo.address_id == item.address_id">
+										<template v-if="item.is_default">
+											<img style="width: 0.3rem;height: 0.3rem;margin-right: 0.15rem;" src="@/assets/images/good/select.png" alt="" v-if="pageInfo.address_id == item.id">
 											<span class="fs26 co-red">已设为默认</span>
 										</template>
 									</div>
 									<div class="address-btn-contrl s-flex jc-fe" style="line-height: 0.78rem;">
 										<span @click="clickDeleteAddress(item,index)">删除</span>
-										<span
-											@click="router.push({ name: 'address_add', query: { address_id: item.address_id, type: 'edit', tag: item.address_type } })">修改</span>
+										<span @click="router.push({ name: 'addressForm', params: { id: item.id } })">修改</span>
 									</div>
 								</div>
 
@@ -573,14 +569,12 @@
 							<p>您还没有地址，快来添加吧～</p>
 						</div>
 						<div class="address-btn">
-							<router-link :to="{ name: 'address_add', query: { type: 'add' } }"
-							             class="address-add s-flex jc-ct">新增收货地址
-							</router-link>
+							<router-link :to="{ name: 'addressForm', params: { id: 0 } }" class="address-add s-flex jc-ct">新增收货地址</router-link>
 						</div>
 					</div>
 				</div>
 			</van-popup>
-			<van-popup v-model="showRemove" :close-on-click-overlay="false">
+			<van-popup v-model:show="showRemove" :close-on-click-overlay="false">
 				<div class="choose-add-address choose-remove-address">
 					<div class="view-h1">确定要删除地址吗？</div>
 					<div class="s-flex ai-ct">
@@ -602,6 +596,7 @@ import {ref, reactive, onMounted, onBeforeUnmount, nextTick, getCurrentInstance 
 import {useRoute, useRouter} from 'vue-router'
 import {useGoodStore} from "@/stores";
 import { getGoodData, goodsCollect } from '@/api/good'
+import { getAddress, deleteAddress, setAddressDefault } from "@/api/address.js";
 import $ from 'jquery'
 import shoppingCard from '@/components/shoppingCard/shoppingCard'
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -656,7 +651,6 @@ const carNum = ref(0)
 const chooseAttr = ref(false)
 const goodsAttr = ref({})
 const recommend = ref([])
-const recommendTitle = ref('')
 const bottomlineRecommend = ref(false)
 const pageRecommend = ref(1)
 const initFlag = ref(0)
@@ -685,6 +679,7 @@ const chatType = ref('shop')
 const showChatAction = ref(false)
 const chatActions = ref([])
 const propPopup = ref(false)
+const selectAddress = ref('请选择地址')
 
 const toEvaluate = (type)=> {
 	cns.appRoute('evaluate', {}, {'no': goodsNo, type})
@@ -731,18 +726,19 @@ const clickKeywords = (item) => {
 
 const clickDeleteAddress = (item, index) => {
 	showRemove.value = true
-	removeAddressId.value = item.address_id
+	removeAddressId.value = item.id
 }
 
 const clickAddOrRemoveAddressSure = () => {
-	cns.$http.postNotLoading('v3/address/delete', {address_id: removeAddressId.value}).then(res => {
+	deleteAddress({id: removeAddressId.value}).then(res => {
 		if (cns.$constant.isSuccessCode(res)) {
-			const index = addressList.value.findIndex(item => item.address_id == removeAddressId.value)
+			const index = addressList.value.findIndex(item => item.id == removeAddressId.value)
 			addressList.value.splice(index, 1)
 			showRemove.value = false
 			cns.$toast('删除成功')
 			if (pageInfo.value.address_id == removeAddressId.value) {
 				pageInfo.value.address_id = ''
+				selectAddress.value = '请选择地址'
 			}
 			removeAddressId.value = null
 		} else {
@@ -777,22 +773,23 @@ const handleBack = () => {
 	router.back(-1)
 }
 
-const clickAddressBack = (address_id) => {
-	if (pageInfo.value.address_id == address_id) {
+const clickAddressBack = (id, item) => {
+	if (pageInfo.value.address_id == id) {
 		return
 	}
 	addressPopup.value = false
-	pageInfo.value.address_id = address_id
+	pageInfo.value.address_id = id
 	addressList.value.forEach((item, index) => {
 		item.select = false
-		if (item.address_id == address_id) {
+		if (item.id == id) {
 			item.select = true
+			selectAddress.value = `${item.province} ${item.city} ${item.district}`
 		}
 	})
 }
 
 const changeAddress = () => {
-	cns.$http.doPost("v3/address/list", {}).then(res => {
+	getAddress().then(res => {
 		addressPopup.value = true
 		if (cns.$constant.isSuccessCode(res)) {
 			if (res.data.length > 0) {
@@ -1110,7 +1107,7 @@ onMounted(() => {
 	goodsNo.value = route.query.goods_no
 	skuId.value = route.query.sku_id
 	// 如果从新增收货地址来的，则打开选择收货地址
-	if (fromPath.value == 'address_add') {
+	if (fromPath.value == 'addressForm') {
 		changeAddress()
 	}
 	// 初始化

@@ -22,11 +22,11 @@
                                         stopOnLastSlide: false,
                                         disableOnInteraction: true,
                                     }"
-                                    @tap="handleClickSearch(navigation_data.search_data.items[currentIndex], 'history');"
+                                    @tap="handleClickSearch(navigation_data[currentIndex], 'history');"
                                     @slideChange="slideChange">
-                                <swiper-slide v-for="(item, index) in navigation_data.search_data.items" :key="index">
+                                <swiper-slide v-for="(item, index) in navigation_data" :key="index">
                                     <div class="s_flex" style="height: 0.66rem; line-height: 0.66rem;">
-                                        <p class="ellipsis-1">{{item.keywords}}</p>
+                                        <p class="ellipsis-1">{{item}}</p>
                                     </div>
                                 </swiper-slide>
                             </swiper>
@@ -176,11 +176,11 @@
                                     stopOnLastSlide: false,
                                     disableOnInteraction: true,
                                 }"
-                                @tap="handleClickSearch(navigation_data.search_data.items[currentIndex], 'history');"
+                                @tap="handleClickSearch(navigation_data[currentIndex], 'history');"
                                 @slideChange="slideChange">
-                                <swiper-slide v-for="(item, index) in navigation_data.search_data.items" :key="index">
+                                <swiper-slide v-for="(item, index) in navigation_data" :key="index">
                                     <div class="s_flex" style="height: 0.66rem; line-height: 0.66rem;">
-                                        <p class="ellipsis-1">{{item.keywords}}</p>
+                                        <p class="ellipsis-1">{{item}}</p>
                                     </div>
                                 </swiper-slide>
                             </swiper>
@@ -212,7 +212,8 @@ import $public from '@/utils/public'
 import {useRoute,useRouter} from 'vue-router'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
-import {cateAxios, navAxios} from "@/api/category.js";
+import {getCategory} from "@/api/category.js";
+import { searchKeywordsAxios } from '@/api/search.js'
 import { showToast } from 'vant';
 import { appRoute } from "@/router/appRoute";
 
@@ -229,8 +230,7 @@ const contentRef = ref(null)
 const isScroll = ref(false);
 
 const loading = ref(true)
-const navigation_data = reactive({})
-const categoryId = ref(route.query.id || 3)
+const navigation_data = ref([])
 const active = ref(0) // 左侧选中分类
 const serachPlaceholder = ref('搜索关键词')
 const searchKey = ref('')
@@ -260,17 +260,24 @@ const setSwiper = (swiper) => {
 }
 
 onMounted(() => {
-    getPageData();
     getData();
+	getKeywords()
     if (keyword_hot.value) {
         searchKey.value = keyword_hot.value;
     }
 });
 
+const getKeywords = () => {
+    searchKeywordsAxios().then(res => {
+        if (res.code == 200) {
+            navigation_data.value = [...res.data];
+        }
+    });
+};
 const getData = () => {
     noData.value = false;
     loading.value = true;
-    cateAxios().then(res => {
+    getCategory().then(res => {
         loading.value = false;
         noData.value = false;
         if (res.code == 200) {
@@ -306,14 +313,6 @@ const doubleScroll = $public.throttle(() => {
         }
     }
 },100)
-
-const routerBack = () => {
-    if (Object.keys(replaceObj.value).length) {
-        router.replace({ name: replaceObj.value.name, params: {}, query: replaceObj.value.query });
-    } else {
-        router.back();
-    }
-};
 
 const switchCategory = (id, name, index) => {
     isScroll.value = true
@@ -378,24 +377,10 @@ const to_detail = (its, itas) => {
         // 分类名称
         query = { 'cat_id': its.id, 'keywords': its.name };
     }
-    setTimeout(() => {
-        appRoute('search', query, {});
-    }, 100);
+	appRoute('search', query);
 };
-
-const getPageData = () => {
-    navAxios().then(res => {
-        if (res.code == 200) {
-            Object.assign(navigation_data,res.data)
-        } else {
-            showToast(res.message);
-        }
-    });
-};
-
 const handleClickSearch = (item, type) => {
-    console.log(item.keywords)
-    appRoute('search_history', {placeholder: item.keywords}, {});
+    appRoute('search_history', {placeholder: item});
 };
 
 const isScrolledToBottom = (element) => {
@@ -414,9 +399,9 @@ const isScrolledToBottom = (element) => {
     .search-item{
         width: 100%;
         height: 0.66rem;
-        background: #FFFFFF;
+        background: #F2F2F2;
         border-radius: 0.33rem;
-        border: 1px solid var(--main-color);
+	    border: 1px solid var(--main-color);
         .imgs{
             width: 0.4rem;
             height: 0.4rem;
@@ -478,7 +463,7 @@ const isScrolledToBottom = (element) => {
 .category {
     height: 100%;
     overflow: hidden;
-    background: #F8F8F8;
+	background: linear-gradient(to bottom, #fff, #f4f4f4);
     box-sizing: border-box;
 
     .content {
@@ -503,7 +488,7 @@ const isScrolledToBottom = (element) => {
 
                 .nav-list {
                     padding: 0 0.20rem;
-                    height: 1.1rem;
+                    height: 1rem;
                     span {
                         font-size: 0.28rem;
                         font-weight: 400;
@@ -519,7 +504,7 @@ const isScrolledToBottom = (element) => {
                     &.active {
                         span {
                             //font-size: 0.32rem;
-                            //font-weight: bold;
+                            font-weight: bold;
                             color: var(--main-color);
                         }
                     }

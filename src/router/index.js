@@ -39,7 +39,7 @@ const router = createRouter({
                   path: 'search',
                   name: 'search',
                   component: () => import('@/views/search/Index.vue'),
-                  meta:{keepAlive:true}
+                  meta:{keepAlive:false}
                 },
                 {
                   path: 'search/history',

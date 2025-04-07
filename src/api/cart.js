@@ -34,9 +34,13 @@ export function usercouponAddAxios(param){
 }
 
 export function placeOrderAxios(){
-  return $http.doGet('v1/cart/place_order')
+  return $http.doPost('v1/cart/place_order')
 }
 
 export function changeNumberAxios(param){
   return $http.doPost('v1/cart/change_number',param)
+}
+
+export function addGoodsToCart(param){
+  return $http.doPost('v1/cart/store',param)
 }
