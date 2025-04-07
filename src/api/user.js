@@ -29,10 +29,10 @@ export function updatePassword(info, action) {
     return $http.doPost(URL, info)
 }
 
-export function verifyPhone(info) {
-    return $http.doPost('v1/primary/phone', info)
+export function verifyPhone(info) {//验证手机号
+    return $http.doPost('v1/check/action/code', info)
 }
 
-export function updatePhone(info) {
+export function updatePhone(info) {//绑定/修改手机号
     return $http.doPost('v1/account_set/phone', info)
 }

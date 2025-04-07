@@ -89,7 +89,7 @@ const onSubmitGet = (values) => {
         cns.$toast('请输入短信验证码')
         return
     }
-    values.phone = route.query.phone ? route.query.phone : phone.value
+    values.phone = isVeryPhone.value ? phone.value : route.query.phone
     if (isVeryPhone.value){//绑定手机号
         submitPhone(values)
     }else{//验证手机号
@@ -97,7 +97,12 @@ const onSubmitGet = (values) => {
     }
 }
 const doVerifyPhone = (values) => {
-    verifyPhone(values).then(res => {
+    let info = {
+        phone:values.phone,
+        action:'phone-verify',
+        code:values.code
+    }
+    verifyPhone(info).then(res => {
         if (cns.$constant.isSuccessCode(res)) {
             isVeryPhone.value = true
             isFirst.value = true
@@ -144,7 +149,7 @@ const sendPhoneCode = () => {
     }
     let info = {
         phone: route.query.phone ? route.query.phone : phone.value,
-        action: phoneType.value
+        action: isVeryPhone.value?'phone-edit':'phone-verify'
     }
     submitSendCode(info)
 }
@@ -165,8 +170,8 @@ const submitSendCode = (info)=>{
 
 onMounted(() => {
     phoneType.value = route.query.type?route.query.type:'phone-verify'
-    if (route.query.phone) {
-        phone.value = cns.$public.getPrivacyPhone(route.query.phone)
+    if (route.query.type == 'phone-edit' && route.query.phone) {
+        phone.value = route.query.phone
         isVeryPhone.value = false
     }
     title.value = phoneType.value == 'phone-edit' ? '修改手机号' : '绑定手机号'

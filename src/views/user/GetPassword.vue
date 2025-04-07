@@ -155,17 +155,7 @@
 		    phone: route.query.phone ? route.query.phone : phone.value,
 		    action: passwordType.value
 	    }
-		if(!route.query.phone){
-			checkPhone(phone.value).then(res => {
-				if (cns.$constant.isSuccessCode(res) && res.data.is_register) {
-					submitSendCode(info)
-				} else {
-					cns.$toast('该手机号未注册，请重新输入')
-				}
-			})
-		}else {
-			submitSendCode(info)
-		}
+        submitSendCode(info)
     }
 
 	const submitSendCode = (info)=>{

@@ -3,9 +3,9 @@
         <common-header :title="title" :is_show_more="false"></common-header>
         <nav class="user-center" v-if="page_loading">
             <van-cell-group style="margin-top: 0.2rem;border-radius: 0.2rem;overflow: hidden">
-                <van-cell title="登录密码" value="* 建议您定期修改密码以确保帐户的安全" is-link @click="appRoute('getPassword',{},{type:'password-edit'})"/>
-                <van-cell title="绑定手机号" value="* 为了您的账户安全请尽快绑定手机号码" is-link @click="appRoute('updatePhone')" v-if="!phone"/>
-                <van-cell title="修改手机号" :value="mobile_phone" is-link v-if="phone" @click="appRoute('updatePhone',{phone:phone})"/>
+                <van-cell title="登录密码" value="* 建议您定期修改密码以确保帐户的安全" is-link @click="appRoute('getPassword',{type:'password-edit'})"/>
+                <van-cell title="绑定手机号" value="* 为了您的账户安全请尽快绑定手机号码" is-link @click="appRoute('updatePhone',{type:'phone-verify'})" v-if="!phone"/>
+                <van-cell title="修改手机号" :value="mobile_phone" is-link v-if="phone" @click="appRoute('updatePhone',{type:'phone-edit',phone:mobile_phone})"/>
             </van-cell-group>
         </nav>
     </div>
@@ -27,7 +27,7 @@ const getUserInfo = () => {
     getUserInfoAxios().then(res => {
         page_loading.value=true
         if (cns.$constant.isSuccessCode(res)) {
-            mobile_phone.value = res.data.mobile_phone
+            mobile_phone.value = cns.$public.getPrivacyPhone(res.data.phone)
             phone.value = res.data.phone
         }else if(cns.$constant.isUnLoginCode(res)){
             // 去登录
