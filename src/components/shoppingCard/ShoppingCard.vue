@@ -47,7 +47,7 @@
                             <template v-if="i===0">
                                 <ul class="paydate s-flex flex-wrap sku-img">
                                     <li :class="{'active':value.selected,'no-mum':value.hidden}" v-for="(value,j) in param.values"  :key="`value${value.id}`" @click="getSkuParam(i,j)">
-                                        <img :src="value.thumb?value.thumb:goodsInfo.goods_thumb" alt="">
+                                        <img :src="value.thumb?value.thumb:mainImg" alt="">
                                         <div class="s-flex ai-ct jc-ct">
                                             <p class="elli-2 fs24 co-3D">{{ value.name }}</p>
                                         </div>
