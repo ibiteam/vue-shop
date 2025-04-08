@@ -169,6 +169,9 @@
         skuPrice.value.integral = newVal.integral
     }, {deep : true})
 
+    watch(() => props.sku_id, (newVal) => {
+		skuId.value = newVal
+    })
     watch(chooseAttr, (newVal) => {
         if (!newVal) {
 	        emit('closeChooseAttr', { specName: specName.value })
@@ -216,7 +219,6 @@
     watch(() => props.skuParamList, (newVal) => {
         skuParamList.value = JSON.parse(JSON.stringify(newVal))
         specName.value = []
-        skuId.value = props.sku_id
         skuParamList.value.length && skuParamList.value.forEach((d) => {
             d.values.forEach(s => {
                 if (s.selected) {
@@ -283,7 +285,8 @@
 	            maxNumber.value = props.goodsInfo.can_quota ? props.goodsInfo.quota_number : goodsNumber.value ? goodsNumber.value : 0 // 当前可用库存
 	            count(res.data.price)
 	            skuPrice.value = {
-                    price: res.data.price
+                    price: res.data.price,
+		            integral: res.data.integral
                 }
 				skuId.value = res.data.id
                 nextTick(() => {
@@ -458,7 +461,7 @@
 						addGoodsToCart(info).then((ret) => {
 							chooseAttr.value = false
 							if (isSuccessCode(ret)) {
-								cns.$toast(ret.message)
+								cns.$toast('添加成功')
 								emit('changeCar', ret.data.number)
 							} else {
 								chooseAttr.value = false

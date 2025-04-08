@@ -32,8 +32,8 @@
                                             </div>
                                             <div class="img-box MR20" :style="{backgroundImage:'url('+ goods.goods.image +')'}" style="flex: none;" @click="toGood(goods.goods.no)"></div>
                                             <div class="goods-msg flex-1 s-flex flex-dir jc-bt">
-                                                <p class="elli-2 fs22 co-333 goods-name" @click="toGood(goods.goods.no)">{{goods.goods.name}}</p>
-                                                <p class="elli-2 fs20 co-666 goods-name" v-if="goods.goods.sku_desc">{{goods.goods.sku_desc}}</p>
+                                                <p class="elli-2 fs22 co-333 goods-name MT10" @click="toGood(goods.goods.no)">{{goods.goods.name}}</p>
+                                                <p class="elli-2 fs20 co-666 goods-attr" v-if="goods.goods.sku_desc">{{goods.goods.sku_desc}}</p>
                                                 <div class="s-flex ai-fe jc-bt">
                                                     <!--价格 数量-->
 	                                                <div class="s-flex ai-ct">
@@ -192,6 +192,7 @@ import {
     newAddAttensionAxios, placeOrderAxios
 } from "@/api/cart.js";
 import { showToast } from 'vant';
+import { appRoute } from "@/router/appRoute.js";
 import { isUnLoginCode, isSuccessCode} from "@/utils/constant.js";
 import RecommendColumn from '@/components/recommendColumn/RecommendColumn'
 
@@ -366,6 +367,7 @@ const countTotal = () => {
         if(item.is_check === 1){
             totalPrice += Number(item.buy_number) * Number(item.goods.price)
 	        totalIntegral += Number(item.buy_number) * Number(item.goods.integral)
+	        goodsCount += Number(item.buy_number)
         }
     })
 
@@ -610,10 +612,18 @@ onMounted(() => {
                         width: 4rem;
                         overflow: hidden;
                         .goods-name{
-                            height: 0.58rem;
+                            max-height: 0.58rem;
                             line-height: 0.3rem;
-
                         }
+	                    .goods-attr{
+		                    background: #EDEDED;
+		                    width: fit-content;
+		                    height: fit-content;
+		                    max-height: 0.7rem;
+		                    padding: 0.05rem 0.15rem;
+		                    line-height: 0.3rem;
+		                    border-radius: 0.06rem;
+	                    }
                         .invalid-name{
                             color: rgba(51, 51, 51, 0.5);
                         }
@@ -794,7 +804,7 @@ onMounted(() => {
                             border-color: transparent;
                         }
                         .goods-name{
-                            height: 0.58rem;
+                            max-height: 0.58rem;
                             line-height: 0.3rem;
                         }
                         .limit-sty{

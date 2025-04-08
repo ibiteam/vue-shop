@@ -329,7 +329,7 @@
 								<div><img class="footer-icon2" src="@/assets/images/good/good-service.png"/></div>
 								<p class="co-333 fs24">客服</p>
 							</a>
-							<div class="shop_car flex-1 s-flex flex-dir ai-ct jc-ct breathe" @click="toCart">
+							<div class="shop-car flex-1 s-flex flex-dir ai-ct jc-ct breathe" @click="toCart">
 								<div style="position: relative;">
 									<img class="footer-icon3" src="@/assets/images/good/good-car.png"/>
 									<span v-if="!!carNum" class="car-num fs20">{{ carNum }}</span>
@@ -381,9 +381,10 @@
 					<section class="footer-menu flex">
 						<div class="s-flex bg-fff" style="width: 3.36rem;">
 							<div class="openShop flex-1 s-flex flex-dir ai-ct jc-ct breathe">
-								<div><img class="footer-icon1"
-								          src="@/assets/images/good/shop.png"/></div>
-								<p class="co-333 fs24">进店</p>
+								<div>
+									<img src="@/assets/images/good/attention-no.png" alt="" style="width: 0.4rem;">
+								</div>
+								<p class="co-333 fs24">收藏</p>
 							</div>
 							<a class="attention flex-1 s-flex flex-dir ai-ct jc-ct breathe">
 								<div><img class="footer-icon2"
@@ -595,7 +596,7 @@
 import {ref, reactive, onMounted, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {useGoodStore} from "@/stores";
-import { getGoodData, goodsCollect } from '@/api/good'
+import {getGoodData, goodsCollect, updateSku} from '@/api/good'
 import { getAddress, deleteAddress, setAddressDefault } from "@/api/address.js";
 import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 import $ from 'jquery'
@@ -720,6 +721,16 @@ const selectSkuFirst = (item)=>{
 	})
 	specName.value[0] = item.name
 	specId.value[0] = item.id
+	updateSku({no: goodsInfo.value.no, unique: specId.value.join('_')}).then((res) => {
+		if (isSuccessCode(res)) {
+			skuShopPrice.value.price = res.data.price
+			skuShopPrice.value.integral = res.data.integral
+			skuId.value = res.data.id
+		} else {
+			cns.$toast(res.message)
+			isSkuIng.value = false
+		}
+	})
 }
 const clickKeywords = (item) => {
 	cns.appRoute('search_history', {placeholder: item.keywords, url: item.url})
@@ -880,7 +891,7 @@ const onScrollRecommend = () => {
 }
 
 const attention = () => {
-	goodsCollect({no: goodsInfo.value.goods_no, value: !isAttention.value}).then((res) => {
+	goodsCollect({no: goodsInfo.value.no, value: !isAttention.value}).then((res) => {
 		if (isSuccessCode(res)) {
 			isAttention.value = !isAttention.value
 			cns.$toast(res.message)
@@ -935,7 +946,7 @@ const unusual = () => {
 	getData()
 }
 const reToDetail = (data) => {
-	cns.appRoute('good', {goods_no: data.goods_no})
+	cns.appRoute('good', {goods_no: data.no})
 }
 const toCart = () => {
 	cns.appRoute('cart', {hasBack: true})
