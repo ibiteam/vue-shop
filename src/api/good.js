@@ -14,6 +14,6 @@ export function checkNumber({no, sku_id, number}){
 
 export function goodsCollect({ no, value }) {
     const URL = value ? 'v1/goods/follow' : 'v1/goods/unfollow'
-    return $http.doGet(URL, { no })
+    return $http.doPost(URL, { no })
 }
 

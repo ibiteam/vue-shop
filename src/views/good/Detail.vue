@@ -46,14 +46,10 @@
 			<van-sticky :offset-top="0.05">
 				<div class="goods-header s-flex ai-ct jc-bt">
 					<em class="iconfont co-333" style="font-size: 21px;" @click="handleBack">&#xe605;</em>
-					<div class="view-input s-flex flex-1">
+					<div class="view-input s-flex flex-1" @click="clickToSearch()">
 						<div class="iconfont" style="font-size: 16px;color: #bbb;">&#xe7c3;</div>
-						<div style="font-size: 14px;min-width: 4rem;" v-if="searchWordList.length">
-							<swiper ref="mySwiper" :options="swiperOptions" style="height: 0.6rem;">
-								<swiper-slide v-for="(item,index) in searchWordList" :key="`kb${index}`">
-									<span style="font-size: 14px;color: #333;" @click="clickKeywords(item)">{{ item.keywords }}</span>
-								</swiper-slide>
-							</swiper>
+						<div style="font-size: 14px;min-width: 4rem;">
+							<span style="font-size: 14px;color: #333;">请输入关键词搜索</span>
 						</div>
 					</div>
 					<em class="iconfont co-333" style="font-size: 21px;display:block;width: 21px;"></em>
@@ -322,7 +318,7 @@
 									<img src="@/assets/images/good/attention.png" alt="" style="width: 0.4rem;" v-if="isAttention">
 									<img src="@/assets/images/good/attention-no.png" alt="" style="width: 0.4rem;" v-else>
 								</div>
-								<p class="co-333 fs24">{{ isAttention ? '取消收藏' : '收藏' }}</p>
+								<p class="co-333 fs24">{{ isAttention ? '收藏' : '收藏' }}</p>
 							</div>
 
 							<a @click="showChatActionFunc('shop')" class="attention flex-1 s-flex flex-dir ai-ct jc-ct breathe">
@@ -595,13 +591,13 @@
 <script setup>
 import {ref, reactive, onMounted, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue'
 import {useRoute, useRouter} from 'vue-router'
+
 import {useGoodStore} from "@/stores";
 import {getGoodData, goodsCollect, updateSku} from '@/api/good'
-import { getAddress, deleteAddress, setAddressDefault } from "@/api/address.js";
+import { getAddress, deleteAddress } from "@/api/address.js";
 import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 import $ from 'jquery'
 import shoppingCard from '@/components/shoppingCard/shoppingCard'
-import { Swiper, SwiperSlide } from 'swiper/vue';
 import skuSelect from './SkuSelect.vue'
 import shopRate from './ShopRate.vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
@@ -614,21 +610,6 @@ const recommendRef = ref(null)
 const detailRef = ref(null)
 const commentRef = ref(null)
 // 响应式数据
-const searchWordList = ref([])
-const swiperOptions = reactive({
-	direction: 'vertical',
-	slidesPerView: 1,
-	loop: true,
-	autoplay: {
-		delay: 5000
-	},
-	on: {
-		click: function () {
-			const realIndex = this.realIndex
-			clickKeywords(searchWordList.value[realIndex])
-		}
-	}
-})
 const banner = ref({})
 const evaluate = ref({
 	items: [],
@@ -732,8 +713,8 @@ const selectSkuFirst = (item)=>{
 		}
 	})
 }
-const clickKeywords = (item) => {
-	cns.appRoute('search_history', {placeholder: item.keywords, url: item.url})
+const clickToSearch = () => {
+	cns.appRoute('search_history', {placeholder: ''})
 }
 
 const clickDeleteAddress = (item, index) => {
@@ -1033,11 +1014,6 @@ const getData = () => {
 	getGoodData(goodsNo.value, skuId.value).then((res) => {
 		if (isSuccessCode(res)) {
 			placeholder.value = false
-			// searchWordList.value = res.data.header.search_word_list
-			//if (searchWordList.value.length && searchWordList.value.length == 1) {
-			//	swiperOptions.loop = false
-			//	swiperOptions.autoplay = false
-			//}
 			banner.value = res.data.banner
 
 			recommend.value = res.data.center.recommend
