@@ -2,318 +2,148 @@
   <div class="myorder">
     <common-header id="orderHead" :title="title"></common-header>
     <template v-if="!page_load">
-<!--      <div class="order-content">-->
-<!--        <van-sticky :offset-top="46" class="order-tab-box" @scroll="changeSticky">-->
-<!--          <div class="s-flex ai-ct" ref="orderTab" style="background: #f8f8f8">-->
-<!--            <van-tabs v-model="tabActive" class="flex-1" @click="clickTabItem">-->
-<!--              <van-tab title="全部" name="0"></van-tab>-->
-<!--              <van-tab title="待确认" name="5"></van-tab>-->
-<!--              <van-tab title="待付款" name="1"></van-tab>-->
-<!--              <van-tab title="待发货" name="4"></van-tab>-->
-<!--              <van-tab title="待收货" name="2"></van-tab>-->
-<!--            </van-tabs>-->
-<!--            <div class="order-tab-icon" v-if="show_search_icon" @click="toSearch">-->
-<!--              <img src="https://cdn.toodudu.com/uploads/2023/10/26/order_search.png" alt="">-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </van-sticky>-->
-<!--        <template v-if="!noData">-->
-<!--          <van-list-->
-<!--              v-model="loading"-->
-<!--              :finished="finished"-->
-<!--              :finished-text="has_recommend?'':'没有更多订单了~'"-->
-<!--              @load="loadMore"-->
-<!--              offset="0"-->
-<!--          >-->
-<!--            <div class="order-list" v-if="!order_load">-->
-<!--              <div class="order-item" v-for="(item,index) in orderListData" :key="index">-->
-<!--                &lt;!&ndash;订单头部&ndash;&gt;-->
-<!--                <div class="order-info s-flex jc-bt">-->
-<!--                  <div class="fs24 co_666">订单号：{{ item.order_info.order_sn }}</div>-->
-<!--                  <div class="fs24 co_666">{{ item.order_info.add_time }}</div>-->
-<!--                </div>-->
-<!--                <div class="order-main">-->
-<!--                  &lt;!&ndash;拼团倒计时&ndash;&gt;-->
-<!--                  <div class="group-time s-flex jc-ct ai-ct" v-if="item.group && item.group.end_time > item.group.now_time">-->
-<!--                    <div class="group-time-left"></div>-->
-<!--                    <div class="group-time-txt ai-ct">距结束:</div>-->
-<!--                    <van-count-down :time="item.group.end_time | getTime(item.group.now_time)" @finish="countDownFinish">-->
-<!--                      <template #default="timeData">-->
-<!--                        <div class="model-time s-flex co_redF7" id="time">-->
-<!--                          <div class="day fs30 co_redF7 fw_b" v-if="timeData.days">{{-->
-<!--                              timeData.days | timeFilter-->
-<!--                            }}-->
-<!--                          </div>-->
-<!--                          <span v-if="timeData.days" class="fs30 co_redF7 fw_b">天</span>-->
-<!--                          <div class="shi fs30 co_redF7 fw_b">{{ timeData.hours | timeFilter }}</div>-->
-<!--                          :-->
-<!--                          <div class="fen fs30 co_redF7 fw_b">{{ timeData.minutes | timeFilter }}</div>-->
-<!--                          :-->
-<!--                          <div class="miao fs30 co_redF7 fw_b">{{ timeData.seconds | timeFilter }}</div>-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                    </van-count-down>-->
-<!--                    <div class="group-time-right"></div>-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash;店铺&ndash;&gt;-->
-<!--                  <div class="shop-box s-flex jc-bt">-->
-<!--                    <div class="shop-name s-flex" v-if="item.order_info.type == 'integral_shop'" @click="routerPath('integral_shop')">-->
-<!--                      <span class="elli_1">积分商城</span>-->
-<!--                      <em class="iconfont">&#xe60b;</em>-->
-<!--                    </div>-->
-<!--                    <div class="shop-name s-flex" v-else @click="routerPath('shop',{'seller_id': item.order_info.seller_id})">-->
-<!--                      <span class="elli_1">{{ item.order_info.shop_name }}</span>-->
-<!--                      <em class="iconfont">&#xe60b;</em>-->
-<!--                    </div>-->
-<!--                    <div class="order-type" :class="item.order_info.msg_gray?'order-type-grey':''">{{ item.order_info.msg }}</div>-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash;商品&ndash;&gt;-->
-<!--                  <div class="good-box" v-if="item.goods && item.goods.length>0">-->
-<!--                    <template v-for="(childItem,childIndex) in item.goods" v-if="(item.show_more_goods && childIndex > 2) || childIndex < 3">-->
-<!--                      <div class="good-model s-flex jc-bt" @click="routerPath('order',item)">-->
-<!--                        <div class="good-model-left flex-1 s-flex">-->
-<!--                          <van-image :src="childItem.image" class="good-img">-->
-<!--                            <template v-slot:loading>-->
-<!--                              <img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="" class="re-img">-->
-<!--                            </template>-->
-<!--                            <template v-slot:error>-->
-<!--                              <img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="" class="re-img">-->
-<!--                            </template>-->
-<!--                          </van-image>-->
-<!--                          <div class="ML20 flex-1" style="max-width: 3.1rem">-->
-<!--                            <div class="fs28 co_333 fw_b" :class="childItem.goods_attr?'elli_1':'elli_2'">{{ childItem.goods_name }}</div>-->
-<!--                            <div class="fs24 co_666 MT20 word-b">{{ childItem.goods_attr }}</div>-->
-<!--                            <div class="good-presell-desc" v-if="childIndex==0 && item.pre_info.pre_sale_type == 'buy_type_deposit'">{{ item.pre_info.logistics_desc }}</div>-->
-<!--                          </div>-->
-<!--                        </div>-->
-<!--                        <div class="good-model-right">-->
-<!--                          <form-price :need_DF="true" :price="childItem.goods_price" sign_size="24" INT_size="32" DF_size="24" weight="600" color="#333"></form-price>-->
-<!--                          <div class="MT20 co_666">X{{ childItem.goods_number }}{{ childItem.unit?childItem.unit:'' }}</div>-->
-<!--                          <div class="MT20 refund-desc" v-if="childItem.is_show_after_sales == '2' || childItem.is_show_after_sales == '3'">{{ childItem.is_show_after_sales == '2' ? '退款中' : '退款成功' }}</div>-->
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                      <template v-if="childItem.children && childItem.children.length > 0">-->
-<!--                        <div class="good-model s-flex jc-bt" @click="routerPath('order',item)"-->
-<!--                             v-for="goodchild in childItem.children">-->
-<!--                          <div class="good-model-left flex-1 s-flex">-->
-<!--                            <van-image :src="goodchild.image" class="good-img">-->
-<!--                              <template v-slot:loading>-->
-<!--                                <img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="" class="re-img">-->
-<!--                              </template>-->
-<!--                              <template v-slot:error>-->
-<!--                                <img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="" class="re-img">-->
-<!--                              </template>-->
-<!--                            </van-image>-->
-<!--                            <div class="ML20 flex-1" style="max-width: 3.1rem">-->
-<!--                              <div class="elli_1 fs28 co_333 fw_b">{{ goodchild.goods_name }}</div>-->
-<!--                            </div>-->
-<!--                          </div>-->
-<!--                          <div class="good-model-right">-->
-<!--                            <div class="gift-txt">赠品</div>-->
-<!--                            <form-price :need_DF="true" price="20" sign_size="24" INT_size="32" DF_size="24" weight="600" color="#999" style="text-decoration: line-through"></form-price>-->
-<!--                            <div class="co_666" style="margin-top: 0.16rem">X{{ goodchild.goods_number }}{{ goodchild.unit?goodchild.unit:'' }}</div>-->
-<!--                          </div>-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                    </template>-->
-<!--                    <div class="good-more s-flex" v-if="item.goods.length>3 && !item.show_more_goods" @click="showMoreGoods(index)">-->
-<!--                      <span>查看剩余{{ item.goods.length - 3 }}个商品</span>-->
-<!--                      <em class="iconfont" style="margin-left: 0.07rem">&#xe604;</em>-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash;物流模块&ndash;&gt;-->
-<!--                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics && item.logistics.ship_info && item.logistics.ship_info.context" @click="routerPath('wuliu', item)">-->
-<!--                    <div class="s-flex ai-ct flex-1">-->
-<!--                      <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">-->
-<!--                      <div class="wuliu-type">{{ item.logistics.ship_info.status }}</div>-->
-<!--                      <div class="wuliu-desc flex-1">{{ item.logistics.ship_info.context }}</div>-->
-<!--                    </div>-->
-<!--                    <em class="iconfont">&#xe60b;</em>-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash;评价模块&ndash;&gt;-->
-<!--                  <div class="evaluate-box s-flex jc-bt ai-ct" v-if="item.order_info.show_evaluate">-->
-<!--                    <div class="fs28 co_333 fw_b">商品好不好，评价一下</div>-->
-<!--                    <div class="s-flex ai-ct jc-fe flex-1">-->
-<!--                      <van-rate v-model="item.evaluate_value" size="13" color="#F54631" @change="changeRate(item)"/>-->
-<!--                      <div class="ML20 evaluate-desc" v-if="item.evaluate_value == 1">非常不满意</div>-->
-<!--                      <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 2">不满意</div>-->
-<!--                      <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 3">一般</div>-->
-<!--                      <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 4">满意</div>-->
-<!--                      <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 5">非常满意</div>-->
-<!--                      <div class="ML20 evaluate-desc" v-else></div>-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash;预售信息&ndash;&gt;-->
-<!--                  <div class="presell-info s-flex jc-fe" v-if="item.pre_info.pre_sale_type == 'buy_type_deposit'">-->
-<!--                    {{ item.pre_info.msg_desc }}</div>-->
-<!--                  &lt;!&ndash;订单价格-预售&ndash;&gt;-->
-<!--                  <div class="price-box fs28 co_3D s-flex jc-fe fw_b price-presell-box" v-if="item.pre_info.pre_sale_type == 'buy_type_deposit'">-->
-<!--                    <div class="MR30 price-presell" v-if="item.pre_info.deposit_msg">{{ item.pre_info.deposit_msg }}<form-price :need_DF="true" :price="item.pre_info.deposit_price_format" sign_size="26" INT_size="26" DF_size="26" weight="100" color="#999"></form-price></div>-->
-<!--                    <div v-if="item.pre_info.balance_msg">{{ item.pre_info.balance_msg }}<form-price :need_DF="true" :price="item.pre_info.balance_price_format" sign_size="28" INT_size="40" DF_size="28" weight="600" color="#333" class="ML10"></form-price></div>-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash;订单价格-拼团&ndash;&gt;-->
-<!--                  <div class="price-box fs28 co_3D s-flex jc-fe fw_b price-group-box" v-else-if="item.group">-->
-<!--                    <div class="group-box s-flex">-->
-<!--                      <div class="group-img" v-for="ite in item.group.default_portrait">-->
-<!--                        <img src="https://cdn.toodudu.com/uploads/2023/11/06/order_group.png" v-if="ite == 'noPicture'" alt="">-->
-<!--                        <img :src="ite" v-else alt="">-->
-<!--                      </div>-->
-<!--                    </div>-->
-<!--                    <div>应付<form-price :need_DF="true" :price="item.order_info.order_amount" sign_size="28" INT_size="40" DF_size="28" weight="600" color="#333" class="ML10"></form-price></div>-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash;订单价格&ndash;&gt;-->
-<!--                  <div class="price-box fs28 co_3D s-flex jc-fe fw_b" v-else>-->
-<!--                    应付<form-price :need_DF="true" :price="item.order_info.order_amount" sign_size="28" INT_size="40" DF_size="28" weight="600" color="#333" class="ML10"></form-price>-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash;操作模块&ndash;&gt;-->
-<!--                  <div class="btn-box s-flex jc-fe ai-ct" v-if="item.button && item.button.length > 0">-->
-<!--                    <van-popover v-model="item.showPopover" trigger="click" placement="top" :offset="[0,5]" v-if="item.button.length > 3">-->
-<!--                      <template v-for="(btnChild,btnIndex) in item.button.slice(0,item.button.length - 3)">-->
-<!--                        <div class="btn-more-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>-->
-<!--                        <div class="btn-more-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>-->
-<!--                      </template>-->
-<!--                      <template #reference>-->
-<!--                        <div class="btn-more">更多</div>-->
-<!--                      </template>-->
-<!--                    </van-popover>-->
-<!--                    <template v-for="(btnChild,btnIndex) in item.button.slice(-3)">-->
-<!--                      <div class="btn-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" :class="((btnIndex == item.button.slice(-3).length - 1) && (btnChild.alias != 'small_order_can_cancel' && btnChild.alias != 'can_cancel' && btnChild.alias != 'is_show_change_address_new' && btnChild.alias != 'can_delete'))?'btn-model-red':''" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>-->
-<!--                      <div class="btn-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :class="(btnIndex == item.button.slice(-3).length - 1)?'btn-model-red':''" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>-->
-<!--                    </template>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="bg-fff" v-else style="border-radius: 0.2rem;margin: 0.2rem 0 0;padding: 0.2rem" v-for="item in 5" :key="item">-->
-<!--              <div class="s-flex jc-bt">-->
-<!--                <div style="width: 30%;height: 0.5rem;background: #f8f8f8"></div>-->
-<!--                <div style="width: 15%;height: 0.5rem;background: #f8f8f8"></div>-->
-<!--              </div>-->
-<!--              <div class="s-flex MT40">-->
-<!--                <div style="width: 1.78rem;height: 1.78rem;background: #f8f8f8"></div>-->
-<!--                <div class="flex-1 ML20">-->
-<!--                  <div style="width: 100%;height: 0.5rem;background: #f8f8f8"></div>-->
-<!--                  <div class="MT20" style="width: 50%;height: 0.5rem;background: #f8f8f8"></div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="s-flex jc-fe MT20">-->
-<!--                <div class="ML20" style="width: 25%;height: 0.5rem;background: #f8f8f8"></div>-->
-<!--                <div class="ML20" style="width: 25%;height: 0.5rem;background: #f8f8f8"></div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </van-list>-->
-<!--        </template>-->
-<!--        &lt;!&ndash;没有数据&ndash;&gt;-->
-<!--        <div class="noData" v-if="noData">-->
-<!--          <img class="noImg" src="@/assets/images/no_order.png"/>-->
-<!--          <div class="noTex">您还没有相关订单</div>-->
-<!--          <div class="noDesc">可以去看看有哪些想买的</div>-->
-<!--        </div>-->
-<!--      </div>-->
+      <div class="order-content">
+        <van-sticky :offset-top="46" class="order-tab-box" @scroll="changeSticky">
+          <div class="s-flex ai-ct" ref="orderTab" style="background: #f8f8f8">
+            <van-tabs v-model="tabActive" class="flex-1" @click="clickTabItem">
+              <van-tab title="全部" name="0"></van-tab>
+              <van-tab title="待确认" name="5"></van-tab>
+              <van-tab title="待付款" name="1"></van-tab>
+              <van-tab title="待发货" name="4"></van-tab>
+              <van-tab title="待收货" name="2"></van-tab>
+            </van-tabs>
+            <div class="order-tab-icon" v-if="show_search_icon" @click="toSearch">
+              <img src="https://cdn.toodudu.com/uploads/2023/10/26/order_search.png" alt="">
+            </div>
+          </div>
+        </van-sticky>
+        <template v-if="!noData">
+          <van-list
+              v-model="loading"
+              :finished="finished"
+              finished-text="没有更多订单了~"
+              @load="loadMore"
+              offset="0"
+          >
+            <div class="order-list" v-if="!order_load">
+              <div class="order-item" v-for="(item,index) in orderListData" :key="index">
+                <!--订单头部-->
+                <div class="order-info s-flex jc-bt">
+                  <div class="fs24 co_666">订单号：{{ item.order_info.order_sn }}</div>
+                  <div class="fs24 co_666">{{ item.order_info.add_time }}</div>
+                </div>
+                <div class="order-main">
+                  <!--店铺-->
+                  <div class="shop-box s-flex jc-bt">
+                    <div class="shop-name s-flex" @click="routerPath('shop',{'seller_id': item.order_info.seller_id})">
+                      <span class="elli_1">{{ item.order_info.shop_name }}</span>
+                      <em class="iconfont">&#xe60b;</em>
+                    </div>
+                    <div class="order-type" :class="item.order_info.msg_gray?'order-type-grey':''">{{ item.order_info.msg }}</div>
+                  </div>
+                  <!--商品-->
+                  <div class="good-box" v-if="item.goods && item.goods.length>0">
+                    <template v-for="(childItem,childIndex) in item.goods" v-if="(item.show_more_goods && childIndex > 2) || childIndex < 3">
+                      <div class="good-model s-flex jc-bt" @click="routerPath('order',item)">
+                        <div class="good-model-left flex-1 s-flex">
+                          <van-image :src="childItem.image" class="good-img">
+                            <template v-slot:loading>
+                              <img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="" class="re-img">
+                            </template>
+                            <template v-slot:error>
+                              <img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="" class="re-img">
+                            </template>
+                          </van-image>
+                          <div class="ML20 flex-1" style="max-width: 3.1rem">
+                            <div class="fs28 co_333 fw_b" :class="childItem.goods_attr?'elli_1':'elli_2'">{{ childItem.goods_name }}</div>
+                            <div class="fs24 co_666 MT20 word-b">{{ childItem.goods_attr }}</div>
+                            <div class="good-presell-desc" v-if="childIndex==0 && item.pre_info.pre_sale_type == 'buy_type_deposit'">{{ item.pre_info.logistics_desc }}</div>
+                          </div>
+                        </div>
+                        <div class="good-model-right">
+                          <form-price :need_DF="true" :price="childItem.goods_price" sign_size="24" INT_size="32" DF_size="24" weight="600" color="#333"></form-price>
+                          <div class="MT20 co_666">X{{ childItem.goods_number }}{{ childItem.unit?childItem.unit:'' }}</div>
+                          <div class="MT20 refund-desc" v-if="childItem.is_show_after_sales == '2' || childItem.is_show_after_sales == '3'">{{ childItem.is_show_after_sales == '2' ? '退款中' : '退款成功' }}</div>
+                        </div>
+                      </div>
+                    </template>
+                    <div class="good-more s-flex" v-if="item.goods.length>3 && !item.show_more_goods" @click="showMoreGoods(index)">
+                      <span>查看剩余{{ item.goods.length - 3 }}个商品</span>
+                      <em class="iconfont" style="margin-left: 0.07rem">&#xe604;</em>
+                    </div>
+                  </div>
+                  <!--物流模块-->
+                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics && item.logistics.ship_info && item.logistics.ship_info.context" @click="routerPath('wuliu', item)">
+                    <div class="s-flex ai-ct flex-1">
+                      <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
+                      <div class="wuliu-type">{{ item.logistics.ship_info.status }}</div>
+                      <div class="wuliu-desc flex-1">{{ item.logistics.ship_info.context }}</div>
+                    </div>
+                    <em class="iconfont">&#xe60b;</em>
+                  </div>
+                    <!--评价模块-->
+                    <div class="evaluate-box s-flex jc-bt ai-ct" v-if="item.order_info.show_evaluate">
+                        <div class="fs28 co_333 fw_b">商品好不好，评价一下</div>
+                        <div class="s-flex ai-ct jc-fe flex-1">
+                            <van-rate v-model="item.evaluate_value" size="13" color="#F54631" @change="changeRate(item)"/>
+                            <div class="ML20 evaluate-desc" v-if="item.evaluate_value == 1">非常不满意</div>
+                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 2">不满意</div>
+                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 3">一般</div>
+                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 4">满意</div>
+                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 5">非常满意</div>
+                            <div class="ML20 evaluate-desc" v-else></div>
+                        </div>
+                    </div>
+                  <!--订单价格-->
+                  <div class="price-box fs28 co_3D s-flex jc-fe fw_b" v-else>
+                    应付<form-price :need_DF="true" :price="item.order_info.order_amount" sign_size="28" INT_size="40" DF_size="28" weight="600" color="#333" class="ML10"></form-price>
+                  </div>
+                  <!--操作模块-->
+                  <div class="btn-box s-flex jc-fe ai-ct" v-if="item.button && item.button.length > 0">
+                    <van-popover v-model="item.showPopover" trigger="click" placement="top" :offset="[0,5]" v-if="item.button.length > 3">
+                      <template v-for="(btnChild,btnIndex) in item.button.slice(0,item.button.length - 3)">
+                        <div class="btn-more-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
+                        <div class="btn-more-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
+                      </template>
+                      <template #reference>
+                        <div class="btn-more">更多</div>
+                      </template>
+                    </van-popover>
+                    <template v-for="(btnChild,btnIndex) in item.button.slice(-3)">
+                      <div class="btn-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" :class="((btnIndex == item.button.slice(-3).length - 1) && (btnChild.alias != 'small_order_can_cancel' && btnChild.alias != 'can_cancel' && btnChild.alias != 'is_show_change_address_new' && btnChild.alias != 'can_delete'))?'btn-model-red':''" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
+                      <div class="btn-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :class="(btnIndex == item.button.slice(-3).length - 1)?'btn-model-red':''" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-fff" v-else style="border-radius: 0.2rem;margin: 0.2rem 0 0;padding: 0.2rem" v-for="item in 5" :key="item">
+              <div class="s-flex jc-bt">
+                <div style="width: 30%;height: 0.5rem;background: #f8f8f8"></div>
+                <div style="width: 15%;height: 0.5rem;background: #f8f8f8"></div>
+              </div>
+              <div class="s-flex MT40">
+                <div style="width: 1.78rem;height: 1.78rem;background: #f8f8f8"></div>
+                <div class="flex-1 ML20">
+                  <div style="width: 100%;height: 0.5rem;background: #f8f8f8"></div>
+                  <div class="MT20" style="width: 50%;height: 0.5rem;background: #f8f8f8"></div>
+                </div>
+              </div>
+              <div class="s-flex jc-fe MT20">
+                <div class="ML20" style="width: 25%;height: 0.5rem;background: #f8f8f8"></div>
+                <div class="ML20" style="width: 25%;height: 0.5rem;background: #f8f8f8"></div>
+              </div>
+            </div>
+          </van-list>
+        </template>
+        <!--没有数据-->
+        <div class="noData" v-if="noData">
+          <img class="noImg" src="@/assets/images/order/no_order.png"/>
+          <div class="noTex">您还没有相关订单</div>
+          <div class="noDesc">可以去看看有哪些想买的</div>
+        </div>
+      </div>
       <recommend-column></recommend-column>
-<!--      &lt;!&ndash;分享提示&ndash;&gt;-->
-<!--      <div class="equity-share">-->
-<!--        <van-overlay :show="canShare" @click="canShare = false" z-index="99">-->
-<!--          <div class="share-img">-->
-<!--            <img src="@/assets/images/sharePop.jpg" alt="">-->
-<!--            <div class="share-txt">-->
-<!--              <p>点击右上角"…"</p>-->
-<!--              &lt;!&ndash;<p>选择在浏览器中打开</p>&ndash;&gt;-->
-<!--              <p>立即分享</p>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </van-overlay>-->
-<!--      </div>-->
-<!--      &lt;!&ndash; 修改地址弹窗 &ndash;&gt;-->
-<!--      <div class="order-address">-->
-<!--        <van-popup class="order-address-pop" v-model="orderAddressShow" round position="bottom" :style="{ height: '85%' }" @close="handleClickAddressClose">-->
-<!--          <div class="order-address-content" :style="{ overflow: !addressSource ? 'hidden' : ''}">-->
-<!--            <div class="order-address-fixed" ref="order_address_fixed">-->
-<!--              <div class="order-address-title s-flex ai-ct jc-bt">-->
-<!--                <p>选择要修改的地址</p>-->
-<!--                <div class="close s-flex ai-ct jc-ct" @click="handleClickAddressClose">-->
-<!--                  <em class="iconfont">&#xe68c;</em>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="order-address-warning">-->
-<!--                <em class="iconfont">&#xe710;</em>-->
-<!--                地址仅支持修改一次，修改后会影响物流时效，若因商品换仓， 已发货、运费变更等原因导致修改失败，请您谅解。-->
-<!--              </div>-->
-<!--              <div class="order-address-mode s-flex ai-ct">-->
-<!--                <p class="mode-title fs26">配送方式</p>-->
-<!--                <div class="mode-item s-flex ai-ct fs26" v-for="(item,index) in orderAddressData.default_delivery_method" :key="`method${index}`" @click="handleOrderDeliveryMethod(item)">-->
-<!--                  <em class="iconfont" :class="{'check': item.value == orderDeliveryMethod}">{{ item.value == orderDeliveryMethod ? '&#xe688;' : '&#xe7c9;' }}</em>-->
-<!--                  <span class="co_333">{{item.label}}</span>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <dl class="order-address-source" v-if="orderAddressData.original_address && orderDeliveryMethod != 2">-->
-<!--                <dt>原收货地址：</dt>-->
-<!--                <dd><span>{{ orderAddressData.original_address.consignee }}</span><span>{{ orderAddressData.original_address.mobile }}</span></dd>-->
-<!--                <dd>{{ orderAddressData.original_address.province }} {{ orderAddressData.original_address.city }} {{ orderAddressData.original_address.district }} {{ orderAddressData.original_address.address }}</dd>-->
-<!--              </dl>-->
-<!--              <div class="order-address-list__title s-flex jc-bt" v-if="orderDeliveryMethod != 2">-->
-<!--                <p>选择新的收货地址</p>-->
-<!--                <router-link :to="{ name: 'address_add', query: { order_index: address_order_index } }" class="order-address-add">-->
-<!--                  <em class="iconfont">&#xe70f;</em>-->
-<!--                  <span>添加新地址</span>-->
-<!--                </router-link>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="order-address-list" ref="order_address_list" v-if="orderDeliveryMethod != 2">-->
-<!--              &lt;!&ndash;  <em class="iconfont">&#xe640;</em>&ndash;&gt;-->
-<!--              <template v-if="address_nodata">-->
-<!--                <div class="order-address-dd s-flex ai-ct" v-for="(address, key) in addressList" :key="key" :class="{ active: addressIndex == key }" @click="handleClickAddressItem(address, key)">-->
-<!--                  <em class="iconfont check">{{ addressIndex == key ? '&#xe6ea;' : '&#xe7c9;' }}</em>-->
-<!--                  <div class="order-address-detail">-->
-<!--                    <div class="s-flex"><span>{{ address.consignee }}</span> <span>{{ address.mobile }}</span> <em class="tag s-flex ai-ct" v-if="address.used == 1">默认</em></div>-->
-<!--                    <p>{{ address.province }} {{ address.city }} {{ address.district }} {{ address.address }}</p>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </template>-->
-<!--              <div class="is-nodata" v-if="!address_nodata">-->
-<!--                <img src="../../assets/images/address/nodata.png" alt="">-->
-<!--                <p>暂无收货地址</p>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="order-address-btn" ref="order_address_btn" :class="{ disabled: (!address_nodata || addressIndex == null) && orderDeliveryMethod != 2 }">-->
-<!--              <p @click="handleClickAddressClose('sure')">确定</p>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </van-popup>-->
-<!--      </div>-->
-<!--      &lt;!&ndash; 确认收货弹窗 &ndash;&gt;-->
-<!--      <div class="confirm-receipt">-->
-<!--        <van-popup class="confirm-receipt-content" v-model="confirmReceiptShow" round position="bottom" :style="{ width: '100%' }" @close="handleClickReceiptClose">-->
-<!--          <div class="confirm-receipt-title s-flex ai-ct jc-bt">-->
-<!--            <p>手机验证</p>-->
-<!--            <div class="close s-flex ai-ct jc-ct" @click="handleClickReceiptClose">-->
-<!--              <em class="iconfont">&#xe68c;</em>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="confirm-receipt-form">-->
-<!--            <div class="form-item">-->
-<!--              <div class="s-flex ai-ct">-->
-<!--                <label>手机验证</label>-->
-<!--                <div class="form-input s-flex ai-ct jc-ct" :class="{ disabled: confirmReceiptForm.can_check_phone || confirmReceiptForm.pay_code == 'hxb' || confirmReceiptForm.pay_code == 'shanghai' || confirmReceiptForm.pay_code == 'ping_an' }">-->
-<!--                  <input type="text" v-model="confirmReceiptForm.phone" :disabled="confirmReceiptForm.can_check_phone || confirmReceiptForm.pay_code == 'hxb' || confirmReceiptForm.pay_code == 'shanghai' || confirmReceiptForm.pay_code == 'ping_an'" />-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="form-warning">{{ confirmReceiptForm.warning_text }}</div>-->
-<!--            </div>-->
-<!--            <div class="form-item s-flex ai-ct">-->
-<!--              <label>验证码</label>-->
-<!--              <div class="form-code s-flex jc-bt">-->
-<!--                <div class="form-input s-flex ai-ct jc-ct">-->
-<!--                  <input type="text" v-model="confirmReceiptForm.code" maxlength="6"/>-->
-<!--                </div>-->
-<!--                <div class="form-btn disabled" v-if="!confirmReceiptForm.phone" @click="handleGetPhoneCode">{{ phoneCodeText }}</div>-->
-<!--                <div class="form-btn 1" v-else :class="{ disabled: phoneCodeSecond != 0 && ((phoneCodeSecond != 60&&confirmReceiptForm.pay_code !== 'ping_an')||(phoneCodeSecond != 120&&confirmReceiptForm.pay_code === 'ping_an')) }" @click="handleGetPhoneCode">{{ phoneCodeText }}</div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="form-submit" :class="{ disabled: !confirmReceiptForm.code }" @click="handleClickReceiptClose('sure')">确认收货</div>-->
-<!--          </div>-->
-<!--        </van-popup>-->
-<!--      </div>-->
     </template>
     <template v-else>
       <div class="s-flex" style="padding: 0.2rem">
@@ -481,28 +311,6 @@ const getOrderData = () => {
         }
         .order-main{
           padding: 0.3rem 0.2rem;
-          .group-time{
-            position: relative;
-            margin-bottom: 0.3rem;
-            .group-time-txt{
-              font-size: 0.3rem;
-              color: #F71111;
-              font-weight: bold;
-              margin-right: 0.1rem;
-            }
-            .group-time-left{
-              width: 0.79rem;
-              height: 0.02rem;
-              margin-right: 0.18rem;
-              background: linear-gradient(297deg, rgba(247,17,17,0.29) 0%, rgba(247,17,17,0) 100%);
-            }
-            .group-time-right{
-              width: 0.79rem;
-              height: 0.02rem;
-              margin-left: 0.18rem;
-              background: linear-gradient(63deg, rgba(247,17,17,0.29) 0%, rgba(247,17,17,0) 100%);
-            }
-          }
           .shop-box{
             align-items: center;
             .shop-name{
@@ -608,38 +416,22 @@ const getOrderData = () => {
               color: #666666;
             }
           }
-          .evaluate-box{
-            height: 0.7rem;
-            border-radius: 0.1rem;
-            background: #F8F8F8;
-            margin-top: 0.3rem;
-            padding: 0 0.2rem;
-            .evaluate-desc{
-              font-size: 0.26rem;
-              color: #666666;
-              width: 1.3rem;
-              text-align: right;
+            .evaluate-box{
+                height: 0.7rem;
+                border-radius: 0.1rem;
+                background: #F8F8F8;
+                margin-top: 0.3rem;
+                padding: 0 0.2rem;
+                .evaluate-desc{
+                    font-size: 0.26rem;
+                    color: #666666;
+                    width: 1.3rem;
+                    text-align: right;
+                }
             }
-          }
-          .presell-info{
-            font-size: 0.26rem;
-            color: #FF8F1F;
-            margin-top: 0.3rem;
-            margin-bottom: -0.1rem;
-          }
           .price-box{
             align-items: center;
             margin-top: 0.3rem;
-            .price-presell{
-              font-size: 0.26rem;
-              color: #999999;
-            }
-            &.price-presell-box{
-              align-items: flex-end;
-            }
-            &.price-group-box{
-              justify-content: space-between;
-            }
             .group-box{
               .group-img{
                 width: 0.4rem;
