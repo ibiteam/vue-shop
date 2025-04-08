@@ -35,5 +35,15 @@ const order = [
         name: 'refund',
         component: () => import('@/views/order/refund.vue'),
     },
+    {
+        path: '/pay/index',
+        name: 'payIndex',
+        component: () => import('@/views/pay/index.vue'),
+    },
+    {
+        path: '/pay/success',
+        name: 'paySuccess',
+        component: () => import('@/views/pay/success.vue'),
+    }
 ]
 export default order
