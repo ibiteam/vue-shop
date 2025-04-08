@@ -49,6 +49,7 @@
     import { ref, watch, onMounted, getCurrentInstance } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 	import { sendCode, updatePassword } from "@/api/user";
+	import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 
 	const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -123,7 +124,7 @@
     }
 	const submitPassword = (values) => {
 		updatePassword(values, passwordType.value).then(res => {
-			if (cns.$constant.isSuccessCode(res)) {
+			if (isSuccessCode(res)) {
 				if (passwordType.value == 'password-edit') {
 					cns.$toast('修改密码成功！请重新登录账号。')
 					cns.$cookies.remove('m-token')
@@ -161,7 +162,7 @@
 	const submitSendCode = (info)=>{
 		sendCode(info).then(ret => {
 			isFirst.value = false
-			if (cns.$constant.isSuccessCode(ret)) {
+			if (isSuccessCode(ret)) {
 				second.value = 60
 				countTime()
 				cns.$toast('短信已经发送')

@@ -1,8 +1,8 @@
-const isSuccessCode = (res) => {
+export const isSuccessCode = (res) => {
     return res.code == 200
 }
 
-const isUnLoginCode = (res) => {
+export const isUnLoginCode = (res) => {
     return res.code == 401
 }
 

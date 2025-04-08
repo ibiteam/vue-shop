@@ -192,6 +192,7 @@ import {
     newAddAttensionAxios, placeOrderAxios
 } from "@/api/cart.js";
 import { showToast } from 'vant';
+import { isUnLoginCode, isSuccessCode} from "@/utils/constant.js";
 import RecommendColumn from '@/components/recommendColumn/RecommendColumn'
 
 const cns = getCurrentInstance().appContext.config.globalProperties
@@ -219,7 +220,7 @@ const getData = () => {
     getDataAxios().then(res => {
         isLoading.value = false
         is_placeholder.value = false
-        if (res.code == 200) {
+        if (isSuccessCode(res)) {
             if (res.data != null && res.data.length != 0) {
                 invalid_goods.value = res.data.invalid_carts
                 shopList.value = res.data.valid_carts
@@ -234,7 +235,7 @@ const getData = () => {
                 goods_count.value = 0
             }
             countTotal()
-        } else if (res.code == 403) {
+        } else if (isUnLoginCode(res)) {
             hasLogin.value = false
         } else {
             showToast(res.message)
@@ -251,10 +252,10 @@ const all_isSelect = computed(() => {
 // 单个删除
 const deleteGoodSole = (goods,index) => {
     deleteAxios({ids:[goods.id]}).then(res => {
-        if (res.code == 200) {
+        if (isSuccessCode(res)) {
             shopList.value.splice(index,1)
             countTotal()
-        } else if (res.code == 403) {
+        } else if (isUnLoginCode(res)) {
             // 去登录
             appRoute('login')
         } else {
@@ -278,9 +279,9 @@ const deleteGoodMass = () => {
     }).then(() => {
         deleteAxios({'ids': str})
             .then((res) => {
-                if (res.code == 200) {
+                if (isSuccessCode(res)) {
                     getData()
-                } else if (res.code == 403) {
+                } else if (isUnLoginCode(res)) {
                     // 去登录
                     appRoute('login')
                 } else {
@@ -294,12 +295,12 @@ const deleteGoodMass = () => {
 const toAttentionSole = (goods,index) => {
     newAddAttensionAxios({ids: [goods.id]})
         .then((res) => {
-            if (res.code == 200) {
+            if (isSuccessCode(res)) {
                 shopList.value.splice(index, 1)
                 countTotal()
                 showToast('移入关注成功！')
 
-            } else if (res.code == 403) {
+            } else if (isUnLoginCode(res)) {
                 // 去登录
                 appRoute('login')
             } else {
@@ -325,10 +326,10 @@ const toAttentionMass = () => {
     }).then(() => {
         newAddAttensionAxios({ids: str})
             .then((res) => {
-                if (res.code == 200) {
+                if (isSuccessCode(res)) {
                     getData()
                     showToast('关注成功！')
-                } else if (res.code == 403) {
+                } else if (isUnLoginCode(res)) {
                     // 去登录
                     appRoute('login')
                 } else {
@@ -345,9 +346,9 @@ const chooseGoods = (item) => {
 
     editByGoodsAxios({goods_no: item.goods.no, is_check: item.is_check,goods_sku_id:item.goods_sku_id})
         .then((res) => {
-            if (res.code == 200) {
+            if (isSuccessCode(res)) {
                 countTotal()
-            } else if (res.code == 403) {
+            } else if (isUnLoginCode(res)) {
                 // 去登录
                 appRoute('login')
             } else {
@@ -380,11 +381,11 @@ const countTotal = () => {
 //
 const changeUpdate = (value,goods,index) => {
     changeNumberAxios({id:goods.id,goods_no:goods.goods.no,goods_sku_id:goods.goods_sku_id,buy_number:value}).then(res => {
-        if (res.code == 200) {
+        if (isSuccessCode(res)) {
             goods.buy_number = value
             countTotal()
             return true
-        } else if (res.code == 403) {
+        } else if (isUnLoginCode(res)) {
             return false
             // 去登录
             appRoute('login')
@@ -399,7 +400,7 @@ const changeUpdate = (value,goods,index) => {
 const selectAllGoods = () => {
     editByGoodsAxios({goods_no: 0, is_check: selectAll.value?0:1,goods_sku_id:0})
         .then((res) => {
-            if (res.code == 200) {
+            if (isSuccessCode(res)) {
                 selectAll.value = !selectAll.value
                 let totalPrice = 0
 	            let totalIntegral = 0
@@ -419,7 +420,7 @@ const selectAllGoods = () => {
                     total_price.value = totalPrice.toFixed(2)
                 }
                 goods_count.value = goodsCount
-            } else if (res.code == 403) {
+            } else if (isUnLoginCode(res)) {
                 // 去登录
                 appRoute('login')
             } else {
@@ -435,10 +436,10 @@ const clearInvalid = () => {
     }).then(() => {
         emptyInvalidAxios()
             .then((res) => {
-                if (res.code == 200) {
+                if (isSuccessCode(res)) {
                     invalid_goods.value = []
                     showToast(res.message)
-                } else if (res.code == 403) {
+                } else if (isUnLoginCode(res)) {
                     // 去登录
                     appRoute('login')
                 } else {
@@ -451,7 +452,7 @@ const clearInvalid = () => {
 const getRecommend = () => {
     getZhiRecommendAxios()
         .then((res) => {
-            if (res.code == 200) {
+            if (isSuccessCode(res)) {
                 recommend.value = res.data
             } else {
                 showToast(res.message)
@@ -477,9 +478,9 @@ const findSimilar = (cat_id, cat_name) => {
 const toBuy = () => {
     placeOrderAxios()
         .then((res) => {
-            if (res.code == 200) {
+            if (isSuccessCode(res)) {
                 appRoute('checkout')
-            } else if (res.code == 403) {
+            } else if (isUnLoginCode(res)) {
                 // 去登录
                 appRoute('login')
             } else {

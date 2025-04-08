@@ -28,6 +28,7 @@
 import {ref, onMounted, getCurrentInstance, watch} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import {registerOrPhoneLogin, sendCode} from '@/api/user'
+import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 const router = useRouter()
@@ -73,7 +74,7 @@ const sendPhoneCode = () => {
 	}
 	sendCode(info).then(res => {
 		sessionStorage.removeItem('can_send_code')
-		if (cns.$constant.isSuccessCode(res)) {
+		if (isSuccessCode(res)) {
 			cns.$toast('短信已经发送')
 			countTime()
 		} else {
@@ -90,7 +91,7 @@ const codeSubmit = () => {
 		code: phoneCode.value
 	}
 	registerOrPhoneLogin({info, action: action.value}).then(res => {
-		if (cns.$constant.isSuccessCode(res)) {
+		if (isSuccessCode(res)) {
 			cns.$toast(res.message)
 			cns.$cookies.set('m-token', res.data.token, res.data.expires_at)
 			let redirect = route.query.redirect

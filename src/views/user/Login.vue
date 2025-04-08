@@ -68,6 +68,7 @@ import {ref, onMounted, getCurrentInstance, computed} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import {useConfigStore} from '@/stores'
 import { accountLogin } from "@/api/user.js";
+import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -109,7 +110,7 @@ const loginPassword = () => {
 		'password': md5(password.value),
 	}
 	accountLogin(data).then(res => {
-		if (cns.$constant.isSuccessCode(res)) {
+		if (isSuccessCode(res)) {
 			cns.$cookies.set('m-token', res.data.token, res.data.expires_at)
 			let redirect = route.query.redirect
 			if (redirect) {

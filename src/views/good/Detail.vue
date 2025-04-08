@@ -597,6 +597,7 @@ import {useRoute, useRouter} from 'vue-router'
 import {useGoodStore} from "@/stores";
 import { getGoodData, goodsCollect } from '@/api/good'
 import { getAddress, deleteAddress, setAddressDefault } from "@/api/address.js";
+import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 import $ from 'jquery'
 import shoppingCard from '@/components/shoppingCard/shoppingCard'
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -731,7 +732,7 @@ const clickDeleteAddress = (item, index) => {
 
 const clickAddOrRemoveAddressSure = () => {
 	deleteAddress({id: removeAddressId.value}).then(res => {
-		if (cns.$constant.isSuccessCode(res)) {
+		if (isSuccessCode(res)) {
 			const index = addressList.value.findIndex(item => item.id == removeAddressId.value)
 			addressList.value.splice(index, 1)
 			showRemove.value = false
@@ -791,7 +792,7 @@ const clickAddressBack = (id, item) => {
 const changeAddress = () => {
 	getAddress().then(res => {
 		addressPopup.value = true
-		if (cns.$constant.isSuccessCode(res)) {
+		if (isSuccessCode(res)) {
 			if (res.data.length > 0) {
 				addressList.value = res.data
 				nodata.value = false
@@ -799,7 +800,7 @@ const changeAddress = () => {
 				addressList.value = []
 				nodata.value = true
 			}
-		} else if (cns.$constant.isUnLoginCode(res)) {
+		} else if (isUnLoginCode(res)) {
 			cns.appRoute('login', {}, 'replace')
 		} else {
 			cns.$toast(res.message)
@@ -880,10 +881,10 @@ const onScrollRecommend = () => {
 
 const attention = () => {
 	goodsCollect({no: goodsInfo.value.goods_no, value: !isAttention.value}).then((res) => {
-		if (cns.$constant.isSuccessCode(res)) {
+		if (isSuccessCode(res)) {
 			isAttention.value = !isAttention.value
 			cns.$toast(res.message)
-		} else if (cns.$constant.isUnLoginCode(res)) {
+		} else if (isUnLoginCode(res)) {
 			cns.appRoute('login', {}, 'replace')
 		} else {
 			cns.$toast(res.message)
@@ -943,11 +944,11 @@ const toCart = () => {
 const getCoupon = (item) => {
 	cns.$http.doPost('v3/usercoupon/add', {id: item.coupon_id})
 		.then((res) => {
-			if (cns.$constant.isSuccessCode(res)) {
+			if (isSuccessCode(res)) {
 				cns.$toast('领取成功！')
 				item.max_limit = !!res.data.status
 				item.btn.url = res.data.searchUrl
-			} else if (cns.$constant.isUnLoginCode(res)) {
+			} else if (isUnLoginCode(res)) {
 				cns.appRoute('login')
 			} else {
 				cns.$toast(res.message)
@@ -957,7 +958,7 @@ const getCoupon = (item) => {
 
 //const getZhiRecommend = () => {
 //	cns.$http.doGet('v4/goods/hotSale', {goods_no: goodsNo.value, page: pageRecommend.value}).then(res => {
-//		if (cns.$constant.isSuccessCode(res)) {
+//		if (isSuccessCode(res)) {
 //			if (pageRecommend.value == 1) {
 //				recommend.value = res.data.data
 //				recommendTitle.value = res.data.title
@@ -1019,7 +1020,7 @@ const detailBig = () => {
 
 const getData = () => {
 	getGoodData(goodsNo.value, skuId.value).then((res) => {
-		if (cns.$constant.isSuccessCode(res)) {
+		if (isSuccessCode(res)) {
 			placeholder.value = false
 			// searchWordList.value = res.data.header.search_word_list
 			//if (searchWordList.value.length && searchWordList.value.length == 1) {

@@ -90,6 +90,7 @@
 	import { updateSku, checkNumber } from '@/api/good'
     import { addGoodsToCart } from '@/api/cart'
 	const cns = getCurrentInstance().appContext.config.globalProperties
+    import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 
     const goodStore = useGoodStore()
     const props = defineProps({
@@ -277,7 +278,7 @@
 	    if (isSkuIng.value) return;
 	    isSkuIng.value = true
 	    updateSku({no: props.goodsInfo.no, unique: specId.value.join('_')}).then((res) => {
-            if (cns.$constant.isSuccessCode(res)) {
+            if (isSuccessCode(res)) {
 	            goodsNumber.value = Number(res.data.number)
 	            maxNumber.value = props.goodsInfo.can_quota ? props.goodsInfo.quota_number : goodsNumber.value ? goodsNumber.value : 0 // 当前可用库存
 	            count(res.data.price)
@@ -347,7 +348,7 @@
     // 检查数量和活动异常
     const examine = () => {
 	    checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumberValue.value}).then((res) => {
-            if (cns.$constant.isSuccessCode(res)) {
+            if (isSuccessCode(res)) {
                 maxNumber.value = props.goodsInfo.can_quota ? props.goodsInfo.quota_number : res.data.total ? res.data.total : 0
 	            goodsNumber.value = res.data.total
 	            if(res.data.can_buy){
@@ -434,7 +435,7 @@
     const checkNumberAndGoOrder = (type) => {
 		checkNumber({no: props.goodsInfo.no, sku_id: skuId.value, number: buyNumberValue.value}).then((res) => {
 			isLoading.value = false
-            if (cns.$constant.isSuccessCode(res)) {
+            if (isSuccessCode(res)) {
 				if(res.data.can_buy){
 					if(type == 1){
 						let info = {
@@ -456,7 +457,7 @@
 						}
 						addGoodsToCart(info).then((ret) => {
 							chooseAttr.value = false
-							if (cns.$constant.isSuccessCode(ret)) {
+							if (isSuccessCode(ret)) {
 								cns.$toast(ret.message)
 								emit('changeCar', ret.data.number)
 							} else {
@@ -472,7 +473,7 @@
 					}
 				}
 
-            } else if (cns.$constant.isUnLoginCode(res)) {
+            } else if (isUnLoginCode(res)) {
                 cns.appRoute('login')
             } else {
                 chooseAttr.value = false

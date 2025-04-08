@@ -209,17 +209,13 @@
 <script setup>
 import {ref , reactive , computed , onMounted , watch , nextTick} from 'vue'
 import $public from '@/utils/public'
-import {useRoute,useRouter} from 'vue-router'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import {getCategory} from "@/api/category.js";
 import { searchKeywordsAxios } from '@/api/search.js'
 import { showToast } from 'vant';
 import { appRoute } from "@/router/appRoute";
-
-
-const route = useRoute();
-const router = useRouter();
+import { isSuccessCode } from "@/utils/constant.js";
 
 const serachSwiper_1 = ref(null);
 const serachSwiper_2 = ref(null)
@@ -240,10 +236,8 @@ const categoryArr = ref([]);
 const popupShow = ref(false);
 const currentIndex = ref(0);
 const noData = ref(false);
-const replaceObj = reactive({});
 
 const keyword_hot = ''
-const config = {}
 
 const slideChange = () => {
     nextTick(() => {
@@ -269,7 +263,7 @@ onMounted(() => {
 
 const getKeywords = () => {
     searchKeywordsAxios().then(res => {
-        if (res.code == 200) {
+        if (isSuccessCode(res)) {
             navigation_data.value = [...res.data];
         }
     });
@@ -280,13 +274,11 @@ const getData = () => {
     getCategory().then(res => {
         loading.value = false;
         noData.value = false;
-        if (res.code == 200) {
+        if (isSuccessCode(res)) {
             categoryArr.value = res.data;
             nextTick(() => {
                 document.querySelector(".category-content-scroll") && document.querySelector(".category-content-scroll").addEventListener("scroll", doubleScroll);
             });
-        } else if (res.code === 3004) {
-            noData.value = true;
         } else {
             noData.value = true;
             showToast(res.message);

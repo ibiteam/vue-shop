@@ -47,6 +47,7 @@ import {ref, reactive, watch, computed, onMounted, onBeforeMount, onActivated} f
 import { useRouter, useRoute } from 'vue-router';
 import $public from '@/utils/public'
 import {searchKeywordsAxios} from '@/api/search'
+import { isSuccessCode } from "@/utils/constant.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -97,7 +98,7 @@ const handleSearchConfirm = (value) => {
 
 const handleInputSearchOptions = $public.debounce(() => {
     searchKeywordsAxios({ keywords: info.keywords }).then(res => {
-        if (res.code == 200) {
+        if (isSuccessCode(res)) {
             search_keywords_optiosn.value = res.data;
         }
     });

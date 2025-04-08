@@ -43,6 +43,7 @@
 import { ref, watch, onMounted, getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { sendCode, verifyPhone, updatePhone} from "@/api/user";
+import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -103,7 +104,7 @@ const doVerifyPhone = (values) => {
         code:values.code
     }
     verifyPhone(info).then(res => {
-        if (cns.$constant.isSuccessCode(res)) {
+        if (isSuccessCode(res)) {
             isVeryPhone.value = true
             isFirst.value = true
             second.value = 0
@@ -119,7 +120,7 @@ const doVerifyPhone = (values) => {
 }
 const submitPhone = (values) => {
     updatePhone(values, phoneType.value).then(res => {
-        if (cns.$constant.isSuccessCode(res)) {
+        if (isSuccessCode(res)) {
             if (phoneType.value == 'phone-edit') {
                 cns.$toast('修改手机号成功！请重新登录账号。')
                 cns.$cookies.remove('m-token')
@@ -157,7 +158,7 @@ const sendPhoneCode = () => {
 const submitSendCode = (info)=>{
     sendCode(info).then(ret => {
         isFirst.value = false
-        if (cns.$constant.isSuccessCode(ret)) {
+        if (isSuccessCode(ret)) {
             second.value = 60
             countTime()
             cns.$toast('短信已经发送')

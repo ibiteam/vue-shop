@@ -104,6 +104,7 @@ import {searchAxios , searchShopAxios} from '@/api/search'
 
 import searchType1 from '@/assets/images/search/search_type_row_2.png'
 import searchType2 from '@/assets/images/search/search_type_row_1.png'
+import {isSuccessCode} from "@/utils/constant.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -150,7 +151,7 @@ const searchData = () => {
     let params = JSON.parse(JSON.stringify(info))
     params['number'] = 15
     searchAxios(params).then(res => {
-        if (res.code == 200) {
+        if (isSuccessCode(res)) {
             listNoData.value = !res.data.list.length
             keywords.value = res.data.keywords
             if ((route.query.cat_id && params.cat_id && route.query.cat_id==params.cat_id) && route.query.keywords != res.data.keywords) {
@@ -188,7 +189,7 @@ const loadMore = () => {
 
             params['number'] = 15
             searchAxios(params).then(res => {
-                if (res.code == 200) {
+                if (isSuccessCode(res)) {
                     loading.value = false;
                     if (res.data.list.length == 0) {
                         finished.value = true;
