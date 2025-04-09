@@ -49,7 +49,7 @@
 					<div class="view-input s-flex flex-1" @click="clickToSearch()">
 						<div class="iconfont" style="font-size: 16px;color: #bbb;">&#xe7c3;</div>
 						<div style="font-size: 14px;min-width: 4rem;">
-							<span style="font-size: 14px;color: #333;">请输入关键词搜索</span>
+							<span style="font-size: 14px;color: #bbb;">请输入关键词搜索</span>
 						</div>
 					</div>
 					<em class="iconfont co-333" style="font-size: 21px;display:block;width: 21px;"></em>
@@ -182,7 +182,7 @@
 								</div>
 							</template>
 						</div>
-						<div class="s-flex ai_fs jc-bt" @click="changeAddress">
+						<div class="s-flex ai_fs jc-bt" @click="openSelectAddress">
 							<div class="s-flex ai_fs">
 								<div class="other-name">配 送</div>
 								<div class="other-cont">
@@ -410,9 +410,9 @@
 			</template>
 		</template>
 		<!--购物弹框-->
-		<shoppingCard
+		<ShoppingCard
 			:chooseAttrs="chooseAttr"
-			:addressId="pageInfo.address_id"
+			:addressId="addressId"
 			:goodsInfo="goodsInfo"
 			:mainImg="banner.images&&banner.images[0]"
 			:shoppingType="shoppingType"
@@ -425,7 +425,7 @@
 			@changeCar="changeCar"
 			@selectSku="selectSku"
 			@unusual="unusual"
-		></shoppingCard>
+		></ShoppingCard>
 		<!--大图查看-->
 		<van-image-preview v-model:show="showPreviewer" :startPosition="startIndex" :images="imgUrlBig" :showIndex="showIndex"></van-image-preview>
 		<van-popup
@@ -467,7 +467,7 @@
 					</div>
 					<div style="max-height:8.8rem;overflow-y:auto;">
 						<p class="co-333 fs30 ML20 s-flex ai-ct" style="line-height: 1;margin-bottom: 0.3rem;font-size: 0.3rem;" v-if="couponList&&couponList.length"><img src="@/assets/images/good/new-coupon-title.png" alt="" style="width: 0.33rem;margin-right: 0.1rem;">可领取优惠券</p>
-						<div class="list_box" style="padding: 0 0.4rem 0.3rem;">
+						<div class="list-box" style="padding: 0 0.4rem 0.3rem;">
 							<div class="coupon_list" :class="[item.show_limit? 'coupon-mit' : '']" v-for="(item,index) in couponList">
 								<div class="s-flex ai-ct jc-bt">
 									<div class="s-flex ai-ct jc-ct flex-wrap"
@@ -504,87 +504,7 @@
 				</div>
 			</van-popup>
 		</div>
-		<!--收货地址 -->
-		<div class="coupon" v-if="addressPopup">
-			<van-popup
-				v-model:show="addressPopup"
-				round
-				position="bottom"
-				:close-on-click-overlay="false"
-			>
-				<div class="close-btn" @click="addressPopup = false">
-					<i class="iconfont">&#xea13;</i>
-				</div>
-				<div style="padding-top: 1.08rem;max-height: 11.12rem;overflow-y: auto;background: #FAFAFA;">
-					<div class="goods-popup-title address-title" style="background: #fff;z-index:9998;">
-						<h3>配送至</h3>
-					</div>
-					<div style="padding: 0.25rem 0.4rem 0.4rem;">
-						<p class="fs28 co-666 MB30" style="line-height: 1;">当前配送至</p>
-						<h4 class="fs28 co-333 MB30 fw-b" style="line-height: 1;">{{ limitAddress }}</h4>
-						<h4 class="fs28 co-666" style="line-height: 1;">从我的收货地址选择</h4>
-					</div>
-					<div class="list_box address-list" style="padding: 0 0.2rem;">
-						<div class="list">
-							<div class="list-item" v-for="(item, index) in addressList" :key="index" :class="{ active: item.select }">
-								<div class="s-flex ai-ct" @click="clickAddressBack(item.id, item)"
-								     style="border-bottom: 1px solid #D8D8D8;padding-bottom: 0.2rem;height: 1.6rem;box-sizing:border-box;">
-									<div class="s-flex flex-1 ai-ct">
-										<div class="address-info flex-1">
-											<p class="elli-2">
-												{{ item.province }}{{ item.city }}{{ item.district }}
-												{{ item.address_detail }}</p>
-											<div class="address-name s-flex">
-												<label class="elli-1">{{ item.recipient_name }}</label>
-												<span>{{ item.recipient_phone.substr(0, 3) + '****' + item.recipient_phone.substr(7) }}</span>
-											</div>
-										</div>
-									</div>
-									<div style="width: 0.3rem;flex: none;">
-										<img style="width: 0.26rem;height: 0.19rem;"
-										     src="@/assets/images/good/address-select-g.png"
-										     alt="" v-if="pageInfo.address_id == item.id">
-									</div>
-								</div>
-								<div class="s-flex ai-ct jc-bt">
-									<div class="s-flex ai-ct">
-										<template v-if="item.is_default">
-											<img style="width: 0.3rem;height: 0.3rem;margin-right: 0.15rem;" src="@/assets/images/good/select.png" alt="" v-if="pageInfo.address_id == item.id">
-											<span class="fs26 co-red">已设为默认</span>
-										</template>
-									</div>
-									<div class="address-btn-contrl s-flex jc-fe" style="line-height: 0.78rem;">
-										<span @click="clickDeleteAddress(item,index)">删除</span>
-										<span @click="router.push({ name: 'addressForm', params: { id: item.id } })">修改</span>
-									</div>
-								</div>
-
-							</div>
-						</div>
-						<div class="nodata" v-if="nodata">
-							<img src="@/assets/images/address/nodata.png" alt="">
-							<p>您还没有地址，快来添加吧～</p>
-						</div>
-						<div class="address-btn">
-							<router-link :to="{ name: 'addressForm', params: { id: 0 } }" class="address-add s-flex jc-ct">新增收货地址</router-link>
-						</div>
-					</div>
-				</div>
-			</van-popup>
-			<van-popup v-model:show="showRemove" :close-on-click-overlay="false">
-				<div class="choose-add-address choose-remove-address">
-					<div class="view-h1">确定要删除地址吗？</div>
-					<div class="s-flex ai-ct">
-						<div class="choose-item s-flex ai-ct jc-ct"
-						     @click="showRemove = false, removeAddressId = null">取消
-						</div>
-						<div class="choose-item primary s-flex ai-ct jc-ct" @click="clickAddOrRemoveAddressSure"
-						     data-type="add">删除
-						</div>
-					</div>
-				</div>
-			</van-popup>
-		</div>
+		<AddressListPopup v-model:show="selectAddressPopup" :addressId="addressId" @changeAddress="changeAddress"></AddressListPopup>
 	</div>
 </template>
 
@@ -594,10 +514,10 @@ import {useRoute, useRouter} from 'vue-router'
 
 import {useGoodStore} from "@/stores";
 import {getGoodData, goodsCollect, updateSku} from '@/api/good'
-import { getAddress, deleteAddress } from "@/api/address.js";
 import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 import $ from 'jquery'
-import shoppingCard from '@/components/shoppingCard/shoppingCard'
+import ShoppingCard from '@/components/shoppingCard/ShoppingCard'
+import AddressListPopup from "@/components/common/AddressListPopup.vue";
 import skuSelect from './SkuSelect.vue'
 import shopRate from './ShopRate.vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
@@ -615,8 +535,15 @@ const evaluate = ref({
 	items: [],
 	tag_data: []
 })
-const showRemove = ref(false)
-const removeAddressId = ref(null)
+
+const selectAddressPopup = ref(false)
+const selectAddress = ref('')
+const addressId = ref('')
+
+const changeAddress = (item) => {
+	addressId.value = item.id
+	selectAddress.value = `${item.province} ${item.city} ${item.district}`
+}
 const goodTab = ref(1)
 const swiperIndex = ref(0)
 const fromPath = ref('')
@@ -627,7 +554,6 @@ const nodata = ref(false)
 const goodsInfo = ref({})
 const isAttention = ref(false)
 const couponList = ref([])
-const addressPopup = ref(false)
 const couponPopup = ref(false)
 const shoppingType = ref(-1)
 const carNum = ref(0)
@@ -644,9 +570,7 @@ const startIndex = ref(0)
 const showIndex = ref(false)
 const imgUrlBig = ref([])
 const isShowHeader = ref(true)
-const addressList = ref([])
-const pageInfo = ref({})
-const limitAddress = ref('')
+
 const isSelectSpec = ref(false)
 const paramNum = ref(0)
 const skuParamList = ref([])
@@ -662,7 +586,7 @@ const chatType = ref('shop')
 const showChatAction = ref(false)
 const chatActions = ref([])
 const propPopup = ref(false)
-const selectAddress = ref('请选择地址')
+
 
 const toEvaluate = (type)=> {
 	cns.appRoute('evaluate', {}, {'no': goodsNo, type})
@@ -717,29 +641,6 @@ const clickToSearch = () => {
 	cns.appRoute('search_history', {placeholder: ''})
 }
 
-const clickDeleteAddress = (item, index) => {
-	showRemove.value = true
-	removeAddressId.value = item.id
-}
-
-const clickAddOrRemoveAddressSure = () => {
-	deleteAddress({id: removeAddressId.value}).then(res => {
-		if (isSuccessCode(res)) {
-			const index = addressList.value.findIndex(item => item.id == removeAddressId.value)
-			addressList.value.splice(index, 1)
-			showRemove.value = false
-			cns.$toast('删除成功')
-			if (pageInfo.value.address_id == removeAddressId.value) {
-				pageInfo.value.address_id = ''
-				selectAddress.value = '请选择地址'
-			}
-			removeAddressId.value = null
-		} else {
-			cns.$toast(res.message)
-		}
-	})
-}
-
 const openPopup = (type, data) => {
 	propPopup.value = type === 'propPopup'
 }
@@ -764,40 +665,6 @@ const onChangeSwiper = (index) => {
 
 const handleBack = () => {
 	router.back(-1)
-}
-
-const clickAddressBack = (id, item) => {
-	if (pageInfo.value.address_id == id) {
-		return
-	}
-	addressPopup.value = false
-	pageInfo.value.address_id = id
-	addressList.value.forEach((item, index) => {
-		item.select = false
-		if (item.id == id) {
-			item.select = true
-			selectAddress.value = `${item.province} ${item.city} ${item.district}`
-		}
-	})
-}
-
-const changeAddress = () => {
-	getAddress().then(res => {
-		addressPopup.value = true
-		if (isSuccessCode(res)) {
-			if (res.data.length > 0) {
-				addressList.value = res.data
-				nodata.value = false
-			} else {
-				addressList.value = []
-				nodata.value = true
-			}
-		} else if (isUnLoginCode(res)) {
-			cns.appRoute('login', {}, 'replace')
-		} else {
-			cns.$toast(res.message)
-		}
-	})
 }
 
 const lookBig = (url) => {
@@ -1091,12 +958,16 @@ const getData = () => {
 	})
 }
 
+const openSelectAddress = () => {
+	selectAddressPopup.value = true
+}
+
 onMounted(() => {
 	goodsNo.value = route.query.goods_no
 	skuId.value = route.query.sku_id
 	// 如果从新增收货地址来的，则打开选择收货地址
 	if (fromPath.value == 'addressForm') {
-		changeAddress()
+		openSelectAddress()
 	}
 	// 初始化
 	getData()
@@ -1120,72 +991,6 @@ router.beforeEach((to, from, next) => {
 	color: var(--red-color);
 	font-size: 0.24rem;
 	font-style: normal;
-}
-
-.choose-add-address {
-	width: 6.10rem;
-	padding: 0.40rem 0.95rem 0.50rem 0.95rem;
-	border-radius: 0.30rem;
-}
-
-.choose-add-address .view-h1 {
-	margin-bottom: 0.20rem;
-	text-align: center;
-	font-size: 0.30rem;
-}
-
-.choose-add-address .choose-item {
-	width: 4.43rem;
-	height: 0.88rem;
-	line-height: 0.88rem;
-	margin: 0.30rem 0;
-	border: 1px solid var(--color-text-desc);
-	border-radius: 0.44rem;
-}
-
-.choose-add-address .choose-item.primary {
-	background: linear-gradient(to right, #FF0000, #FF7979);
-	border: none;
-	color: #ffffff;
-}
-
-.choose-add-address .choose-item .iconfont {
-	font-size: 0.50rem;
-	color: #0ABC64;
-}
-
-.choose-add-address .choose-item .import-text {
-	margin-left: 0.14rem;
-	font-size: 0.30rem;
-}
-
-.choose-add-address .choose-item.primary .import-text {
-	margin-left: 0;
-}
-
-.choose-remove-address {
-	padding: 0.40rem 0.40rem 0.30rem 0.40rem;
-}
-
-.choose-remove-address .choose-item {
-	height: 0.84rem;
-	line-height: 0.84rem;
-}
-
-.choose-remove-address .choose-item.primary {
-	height: 0.88rem;
-	margin-left: 0.36rem;
-}
-
-.choose-remove-address .view-h1 {
-	margin-bottom: 0.50rem;
-}
-
-.address-btn-contrl span {
-	margin-left: 0.5rem;
-	padding: 0 0.1rem;
-	color: #999;
-	font-size: 0.26rem;
 }
 
 .prop-cont {
@@ -1240,31 +1045,6 @@ router.beforeEach((to, from, next) => {
 	right: 0.4rem;
 	top: 0.44rem;
 	z-index: 9999;
-}
-
-.goods-popup-title {
-	text-align: center;
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 7.5rem;
-	padding: 0.4rem 0;
-	background: #fff;
-
-	h3 {
-		font-size: 0.32rem;
-		font-weight: bold;
-	}
-}
-
-.address-title {
-	text-align: left;
-	padding: 0.4rem 0.4rem 0.28rem;
-	box-sizing: border-box;
-
-	h3 {
-		line-height: 0.4rem;
-	}
 }
 
 .service-title {
@@ -1639,136 +1419,6 @@ router.beforeEach((to, from, next) => {
 	margin-right: 0.24rem;
 }
 
-.address-list {
-	padding-bottom: 1.2rem !important;
-
-	.nodata {
-		width: 5.3rem;
-		margin: 1rem auto;
-		text-align: center;
-	}
-
-	.nodata img {
-		width: 5.3rem;
-		height: 3rem;
-	}
-
-	.nodata p {
-		margin-top: 0.7rem;
-		font-size: 0.26rem;
-		color: #666666;
-	}
-
-	.list .list-item {
-		width: 100%;
-		height: 2.78rem;
-		background: #FFFFFF;
-		border-radius: 0.2rem;
-		margin-bottom: 0.2rem;
-		padding: 0.3rem 0.2rem 0.1rem;
-		box-sizing: border-box;
-
-		&:last-of-type {
-			border-bottom: none;
-		}
-	}
-
-	.list .list-item .address-icon {
-		line-height: 1rem;
-		padding: 0 0.1rem;
-		margin-right: 0.15rem;
-		position: relative;
-		text-align: center;
-	}
-
-	.list .list-item .address-icon em {
-		font-size: 0.36rem;
-		color: var(--red-color);
-	}
-
-	.list .list-item :deep(.van-button) {
-		height: 100%;
-	}
-
-	.list .list-item :deep(.default.van-button .van-button__text) {
-		color: #333333;
-	}
-
-	.list .list-item .address-info {
-		max-width: 6rem;
-	}
-
-	.list .list-item .address-info p {
-		line-height: 0.36rem;
-		font-size: 0.30rem;
-		color: #333;
-		margin-bottom: 0.24rem;
-		padding: 0 0.1rem;
-	}
-
-	.list .list-item .address-info .address-name {
-		line-height: 0.5rem;
-		align-items: center;
-		padding: 0 0.1rem;
-		width: 100%;
-	}
-
-	.list .list-item .address-info .address-name label {
-		color: #333;
-	}
-
-	.list .list-item .address-info .address-name label,
-	.list .list-item .address-info .address-name span {
-		font-size: 0.28rem;
-	}
-
-	.list .list-item .address-info .address-name span {
-		margin-left: 0.2rem;
-		color: #999;
-	}
-
-	.list .list-item .address-edit {
-		line-height: 1rem;
-		padding: 0 0.3rem;
-		font-size: 0.28rem;
-		color: #333333;
-	}
-
-	:deep(.van-cell) {
-		padding: 5px 10px 5px 0;
-	}
-
-	:deep(.van-swipe-cell) {
-		z-index: -1;
-	}
-
-	.address-add {
-		width: 4rem;
-		height: 0.80rem;
-		margin: 0 auto;
-		line-height: 0.80rem;
-		text-align: center;
-		background: linear-gradient(to right, var(--red-color), #FA5F5F);
-		border-radius: 0.6rem;
-		font-size: 0.32rem;
-		font-weight: bold;
-		color: #ffffff;
-	}
-
-	.address-btn {
-		width: 100%;
-		padding-bottom: constant(safe-area-inset-bottom);
-		padding-bottom: env(safe-area-inset-bottom);
-		position: fixed;
-		left: 50%;
-		bottom: 0;
-		transform: translate(-50%);
-		height: 1.2rem;
-		padding-top: 0.16rem;
-		box-sizing: border-box;
-	}
-}
-
 .price-on-sale-no {
 	line-height: 0.5rem;
 	color: #333;
@@ -2138,7 +1788,7 @@ router.beforeEach((to, from, next) => {
 	height: 0.36rem;
 }
 
-.list_box {
+.list-box {
 	padding: 0 0.11rem 0.35rem;
 }
 
