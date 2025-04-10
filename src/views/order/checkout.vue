@@ -237,7 +237,7 @@ const done = () => {
 			cns.$toast('下单成功')
 			setTimeout(() => {
 				if (res.data.can_pay) {
-					appRoute('pay', {no: res.data.no}, 'replace')
+					appRoute('payIndex', {no: res.data.no}, 'replace')
 				} else {
 					appRoute('orderSuccess', {no: res.data.no}, 'replace')
 				}

@@ -128,8 +128,11 @@ export const initShopConfig = () => {
         }
         let root = document.querySelector(":root")
         root.style.setProperty("--main-color", shopConfig.shop_color)
-        root.style.setProperty("--main-color-30", shopConfig.shop_color+'30')
-        root.style.setProperty("--main-color-90", shopConfig.shop_color+'90')
+        let color_number = 10
+        while (color_number < 100) {
+            root.style.setProperty(`--main-color-${color_number}`, shopConfig.shop_color + color_number)
+            color_number += 10
+        }
         const favicon = document.getElementById('favicon');
         // 修改 href 属性
         favicon.href = shopConfig.shop_logo;

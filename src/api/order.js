@@ -14,3 +14,11 @@ export function checkoutDone(params) {
 export function getOrderSuccess(no){
   return $http.doGet('v1/order/done/success',{no})
 }
+
+export function payInit(no){
+  return $http.doGet('v1/order/cash',{no})
+}
+
+export function wxPay(params){
+  return $http.doPost('v1/order/cash/wechat/pay',params)
+}
