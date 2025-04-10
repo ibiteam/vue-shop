@@ -14,19 +14,6 @@ function filter(params) {
     return params
 }
 
-/**
- * 对数组进行过滤，不去除空值
- * @param params
- * @returns {*}
- */
-function filterNotRemove(params) {
-    for (let index in params) {
-        if (index == 'sign' || index == 'file') {
-            delete params[index]
-        }
-    }
-    return params
-}
 
 /**
  * 对对象进行排序
@@ -92,50 +79,6 @@ function sign(paras, api_key) {
 }
 
 /**
- * 对数据进行签名，不去除空值
- * @param paras
- * @param api_key
- * @returns {{}|*}
- */
-function signNotRemove(paras, api_key) {
-    paras = filterNotRemove(paras)
-    paras['timeStamp'] = Date.parse(new Date()) / 1000
-    paras = sort(paras)
-    let str = linkStr(paras).substr(1)
-    let sign = md5(str + api_key)
-    paras['sign'] = sign
-    return paras
-}
-
-/**
- * 对数据进行验证签名
- * @param paras
- * @param api_key
- * @returns {boolean}
- */
-function verify(paras, api_key) {
-    let sign = paras['sign']
-    paras = filter(paras)
-    let data = sort(paras)
-    let str = linkStr(data).substr(1)
-    let mysign = md5(str + api_key)
-    return mysign == sign
-}
-
-/**
- * 签名数据转变为url
- * @param host
- * @param paras
- * @param api_key
- * @returns {string}
- */
-function signToUrl(host, paras, api_key) {
-    let data = sign(paras, api_key)
-    host = host.replace(/\?$/gi, '')// 去掉host中最后的?
-    return host + '?' + linkStr(data).substr(1)
-}
-
-/**
  * 将对象或者数组转变为url的字符串如&name=jin&age=12
  * @param paras
  * @param key
@@ -155,20 +98,8 @@ function linkStr(paras, key) {
     return paramStr
 }
 
-/**
- * 数据转为md5
- * @param str
- */
-function toMd5(str) {
-    return md5(str)
-}
-
 export default {
     filter,
     sort,
     sign,
-    verify,
-    signToUrl,
-    toMd5,
-    signNotRemove
 }

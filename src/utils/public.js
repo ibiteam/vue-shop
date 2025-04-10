@@ -1,21 +1,9 @@
-import $env from './env'
 import $http from './http'
 import { useConfigStore } from "@/stores/index.js"
 import { isSuccessCode, isUnLoginCode} from "@/utils/constant.js";
 
-function openVConsole() {
-    if (($env.isTest() || $env.isDev())) {
-        const script = document.createElement('script')
-        script.src = "https://cdn.bootcss.com/vConsole/3.3.4/vconsole.min.js"
-        document.body.appendChild(script)
-        script.onload = function () {
-            new VConsole()
-        }
-    }
-}
-
 /** 手机号校验 **/
-function isTelPhone (value) {
+export function isTelPhone (value) {
     let isPhone = /^(13|14|15|17|18|16|19)\d{9}$/
     if (!isPhone.test(value)) {
         return false
@@ -24,77 +12,6 @@ function isTelPhone (value) {
     }
 }
 
-/** 密码类型校验 **/
-function isPassWord (value) {
-    let status = 0
-    let isPwdLen = value.length >= 16 || value.length < 6
-    let isTrim = /^[^\s].*[^\s]$/
-    let isLetterNumber = /^(?!\d{6,8}$)(?! )(?=.*[A-Za-z])[a-zA-Z0-9_]|[^a-zA-Z0-9-=+_., *]{6,16}$/
-    let test = /[`~!@#$%^&*()<>?:"{}\/;'[\]]/im
-    if (isPwdLen || !isTrim.test(value)) {
-        status = 1
-    } else if (!isLetterNumber.test(value) && (!isLetterNumber.test(value) || test.test(value))) {
-        status = 2
-    } else if (test.test(value)) {
-        status = 3
-    } else {
-        status = 0
-    }
-    return status
-}
-
-/**
- * 获取缓存数据
- * @param key  缓存的名称
- * @param value 如果为null是清除缓存，为false是获取缓存，有值的话是设置值
- * @returns {*}
- */
-export function cache (key, value) {
-    if (arguments.length === 1) {
-        value = false
-    }
-    if (arguments.length === 2 && value === null) {
-        return localStorage.removeItem(key)
-    } else if (arguments.length === 1 && value === false) {
-        // 浏览器缓存一天
-        const timestamp = Date.parse(new Date()) / 1000
-        const cacheTime = localStorage.getItem('cacheTime')
-        if (!cacheTime || timestamp - cacheTime > 86400) {
-            localStorage.setItem('cacheTime', timestamp)
-            return false
-        }
-        return JSON.parse(localStorage.getItem(key))
-    } else {
-        localStorage.setItem(key, JSON.stringify(value))
-    }
-}
-export function formatCash(str) {
-    str = (str || 0).toString();
-    if (str.length <= 3) {
-        return str;
-    }
-    if(str.length%3==0){
-        let l=str.length/3
-        let arr=[]
-        for(var j=0;j<l;j++){
-            arr.push(str.substr(j,3))
-        }
-        return arr.join(",");
-    }
-    var arr = [];
-
-    for (var i = 1, len = str.length; i < len; i++) {
-        if (str.length % 3 && i === 1) {
-            arr.push(str.substr(0, str.length % 3));
-        }
-        if (i % 3 === 0) {
-            arr.push(str.substr(i - 2, 3));
-        }
-
-    }
-
-    return arr.join(",");
-}
 export function copyText(text){ //复制到剪切栏
     if (navigator.clipboard) {
         // clipboard api 复制
@@ -118,20 +35,6 @@ export function copyText(text){ //复制到剪切栏
 }
 
 /**
- * 对多为小数进行四舍五入，保留 v 位小数
- * @param num 需处理的数字
- * @param v   要保留的的小数位数
- */
-const decimal = (num, v = 2) => {
-    var vv = Math.pow(10, v) // 获取10的v次幂
-    if (num <= 0) {
-        num = 0
-        num = num.toFixed(v)
-    }
-    return (Math.round(num * vv) / vv).toFixed(v)
-}
-
-/**
  * 格式化金额
  * @param price  金额,支持小数
  * @param num    保留几位小数，默认保留两位
@@ -139,7 +42,7 @@ const decimal = (num, v = 2) => {
  * 12345格式化为12,345.00   12345.6格式化为12,345.60   12345.67格式化为 12,345.67
  * 调用：formatCurrency("12345.675910", 3)，返回12,345.676
  */
-const formatCurrency = (price, num) => {
+export const formatCurrency = (price, num) => {
     num = num > 0 && num <= 20 ? num : 2
     let minus = String(price).indexOf('-') >= 0 ? '-' : ''
     price = String(price).indexOf('-') >= 0 ? String(price).replace('-','') : price
@@ -153,7 +56,7 @@ const formatCurrency = (price, num) => {
     return minus + t.split('').reverse().join('') + '.' + r
 }
 
-function isEmail(value) {
+export function isEmail(value) {
     let email = /^([a-zA-Z\d])((\w|-)+\.?)+@([a-zA-Z\d]+\.)+[a-zA-Z]{2,6}$/
     if (!email.test(value)) {
         return false
@@ -162,13 +65,13 @@ function isEmail(value) {
     }
 }
 
-function isUserNameV3(value) {
+export function isUserNameV3(value) {
     let isVery = /^(?![\d]+$)(?![a-zA-Z]+$)(?![_]+$)[\da-zA-Z_]{3,22}$/
     let isC = /^[A-Za-z]+$/
     return isVery.test(value) || isC.test(value)
 }
 
-function isUserName(value) {
+export function isUserName(value) {
     for(var i in value){
         var asc = value.charCodeAt(i)
         if((asc>=65 && asc<=90) || (asc>=97&&asc<=122)){
@@ -184,12 +87,12 @@ function isUserName(value) {
  * 例如 13355558888 -> 133****8888
  **/
 
-const getPrivacyPhone = (phone)=>{
+export const getPrivacyPhone = (phone)=>{
     return phone.substr(0,3) + '****' + phone.substr(7,4)
 }
 
 /** 获取页面配置信息 */
-const getShopConfig = () => {
+export const getShopConfig = () => {
     const session_name = 'shop-config'
     return new Promise(resolve => {
          $http.doGet('v1/shop/config').then(res => {
@@ -208,7 +111,7 @@ const getShopConfig = () => {
     })
 }
 
-const initShopConfig = () => {
+export const initShopConfig = () => {
     const session_name = 'shop-config'
     return new Promise(async resolve => {
         let shopConfig = {}
@@ -236,7 +139,7 @@ const initShopConfig = () => {
     })
 }
 /** 校验用户是否登录 **/
-function requestLogin() {
+export function requestLogin() {
     return new Promise(resolve => {
         $http.doGet('v1/auth/check_login').then(res=>{
             if (isSuccessCode(res)) {
@@ -264,12 +167,12 @@ function isLogin() {
         console.log(err)
     })
 }
-function filterWhitespace(str){
+export function filterWhitespace(str){
     let newStr = str.replace(/\s*/g,"")
     return newStr;
 }
 
-const debounce = (fnc,delay) => {
+export const debounce = (fnc,delay) => {
   let timer = null
   return function (args){
     if(timer){
@@ -282,7 +185,7 @@ const debounce = (fnc,delay) => {
   }
 }
 
-const throttle = (func,delay) => {
+export const throttle = (func,delay) => {
   let last = 0
   return function (args){
     let now = Date.now()
@@ -293,11 +196,7 @@ const throttle = (func,delay) => {
   }
 }
 export default {
-    openVConsole,
     isTelPhone,
-    isPassWord,
-    cache,
-    decimal,
     formatCurrency,
     isEmail,
     isUserNameV3,

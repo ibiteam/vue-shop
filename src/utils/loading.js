@@ -24,7 +24,6 @@ function close () {
         document.body.removeChild(document.getElementsByClassName('def-loading')[0])
         if (!(document.getElementsByClassName('def-loading') && document.getElementsByClassName('def-loading')[0])) {
             document.body.removeChild(document.getElementsByClassName('def-mask')[0])
-            // document.getElementsByTagName('body')[0].style.cssText = "height: auto;overflow:auto;"
         }
     }
 }
