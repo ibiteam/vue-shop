@@ -39,7 +39,6 @@
 
     import { ref, onMounted, getCurrentInstance, computed } from 'vue'
     import { useRouter } from 'vue-router'
-	import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 
     const cns = getCurrentInstance().appContext.config.globalProperties
     const router = useRouter()
@@ -67,7 +66,7 @@
 
     onMounted(() => {
         if(cns.$public.isLogin()){
-            cns.appRoute('ucenter', {}, {}, 'replace')
+            cns.appRoute('ucenter', {}, 'replace')
         }
     })
 </script>

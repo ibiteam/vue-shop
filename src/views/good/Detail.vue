@@ -129,7 +129,7 @@
 										<template v-if="skuShopPrice.integral || goodsInfo.integral">
 											<p class="co-333 fs40" style="margin: 0 0.08rem;"> + </p>
 											<span class="co-red fs50 fw-b">{{ skuShopPrice.integral || goodsInfo.integral }}</span>
-											<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ goodsInfo.integral_name || '积分' }}</span>
+											<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
 										</template>
 										<p class="fs24 co-red" style="margin-left: 0.3rem;">{{ goodsInfo.label }}</p>
 									</div>
@@ -248,9 +248,9 @@
 						<div class="good-attr attr-title">
 							<p>商品详情</p>
 						</div>
-						<div class="good-attr bg-fff" style="padding-bottom: 0.26rem;">
+						<div class="good-attr bg-fff" style="padding-bottom: 0.26rem;" v-if="goodsAttr && goodsAttr.length>0">
 							<h4 class="fs32 co-333 fw-b" style="padding: 0.3rem 0 0.2rem;">产品参数</h4>
-							<div style="padding-bottom: 0.1rem;" v-if="goodsAttr && goodsAttr.length>0">
+							<div style="padding-bottom: 0.1rem;">
 								<p v-for="item in goodsAttr"><span>{{ item.name }}</span>{{ item.value }}</p>
 							</div>
 							<div class="more-attr s-flex jc-ct">
@@ -509,7 +509,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue'
+import {ref, reactive, onMounted, onBeforeUnmount, nextTick, getCurrentInstance, inject} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 
 import {useGoodStore} from "@/stores";
@@ -524,6 +524,7 @@ const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const router = useRouter()
 const goodStore = useGoodStore()
+const shopConfig = inject('shopConfig')
 
 const swiperRef = ref(null)
 const recommendRef = ref(null)

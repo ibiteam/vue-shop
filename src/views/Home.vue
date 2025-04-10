@@ -34,13 +34,8 @@
 
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
-import { shopCommonConfig } from '@/api/common'
 import HorizontalScroller from '@/components/swiper/horizontalScroller'
 import RecommendColumn from '../components/recommendColumn/RecommendColumn'
-
-onMounted(() => {
-    // shopCommonConfig()
-})
 </script>
 
 <style lang='scss' scoped>

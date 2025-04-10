@@ -1,7 +1,7 @@
 import $env from './env'
 import $http from './http'
 import { useConfigStore } from "@/stores/index.js"
-import constant from "@/utils/constant.js";
+import { isSuccessCode, isUnLoginCode} from "@/utils/constant.js";
 
 function openVConsole() {
     if (($env.isTest() || $env.isDev())) {
@@ -192,39 +192,19 @@ const getPrivacyPhone = (phone)=>{
 const getShopConfig = () => {
     const session_name = 'shop-config'
     return new Promise(resolve => {
-        // $http.doGet('v4/common_config').then(res => {
-        //     if (res.code == 200) {
-        //         if (sessionStorage.getItem(session_name)) {
-        //             sessionStorage.removeItem(session_name)
-        //         }
-        //         const shopConfig = res.data
-        //         shopConfig.expires_time = data.expires_time
-        //         sessionStorage.setItem(session_name, JSON.stringify(shopConfig))
-        //         resolve(res.data)
-        //     } else {
-        //         Toast(res.message)
-        //         resolve('')
-        //     }
-        // })
-        let data = {
-            "privacy_policy": "52585",
-            "shop_color": "#1050A9",
-            "shop_desc": "多多22",
-            "shop_logo": "",
-            "shop_name": "涂多多",
-            "user_agree": "78248",
-            "wap_logo": "",
-            "wap_logo_color": "",
-            "platform_id": "toodudu",
-            "expires_time": 1742486399
-        }
-        if (sessionStorage.getItem(session_name)) {
-            sessionStorage.removeItem(session_name)
-        }
-        const shopConfig = data
-        shopConfig.expires_time = data.expires_time
-        sessionStorage.setItem(session_name, JSON.stringify(shopConfig))
-        resolve(data)
+         $http.doGet('v1/shop/config').then(res => {
+             if (isSuccessCode(res)) {
+                 if (sessionStorage.getItem(session_name)) {
+                     sessionStorage.removeItem(session_name)
+                 }
+                 const shopConfig = res.data
+                 shopConfig.expires_time = res.data.expires_time
+                 sessionStorage.setItem(session_name, JSON.stringify(shopConfig))
+                 resolve(res.data)
+             } else {
+                 resolve('')
+             }
+         })
     })
 }
 
@@ -247,6 +227,10 @@ const initShopConfig = () => {
         root.style.setProperty("--main-color", shopConfig.shop_color)
         root.style.setProperty("--main-color-30", shopConfig.shop_color+'30')
         root.style.setProperty("--main-color-90", shopConfig.shop_color+'90')
+        const favicon = document.getElementById('favicon');
+        // 修改 href 属性
+        favicon.href = shopConfig.shop_logo;
+        document.title = shopConfig.shop_name
         useConfigStore().setShopConfig(shopConfig)
         resolve(shopConfig)
     })
@@ -255,7 +239,7 @@ const initShopConfig = () => {
 function requestLogin() {
     return new Promise(resolve => {
         $http.doGet('v1/auth/check_login').then(res=>{
-            if (constant.isSuccessCode(res)) {
+            if (isSuccessCode(res)) {
                 resolve(res.data.is_login)
             } else {
                 resolve(false)

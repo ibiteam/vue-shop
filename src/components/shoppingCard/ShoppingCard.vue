@@ -24,7 +24,7 @@
 	                        <template v-if="skuPrice.integral || goodsInfo.integral">
 		                        <span class="co-333 fs40" style="margin: 0 0.08rem;"> + </span>
 		                        <span class="co-red fs50 fw-b">{{ skuPrice.integral || goodsInfo.integral }}</span>
-		                        <span class="co-red" style="margin-left: 0.05rem;">{{ goodsInfo.integral_name || '积分' }}</span>
+		                        <span class="co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
 	                        </template>
                         </p>
                         <p class="fs24 co-999 MT10">
@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-    import { ref, computed, watch, nextTick, onMounted, getCurrentInstance } from 'vue'
+	import {ref, computed, watch, nextTick, onMounted, getCurrentInstance, inject} from 'vue'
     import { useGoodStore } from "@/stores";
 	import { updateSku, checkNumber } from '@/api/good'
     import { addGoodsToCart } from '@/api/cart'
@@ -93,6 +93,7 @@
     import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 
     const goodStore = useGoodStore()
+	const shopConfig = inject('shopConfig')
     const props = defineProps({
         skuParamList: {
             default: () => []
@@ -443,14 +444,13 @@
 					if(type == 1){
 						let info = {
 							no: props.goodsInfo.no,
-							goods_number: buyNumberValue.value ? buyNumberValue.value : "",
-							address_id: props.addressId,
-							sku_id: skuId.value,
-							goods_price: count(skuId.value ? skuPrice.value.price : props.goodsInfo.price) // goods_price 商品价格必填
+							buy_number: buyNumberValue.value ? buyNumberValue.value : "",
+							user_address_id: props.addressId,
+							sku_id: skuId.value
 						}
 						//打开下单页面
 						setTimeout(() => {
-							cns.appRoute('active_checkout', {}, info)
+							cns.appRoute('checkout', info)
 						}, 150)
 					}else {
 						const info = {

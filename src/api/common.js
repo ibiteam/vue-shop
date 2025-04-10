@@ -6,5 +6,5 @@ import $http from '@/utils/http'
 
 // 获取页面配置信息
 export const shopCommonConfig = () => {
-    return $http.getNotLoading('v4/common_config')
+    return $http.getNotLoading('v1/shop/config')
 }

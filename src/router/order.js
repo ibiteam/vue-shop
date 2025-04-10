@@ -17,6 +17,12 @@ const order = [
         name: 'checkout',
         component: () => import('@/views/order/checkout.vue'),
     },
+    /*下单成功*/
+    {
+        path: '/order/success',
+        name: 'orderSuccess',
+        component: () => import('@/views/order/success.vue'),
+    },
     /*物流*/
     {
         path: '/order/wuliu',

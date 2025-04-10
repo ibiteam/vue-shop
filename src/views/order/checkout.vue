@@ -2,68 +2,46 @@
 	<div class="sure-order">
 		<common-header :title="title"></common-header>
 		<div v-if="!placeholder">
-			<div class="MB20 choose-li">
-				<div class="order-ship-choose order-ship-way" @click="showShipWay = !showShipWay">
-					<div class="top s-flex jc-bt ai-ct">
-						<label>配送方式</label>
-						<div class="right s-flex ai-ct">
-							<span>{{ shipWayText }}</span>
-							<van-icon name="arrow"/>
-						</div>
-					</div>
-				</div>
-				<div class="order-ship-choose" @click="showDeliveryWay = !showDeliveryWay" v-if="showPlan">
-					<div class="top s-flex jc-bt ai-ct">
-						<label>发货方式</label>
-						<div class="right s-flex ai-ct">
-							<span>{{ deliveryArr.find(a => a.value === deliveryValue).label }}</span>
-							<van-icon name="arrow"/>
-						</div>
-					</div>
-					<div class="tips">
-						<span>{{ deliveryArr.find(a => a.value === deliveryValue).message }}</span>
-					</div>
-				</div>
-			</div>
-
 			<!--收货地址-->
-			<template v-if="deliveryDefaultMethod.checked != 2">
-				<section class="s-flex address-box bg-fff ai-ct" v-if="address!=null" @click="changeAddress">
-					<div class="flex-1">
-						<p class="MB20 s-flex ai-ct">
-							<span class="default-addr" v-if="address.used==1">默认</span>
-							<span class="default-addr"
-							      :class="{ home: address.address_type == '家', company: address.address_type == '公司', repos: address.address_type == '仓库' }">{{ address.address_type }}</span>
-							<span
-								class="fs24 co-333">{{ address.province }}{{ address.city }}{{ address.district }}</span>
-						</p>
-						<p class="fs30 co-333 fw-b elli-2">{{ address.address }}</p>
-						<p>
-							<span class="fs24 co-333">{{ address.consignee }}</span>
-							<span class="fs24 co-333">{{ address.mobile }}</span>
-						</p>
-					</div>
-					<img class="ML10" style="width:0.11rem;height:0.19rem" src="@/assets/images/arrow-right.png" alt="">
-				</section>
-				<section class="s-flex ai-ct address-box no-address bg-fff ai-ct" @click="changeAddress" v-else>
-					<p class="fw-b fs28 flex-1">请选择收货地址</p>
-					<img style="width:0.11rem;height:0.19rem" src="@/assets/images/arrow-right.png" alt="">
-				</section>
-			</template>
+			<section class="s-flex address-box bg-fff ai-ct" v-if="address!=null" @click="changeAddress">
+				<div class="flex-1">
+					<p class="MB20 s-flex ai-ct">
+						<span class="default-addr" v-if="address.is_default==1">默认</span>
+						<!--<span class="default-addr"-->
+						<!--      :class="{ home: address.address_type == '家', company: address.address_type == '公司', repos: address.address_type == '仓库' }">{{ address.address_type }}</span>-->
+						<span
+							class="fs24 co-333">{{ address.province }}{{ address.city }}{{ address.district }}</span>
+					</p>
+					<p class="fs30 co-333 fw-b elli-2">{{ address.address_detail }}</p>
+					<p>
+						<span class="fs24 co-333">{{ address.recipient_name }}</span>
+						<span class="fs24 co-333">{{ address.recipient_phone }}</span>
+					</p>
+				</div>
+				<img class="ML10" style="width:0.11rem;height:0.19rem" src="@/assets/images/arrow-right.png" alt="">
+			</section>
+			<section class="s-flex ai-ct address-box no-address bg-fff ai-ct" @click="changeAddress" v-else>
+				<p class="fw-b fs28 flex-1">请选择收货地址</p>
+				<img style="width:0.11rem;height:0.19rem" src="@/assets/images/arrow-right.png" alt="">
+			</section>
 			<!--商品内容-->
 			<section class="MT20">
-				<div class="shop-list bg-fff MT10" v-for="(shop,shopIdx) in goodsInfo" :key="shopIdx">
-					<div v-for="(good,goodsIdx) in shop.goods" :key="goodsIdx">
-						<div class="goods-list s-flex ai-ct">
-							<div class="img-box" :style="{backgroundImage:'url('+ good.goods_thumb +')'}"></div>
-							<div class="goods-msg s-flex flex-dir flex-1">
-								<p class="elli-2 fs22 goods-name">{{ good.goods_name }}</p>
-								<p class="elli-2 fs20 goods-attr" v-if="good.goods_attr">{{ good.goods_attr }}</p>
-								<div class="fs24 s-flex jc-bt MB10">
-									<form-price :price="good.shop_price" :unit="good.unit" unit_color="#333"
-									            weight="bold"></form-price>
-									<div class="number-box s-flex">x {{ good.number }}</div>
-								</div>
+				<div class="shop-list bg-fff MT10" v-for="(good,goodsIdx) in goodsInfo" :key="goodsIdx">
+					<div class="goods-list s-flex ai-ct">
+						<div class="img-box" :style="{backgroundImage:'url('+ good.thumb +')'}"></div>
+						<div class="goods-msg s-flex flex-dir flex-1">
+							<p class="elli-2 fs22 goods-name">{{ good.name }}</p>
+							<p class="elli-2 fs20 goods-attr" v-if="good.sku_data">{{ good.sku_data }}</p>
+							<div class="fs24 s-flex jc-bt MB10">
+								<form-price :price="good.price" :unit="good.unit" unit_color="#333"
+								            weight="bold"></form-price>
+								<template v-if="good.integral">
+									<p class="co-333 fs40" style="margin: 0 0.08rem;"> + </p>
+									<span class="co-red fs50 fw-b">{{ goodsInfo.integral }}</span>
+									<span class="co-333 co-red"
+									      style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
+								</template>
+								<div class="number-box s-flex">x {{ good.buy_number }}</div>
 							</div>
 						</div>
 					</div>
@@ -73,7 +51,7 @@
 			<section class="bg-fff MT20">
 				<div class="discount ML30 MR30 s-flex ai-ct" style="padding:0.4rem 0;">
 					<span class="fs24 co-333 MR20">留言</span>
-					<input class="fs24" type="text" v-model="formData.postscript" maxlength="50"
+					<input class="fs24" type="text" v-model="formData.remark" maxlength="50"
 					       placeholder="选填 （50个字以内）" style="width:6.2rem;">
 				</div>
 			</section>
@@ -82,11 +60,15 @@
 				<div style="padding: 0 0.3rem">
 					<div class="fs24 s-flex jc-bt discount">
 						<span>商品总额</span>
-						<span class="fw-b">￥{{ total.goodsPrice }}</span>
+						<span class="fw-b">￥{{ total.goods_amount }}</span>
+					</div>
+					<div class="fs24 s-flex jc-bt discount" v-if="total.goods_integral">
+						<span>商品积分</span>
+						<span class="fw-b">{{ total.goodsIntegral }}</span>
 					</div>
 					<div class="fs24 s-flex jc-bt discount">
 						<span>运费</span>
-						<span class="fw-b">+￥{{ total.ship_price }}</span>
+						<span class="fw-b">+￥{{ total.shipping_fee }}</span>
 					</div>
 				</div>
 			</section>
@@ -94,14 +76,22 @@
 			<section class="bg-fff MT20" v-if="payType.length>0">
 				<div class="fs24 s-flex jc-bt discount ML30 MR30" @click="openPay">
 					<span>支付方式</span>
-					<span class="co-333 fw-b">{{ payType[payTypeIndex].name }}<img style="width:0.11rem;height:0.19rem" class="ML20" src="@/assets/images/arrow-right.png" alt=""></span>
+					<span class="co-333 fw-b">{{ payType[payTypeIndex].name }}<img style="width:0.11rem;height:0.19rem"
+					                                                               class="ML20"
+					                                                               src="@/assets/images/arrow-right.png"
+					                                                               alt=""></span>
 				</div>
 			</section>
 			<!--底部-->
 			<div class="footer-box MT20 breathe">
 				<div class="s-flex ai-ct bg-fff jc-fe">
 					<section class="s-flex fs28 flex-1 ML30 breathe">
-						<form-price :price="total.total" sign_size="28" INT_size="48" DF_size="28"></form-price>
+						<form-price :price="total.total_amount" sign_size="28" INT_size="48" DF_size="28"></form-price>
+						<template v-if="total.goods_integral">
+							<p class="co-333 fs40" style="margin: 0 0.08rem;"> + </p>
+							<span class="co-red fs50 fw-b">{{ total.goods_integral }}</span>
+							<span class="co-333 co-red" style="margin-left: 0.05rem;">{{shopConfig.integral_name || '积分' }}</span>
+						</template>
 					</section>
 					<div class="breathe">
 						<section class="to-buy co-999 fs24" @click="done">
@@ -164,97 +154,23 @@
 						     :class="tempPayType == index?'active':''"
 						     v-for="(item,index) in payType"
 						     :key="index"
-						     @click="tempPayType=index"
+						     @click="tempPayType = index"
 						>
 							<span>{{ item.name }}</span>
 						</div>
-					</div>
-					<div class="tips">
-						<span>{{ payType[tempPayType].desc }}</span>
 					</div>
 				</div>
 				<div class="btn-box s-flex" @click="choosenPayType">确认</div>
 			</van-popup>
 		</div>
-		<!--配送方式弹窗-->
-		<div class="delivery-box" v-if="showShipWay">
-			<van-popup
-				v-model:show="showShipWay"
-				round
-				closeable
-				close-icon="close"
-				position="bottom"
-				:close-on-click-overlay="false"
-				:style="{ 'height': '8.6rem' }"
-			>
-				<div class="delivery-title flex jc-bt">
-					<h3 class="fs32 co-333 flex-1 ai-ct">配送方式</h3>
-				</div>
-				<div class="delivery-content">
-					<div class="btns-box s-flex ai-ct">
-						<div class="btn s-flex ai-ct jc-ct" :class="{'active': deliveryChecked == item.value}"
-						     v-for="(item, index) in deliveryDefaultMethod.default_list" :key="index"
-						     @click="changeShipType(item)">
-							<span>{{ item.label }}</span>
-						</div>
-					</div>
-				</div>
-				<div class="btn-box s-flex" @click="choosenShipWayType">确认</div>
-			</van-popup>
-		</div>
-		<!--无效产品-->
-		<van-dialog
-			v-model:show="invalidShow"
-			cancelButtonText="返回购物车"
-			confirmButtonText="继续下单"
-			showCancelButton
-			:showConfirmButton="!!invalidationGoods.canDone"
-			@cancel="invalidCancel"
-			@confirm="invalidConfirm"
-		>
-			<template v-if="invalidationGoods.soldOut && invalidationGoods.soldOut.length>0">
-				<div class="use-state invalid-state fw-b">
-					抱歉，您本单购买的商品{{ !invalidationGoods.canDone && invalidationGoods.deleteGoods.length == 0 ? '全部' : '部分' }}无货！
-				</div>
-				<div class="list-state-box flex-1 co-333">
-					<div class="goods-box" v-for="item in invalidationGoods.soldOut">
-						<div class="img-box" style="position:relative;"><img :src="item.goods_thumb" alt=""><img
-							class="nogood" src="@/assets/images/nogood.png" alt=""></div>
-						<div class="left s-flex flex-dir jc-bt">
-							<div class="top elli-2 fs22">{{ item.goods_name }}</div>
-							<div class="s-flex ai-ct MB20">
-								<span class="fs22 MR10">x</span>
-								<span class="fs22">{{ item.number }}</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</template>
-			<template v-if="invalidationGoods.deleteGoods && invalidationGoods.deleteGoods.length>0">
-				<div class="use-state invalid-state fw-b">
-					抱歉，您本单购买的{{ !invalidationGoods.canDone && invalidationGoods.soldOut.length == 0 ? '全部' : '部分' }}商品已被删除/下架！
-				</div>
-				<div class="list-state-box flex-1 co-333">
-					<div class="goods-box" v-for="item in invalidationGoods.deleteGoods">
-						<div class="img-box" style="position:relative;"><img :src="item.goods_thumb" alt=""></div>
-						<div class="left s-flex flex-dir jc-bt">
-							<div class="top elli-2 fs22">{{ item.goods_name }}</div>
-							<div class="s-flex ai-ct MB20">
-								<span class="fs22 MR10">x</span>
-								<span class="fs22">{{ item.number }}</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</template>
-		</van-dialog>
 		<!--收货地址弹窗-->
-		<AddressListPopup v-model:show="showAddress" :addressId="formData.address_id" @changeAddress="clickAddressBack"></AddressListPopup>
+		<AddressListPopup v-model:show="showAddress" :addressId="formData.user_address_id"
+		                  @changeAddress="clickAddressBack"></AddressListPopup>
 	</div>
 </template>
 
 <script setup>
-import {ref, reactive, computed, onMounted, onActivated, getCurrentInstance, nextTick} from 'vue'
+import {ref, reactive, computed, onMounted, onActivated, getCurrentInstance, nextTick, inject} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import AddressListPopup from "@/components/common/AddressListPopup.vue";
 
@@ -262,8 +178,9 @@ const router = useRouter()
 const route = useRoute()
 import {appRoute} from "@/router/appRoute.js";
 import {isUnLoginCode, isSuccessCode} from "@/utils/constant.js";
-import {getCheckoutData} from "@/api/order.js";
-import http from "@/utils/http.js";
+import {getCheckoutData, checkoutDone} from "@/api/order.js";
+
+const shopConfig = inject('shopConfig')
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -272,45 +189,27 @@ const title = ref('填写订单')
 const address = ref(null) // 收货地址
 const goodsInfo = ref({}) // 商品信息
 const formData = reactive({
-	address_id: 0,
-	postscript: '', // 备注
-	payment_method_code: '' // 支付方式
+	user_address_id: 0,
+	remark: '', // 备注
+	payment_method: '' // 支付方式
 })
+const routeQuery = computed(() => {
+	return route.query
+})
+
 const total = ref({})
 
 // 支付方式相关
 const payType = ref([])
 const showPay = ref(false)
 const tempPayType = ref(0)
-const payTypeIndex = ref(0)
+const payTypeIndex = ref(-1)
 
-// 失效产品相关
-const invalidShow = ref(false)
-const invalidationGoods = ref([])
 const placeholder = ref(true)
 const doLoading = ref(false)
 
-// 配送相关
-const showShipWay = ref(false)
-const shipWayText = ref('')
-const deliveryChecked = ref(null)
-const deliveryDefaultMethod = ref([])
-const showDeliveryWay = ref(false)
-const deliveryArr = ref([])
-const deliveryValue = ref(null)
-
 // 地址相关
 const showAddress = ref(false)
-
-// 方法定义
-const invalidCancel = () => {
-	router.back()
-}
-
-const invalidConfirm = () => {
-	invalidShow.value = false
-	getData()
-}
 
 const changeAddress = () => {
 	showAddress.value = true
@@ -324,93 +223,66 @@ const openPay = () => {
 const choosenPayType = () => {
 	showPay.value = !showPay.value
 	payTypeIndex.value = tempPayType.value
-	formData.payment_method_code = payType.value[payTypeIndex.value].code
+	formData.payment_method = payType.value[payTypeIndex.value].alias
 }
 
-const choosenShipWayType = () => {
-	deliveryDefaultMethod.value.checked = deliveryChecked.value
-	showShipWay.value = false
-	getData( {delivery_method: deliveryDefaultMethod.value.checked})
-}
-
-
-const changeShipType = (item) => {
-	deliveryChecked.value = item.value
-	shipWayText.value = item.label
-}
-
-const done = (param) => {
+const done = () => {
 	if (doLoading.value) return false
 
 	doLoading.value = true
-	formData.delivery_method = deliveryChecked.value
-	const params = {...formData, delivery_type: deliveryValue.value}
-
-	http.doPost('v3/newOrder/done/index', params)
-		.then((res) => {
-			doLoading.value = false
-
-			if (isSuccessCode(res)) {
-				setTimeout(() => {
-					if (res.data.service_id) {
-						appRoute('order_success', {order_id: res.data.order_id}, 'replace')
-					} else if (res.data.canUseWechatPay) {
-						appRoute('pay', {order_id: res.data.order_id}, 'replace')
-					} else {
-						appRoute('order_success', {order_id: res.data.order_id}, 'replace')
-					}
-				}, 150)
-			} else {
-				cns.$dialog.alert({
-					message: res.message
-				}).then(() => {
-					router.back()
-				})
-			}
-		}).catch(() => {
+	const params = {...routeQuery.value, ...formData}
+	checkoutDone(params).then((res) => {
+		doLoading.value = false
+		if (isSuccessCode(res)) {
+			cns.$toast('下单成功')
+			setTimeout(() => {
+				if (res.data.can_pay) {
+					appRoute('pay', {no: res.data.no}, 'replace')
+				} else {
+					appRoute('orderSuccess', {no: res.data.no}, 'replace')
+				}
+			}, 150)
+		} else {
+			cns.$dialog.alert({
+				message: res.message
+			}).then(() => {
+				router.back()
+			})
+		}
+	}).catch(() => {
 		doLoading.value = false
 	})
 }
 
-const getData = (params = {}) => {
-	getCheckoutData({...formData, ...params}).then((res) => {
+const getData = () => {
+	getCheckoutData(Object.keys(routeQuery.value).length ? routeQuery.value : null).then((res) => {
 		if (isSuccessCode(res)) {
 			placeholder.value = false
-
-			// 处理非法商品
-			invalidationGoods.value = res.data.invalidationGoods
-			invalidShow.value = !!(invalidationGoods.value.soldOut.length > 0 || invalidationGoods.value.deleteGoods.length > 0)
 
 			// 商品信息
 			goodsInfo.value = res.data.goods
 
 			// 地址信息
-			address.value = res.data.address
-			formData.address_id = res.data.address !== null ? address.value.address_id : 0
+			address.value = res.data.user_address
+			formData.user_address_id = res.data.user_address !== null ? address.value.id : 0
 
 			// 其他信息
 			total.value = res.data.total
 
 			// 支付方式
-			payType.value = res.data.paymentMethod
-			payType.value.forEach((item, index) => {
-				if (item.selected) {
-					payTypeIndex.value = index
-					formData.payment_method_code = item.code
-				}
-			})
-
-			// 配送方式
-			deliveryDefaultMethod.value = res.data.delivery_default_method
-			const [first] = deliveryDefaultMethod.value?.default_list.filter(item =>
-				deliveryDefaultMethod.value.checked == item.value
-			)
-			deliveryChecked.value = first ? first.value : null
-			shipWayText.value = first ? first.label : ''
+			payType.value = res.data.payment_methods
+			let recommendPay = res.data.payment_methods.filter(item => item.is_recommend)
+			if (recommendPay.length > 0) {
+				payTypeIndex.value = recommendPay[0].id
+				formData.payment_method = recommendPay[0].alias
+			}else if (payType.value.length > 0) {
+				payTypeIndex.value = 0
+				formData.payment_method = payType.value[0].alias
+			}
 		} else if (isUnLoginCode(res)) {
 			appRoute('login', {}, 'replace')
 		} else {
-			cns.dialog.alert({
+			cns.$dialog.alert({
 				message: res.message
 			}).then(() => {
 				router.back()
@@ -421,15 +293,15 @@ const getData = (params = {}) => {
 }
 
 const clickAddressBack = (item) => {
-	sessionStorage.setItem('address_id', item.address_id)
+	sessionStorage.setItem('address_id', item.id)
 	address.value = item
-	formData.address_id = item.address_id
+	formData.user_address_id = item.id
 	showAddress.value = false
 	getData()
 }
 
 onMounted(() => {
-	formData.address_id = sessionStorage.getItem('address_id')
+	formData.user_address_id = routeQuery.value.user_address_id || sessionStorage.getItem('address_id')
 	getData()
 })
 </script>
@@ -438,7 +310,7 @@ onMounted(() => {
 /*收货地址*/
 .address-box {
 	padding: 0.3rem 0.3rem;
-	border-top: 1px solid #e5e5e5;
+	//border-top: 1px solid #e5e5e5;
 	background: #fff url("@/assets/images/address/xq-bg.png") repeat-x left bottom;
 }
 
@@ -750,78 +622,6 @@ textarea {
 :deep(.van-dialog__content) {
 	max-height: 5rem;
 	overflow: auto;
-}
-
-.invalid-state {
-	font-size: 0.3rem;
-	padding: 0.4rem 0.3rem 0.3rem;
-	text-align: center;
-}
-
-.nogood {
-	width: 1.1rem !important;
-	height: 1.1rem !important;
-	border-radius: 50%;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-}
-
-.choose-li {
-	.order-ship-choose {
-		padding: 0.3rem;
-		box-sizing: border-box;
-		background: #fff;
-
-		&.order-ship-way {
-			padding: 0.4rem 0.3rem;
-			position: relative;
-
-			.top::before {
-				position: absolute;
-				content: '';
-				width: 100%;
-				height: 1px;
-				background: #F2F2F2;
-				bottom: -0.4rem;
-			}
-		}
-
-		.top {
-			position: relative;
-
-			label {
-				font-weight: 400;
-				font-size: 0.24rem;
-				color: #333333;
-			}
-
-			.right {
-				span {
-					font-weight: bold;
-					font-size: 0.24rem;
-					color: #333333;
-				}
-			}
-		}
-
-		.tips {
-			margin-top: 0.2rem;
-			-webkit-line-clamp: 2; // 用来限制在一个块元素显示的文本的行数
-			display: -webkit-box; // 将对象作为弹性伸缩盒模型显示
-			-webkit-box-orient: vertical; //设置或检查伸缩盒对象的子元素的排列方式
-			text-overflow: ellipsis; // 在多行文本的情况下，用...隐藏超出范围的文本
-			word-break: break-all;
-			overflow: hidden;
-
-			span {
-				font-weight: 400;
-				font-size: 0.22rem;
-				color: #FF8C10;
-			}
-		}
-	}
 }
 
 :deep(.delivery-box) {

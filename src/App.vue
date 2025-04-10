@@ -2,7 +2,15 @@
 import { RouterView } from 'vue-router'
 import $public from '@/utils/public'
 $public.initShopConfig()
-import {onMounted} from "vue";
+import {onMounted, provide, computed} from "vue";
+
+import { useConfigStore } from "@/stores/index.js";
+
+const configStore = useConfigStore()
+const shopConfig = computed(() => configStore.shopConfig)
+
+provide('shopConfig', shopConfig)
+
 onMounted(() => {
     function getCssVariableValue(variableName) {
         return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
