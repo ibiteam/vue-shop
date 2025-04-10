@@ -5,10 +5,10 @@
 		</div>
 		<div class="login-company">
             <span>
-                <img :src="wap_logo_color" v-if="wap_logo_color"/>
+                <img :src="shopConfig.shop_logo" v-if="shopConfig.shop_logo"/>
                 <h4 v-else class="no"/>
             </span>
-			<p>买好货上{{ shop_name }}</p>
+			<p>买好货上{{ shopConfig.shop_name }}</p>
 		</div>
 		<div class="login-form">
 			<van-form @submit="onSubmit" v-if="loginType">
@@ -64,28 +64,23 @@
 
 <script setup>
 import md5 from 'js-md5'
-import {ref, onMounted, getCurrentInstance, computed} from 'vue'
+import {ref, onMounted, getCurrentInstance, inject} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
-import {useConfigStore} from '@/stores'
 import { accountLogin } from "@/api/user.js";
-import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
+import { isSuccessCode } from "@/utils/constant.js";
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 
 const router = useRouter()
 const route = useRoute()
-const configStore = useConfigStore()
-const shopConfig = computed(() => configStore.shopConfig)
+const shopConfig = inject('shopConfig')
 
-const wap_logo_color = computed(() => shopConfig.value.wap_logo_color || '')
-const shop_name = computed(() => shopConfig.value.shop_name || '')
 const username = ref('')
 const password = ref('')
 const phone = ref('')
 const showPassword = ref(false)
 const loginType = ref(true) // true:代表账号密码登录，false：代表手机号登录
 const fromPath = ref('')
-const isRegistered = ref('0')
 
 const changeShowPassword = () => {
 	showPassword.value = !showPassword.value
@@ -145,7 +140,7 @@ const goToPhone = () => {
 	let query = {}
 	if (redirect) {
 		// 不处理
-	} else if (fromPath.value.name && fromPath.value.name != 'getPassword' && fromPath.value.name != 'register' && fromPath.value.name != 'phone_getPassword') {
+	} else if (fromPath.value.name && fromPath.value.name != 'getPassword' && fromPath.value.name != 'register') {
 		redirect = fromPath.value.name
 		query = fromPath.value.query
 	} else {

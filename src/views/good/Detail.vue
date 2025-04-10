@@ -548,7 +548,7 @@ const changeAddress = (item) => {
 const goodTab = ref(1)
 const swiperIndex = ref(0)
 const fromPath = ref('')
-const goodsNo = ref(7419)
+const goodsNo = ref('')
 const opacity = ref(0)
 const active = ref('good')
 const nodata = ref(false)
@@ -590,7 +590,7 @@ const propPopup = ref(false)
 
 
 const toEvaluate = (type)=> {
-	cns.appRoute('evaluate', {}, {'no': goodsNo, type})
+	cns.appRoute('evaluate', {'no': goodsNo.value })
 }
 // 方法
 const changeShowInfo = (index) => {

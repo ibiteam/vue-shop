@@ -17,3 +17,6 @@ export function goodsCollect({ no, value }) {
     return $http.doPost(URL, { no })
 }
 
+export function getGoodsEvaluate(params) {
+    return $http.doGet('v1/evaluate/goods', params)
+}

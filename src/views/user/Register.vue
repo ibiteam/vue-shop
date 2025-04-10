@@ -7,10 +7,10 @@
         </van-sticky>
         <div class="login-company">
             <span>
-                <img :src="wap_logo_color" v-if="wap_logo_color"/>
+                <img :src="shopConfig.shop_logo" v-if="shopConfig.shop_logo"/>
                 <h4 v-else class="no"/>
             </span>
-	        <p>买好货上{{ shop_name }}</p>
+	        <p>买好货上{{ shopConfig.shop_name }}</p>
         </div>
         <div class="login-form" style="padding-bottom: 1.4rem;">
             <van-form @submit="onSubmitRegister">
@@ -34,18 +34,15 @@
 </template>
 
 <script setup>
-	import {useConfigStore} from '@/stores'
-	const configStore = useConfigStore()
 
-    import { ref, onMounted, getCurrentInstance, computed } from 'vue'
+    import { ref, onMounted, getCurrentInstance, computed, inject } from 'vue'
     import { useRouter } from 'vue-router'
 
     const cns = getCurrentInstance().appContext.config.globalProperties
     const router = useRouter()
 
     const phone = ref('')
-	const wap_logo_color = computed(() => configStore.shopConfig.wap_logo_color || '')
-	const shop_name = computed(() => configStore.shopConfig.shop_name || '')
+	const shopConfig = inject('shopConfig')
     const onSubmitRegister = (values) => {
         if (values.phone === '') {
             cns.$toast('请输入手机号码')
