@@ -314,7 +314,7 @@ const loadMore = () => {
         height: 0.48rem;
         line-height: 0.48rem;
         text-align: center;
-        background: var(--color);
+        background: var(--main-color);
         font-size: 0.24rem;
         color: #ffffff;
         border-radius: 0.04rem;

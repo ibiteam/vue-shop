@@ -203,7 +203,7 @@ const toOrder = (order_id) => {
     display: none;
 }
 :deep(.integral-detail .integral-tabs .van-tabs__line) {
-    background: var(--color);
+    background: var(--main-color);
 }
 :deep(.van-tab__text) {
     font-weight: bold;

@@ -105,7 +105,7 @@ const getCropperFile = (file) => {
     afterRead({content: file})
 }
 const getFileChooseData = (file) => {
-    file_choose_data.file = file
+    file_choose_data.value.file = file
     show_file_choose.value = false
     show_img_cropper.value = true
 }
@@ -302,7 +302,7 @@ const updateNickname = () => {
         }
     }
     .van-dialog__confirm,.van-dialog__confirm:active{
-        color: var(--color);
+        color: var(--main-color);
     }
 
     .van-cell__right-icon{
@@ -362,7 +362,7 @@ const updateNickname = () => {
     }
 
     .btn-right {
-        color: var(--color);
+        color: var(--main-color);
     }
 }
 

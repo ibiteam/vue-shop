@@ -212,10 +212,10 @@ const logOut = () => {
     line-height: 0.88rem;
     font-size: 0.32rem;
     text-align: center;
-    color: var(--color);
+    color: var(--main-color);
     background: #fff;
     border-radius: 3.3rem;
-    border: 1px solid var(--color);
+    border: 1px solid var(--main-color);
     font-weight: bold;
 }
 .van-hairline--top-bottom::after, .van-hairline-unset--top-bottom::after{

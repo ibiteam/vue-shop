@@ -3,50 +3,39 @@
     <common-header id="orderHead" :title="title"></common-header>
     <template v-if="!page_load">
       <div class="order-content">
-        <van-sticky :offset-top="46" class="order-tab-box" @scroll="changeSticky">
-          <div class="s-flex ai-ct" ref="orderTab" style="background: #f8f8f8">
-            <van-tabs v-model="tabActive" class="flex-1" @click="clickTabItem">
-              <van-tab title="全部" name="0"></van-tab>
-              <van-tab title="待确认" name="5"></van-tab>
-              <van-tab title="待付款" name="1"></van-tab>
-              <van-tab title="待发货" name="4"></van-tab>
-              <van-tab title="待收货" name="2"></van-tab>
+        <van-sticky :offset-top="46">
+          <div class="s-flex ai-ct order-tab-box" ref="orderTab">
+            <van-tabs v-model:active="orderInfo.type" class="flex-1" @click="clickTabItem">
+              <van-tab title="全部" name="all"></van-tab>
+              <van-tab title="待付款" name="not_pay"></van-tab>
+              <van-tab title="待发货" name="wait_ship"></van-tab>
+              <van-tab title="待评价" name="wait_evaluate"></van-tab>
+              <van-tab title="已完成" name="success"></van-tab>
             </van-tabs>
-            <div class="order-tab-icon" v-if="show_search_icon" @click="toSearch">
-              <img src="https://cdn.toodudu.com/uploads/2023/10/26/order_search.png" alt="">
-            </div>
           </div>
         </van-sticky>
         <template v-if="!noData">
           <van-list
-              v-model="loading"
+              v-model:loading="loading"
               :finished="finished"
               finished-text="没有更多订单了~"
-              @load="loadMore"
+              @load="getOrderData"
               offset="0"
           >
             <div class="order-list" v-if="!order_load">
               <div class="order-item" v-for="(item,index) in orderListData" :key="index">
                 <!--订单头部-->
                 <div class="order-info s-flex jc-bt">
-                  <div class="fs24 co_666">订单号：{{ item.order_info.order_sn }}</div>
-                  <div class="fs24 co_666">{{ item.order_info.add_time }}</div>
+                  <div class="fs24 co-666">订单号：{{ item.no }}</div>
+                  <div class="order-type" :class="item.status == 2 || item.status == 6?'order-type-grey':''">{{ orderStatus(item.status) }}</div>
                 </div>
                 <div class="order-main">
-                  <!--店铺-->
-                  <div class="shop-box s-flex jc-bt">
-                    <div class="shop-name s-flex" @click="routerPath('shop',{'seller_id': item.order_info.seller_id})">
-                      <span class="elli_1">{{ item.order_info.shop_name }}</span>
-                      <em class="iconfont">&#xe60b;</em>
-                    </div>
-                    <div class="order-type" :class="item.order_info.msg_gray?'order-type-grey':''">{{ item.order_info.msg }}</div>
-                  </div>
                   <!--商品-->
-                  <div class="good-box" v-if="item.goods && item.goods.length>0">
-                    <template v-for="(childItem,childIndex) in item.goods" v-if="(item.show_more_goods && childIndex > 2) || childIndex < 3">
-                      <div class="good-model s-flex jc-bt" @click="routerPath('order',item)">
+                  <div class="good-box" v-if="item.items && item.items.length>0">
+                    <template v-for="(childItem,childIndex) in item.items">
+                      <div class="good-model s-flex jc-bt" v-if="(item.show_more_goods && childIndex > 2) || childIndex < 3">
                         <div class="good-model-left flex-1 s-flex">
-                          <van-image :src="childItem.image" class="good-img">
+                          <van-image :src="childItem.goods_image" class="good-img">
                             <template v-slot:loading>
                               <img src="https://cdn.toodudu.com/uploads/2021/02/20/app_nopic.png" alt="" class="re-img">
                             </template>
@@ -55,25 +44,23 @@
                             </template>
                           </van-image>
                           <div class="ML20 flex-1" style="max-width: 3.1rem">
-                            <div class="fs28 co_333 fw_b" :class="childItem.goods_attr?'elli_1':'elli_2'">{{ childItem.goods_name }}</div>
-                            <div class="fs24 co_666 MT20 word-b">{{ childItem.goods_attr }}</div>
-                            <div class="good-presell-desc" v-if="childIndex==0 && item.pre_info.pre_sale_type == 'buy_type_deposit'">{{ item.pre_info.logistics_desc }}</div>
+                            <div class="fs28 co-333 fw-b elli-2">{{ childItem.goods_name }}</div>
+                            <div class="fs24 co-666 MT20 word-b" v-if="childItem.sku_value">{{ childItem.sku_value }}</div>
                           </div>
                         </div>
                         <div class="good-model-right">
                           <form-price :need_DF="true" :price="childItem.goods_price" sign_size="24" INT_size="32" DF_size="24" weight="600" color="#333"></form-price>
-                          <div class="MT20 co_666">X{{ childItem.goods_number }}{{ childItem.unit?childItem.unit:'' }}</div>
-                          <div class="MT20 refund-desc" v-if="childItem.is_show_after_sales == '2' || childItem.is_show_after_sales == '3'">{{ childItem.is_show_after_sales == '2' ? '退款中' : '退款成功' }}</div>
+                          <div class="MT20 co-666">X{{ childItem.number }}{{ childItem.goods_unit }}</div>
                         </div>
                       </div>
                     </template>
-                    <div class="good-more s-flex" v-if="item.goods.length>3 && !item.show_more_goods" @click="showMoreGoods(index)">
-                      <span>查看剩余{{ item.goods.length - 3 }}个商品</span>
+                    <div class="good-more s-flex" v-if="item.items.length>3 && !item.show_more_goods" @click="showMoreGoods(index)">
+                      <span>查看剩余{{ item.items.length - 3 }}个商品</span>
                       <em class="iconfont" style="margin-left: 0.07rem">&#xe604;</em>
                     </div>
                   </div>
                   <!--物流模块-->
-                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics && item.logistics.ship_info && item.logistics.ship_info.context" @click="routerPath('wuliu', item)">
+                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics">
                     <div class="s-flex ai-ct flex-1">
                       <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
                       <div class="wuliu-type">{{ item.logistics.ship_info.status }}</div>
@@ -82,26 +69,26 @@
                     <em class="iconfont">&#xe60b;</em>
                   </div>
                     <!--评价模块-->
-                    <div class="evaluate-box s-flex jc-bt ai-ct" v-if="item.order_info.show_evaluate">
-                        <div class="fs28 co_333 fw_b">商品好不好，评价一下</div>
+                    <div class="evaluate-box s-flex jc-bt ai-ct" v-if="item.evaluate">
+                        <div class="fs28 co-333 fw-b">商品好不好，评价一下</div>
                         <div class="s-flex ai-ct jc-fe flex-1">
-                            <van-rate v-model="item.evaluate_value" size="13" color="#F54631" @change="changeRate(item)"/>
-                            <div class="ML20 evaluate-desc" v-if="item.evaluate_value == 1">非常不满意</div>
-                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 2">不满意</div>
-                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 3">一般</div>
-                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 4">满意</div>
-                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate_value == 5">非常满意</div>
+                            <van-rate v-model="item.evaluate.default_value" size="13" color="#F54631" @change="changeRate(item)"/>
+                            <div class="ML20 evaluate-desc" v-if="item.evaluate.default_value == 1">非常不满意</div>
+                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate.default_value == 2">不满意</div>
+                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate.default_value == 3">一般</div>
+                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate.default_value == 4">满意</div>
+                            <div class="ML20 evaluate-desc" v-else-if="item.evaluate.default_value == 5">非常满意</div>
                             <div class="ML20 evaluate-desc" v-else></div>
                         </div>
                     </div>
                   <!--订单价格-->
-                  <div class="price-box fs28 co_3D s-flex jc-fe fw_b" v-else>
-                    应付<form-price :need_DF="true" :price="item.order_info.order_amount" sign_size="28" INT_size="40" DF_size="28" weight="600" color="#333" class="ML10"></form-price>
+                  <div class="price-box fs28 co_3D s-flex jc-fe fw-b" v-else>
+                    应付<form-price :need_DF="true" :price="item.order_amount" sign_size="28" INT_size="40" DF_size="28" weight="600" color="#333" class="ML10"></form-price>
                   </div>
                   <!--操作模块-->
-                  <div class="btn-box s-flex jc-fe ai-ct" v-if="item.button && item.button.length > 0">
-                    <van-popover v-model="item.showPopover" trigger="click" placement="top" :offset="[0,5]" v-if="item.button.length > 3">
-                      <template v-for="(btnChild,btnIndex) in item.button.slice(0,item.button.length - 3)">
+                  <div class="btn-box s-flex jc-fe ai-ct" v-if="item.buttons && item.buttons.length > 0">
+                    <van-popover v-model="item.showPopover" trigger="click" placement="top" :offset="[0,5]" v-if="item.buttons.length > 3">
+                      <template v-for="(btnChild,btnIndex) in item.buttons.slice(0,item.buttons.length - 3)">
                         <div class="btn-more-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
                         <div class="btn-more-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
                       </template>
@@ -109,9 +96,9 @@
                         <div class="btn-more">更多</div>
                       </template>
                     </van-popover>
-                    <template v-for="(btnChild,btnIndex) in item.button.slice(-3)">
-                      <div class="btn-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" :class="((btnIndex == item.button.slice(-3).length - 1) && (btnChild.alias != 'small_order_can_cancel' && btnChild.alias != 'can_cancel' && btnChild.alias != 'is_show_change_address_new' && btnChild.alias != 'can_delete'))?'btn-model-red':''" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
-                      <div class="btn-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :class="(btnIndex == item.button.slice(-3).length - 1)?'btn-model-red':''" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
+                    <template v-for="(btnChild,btnIndex) in item.buttons.slice(-3)">
+                      <div class="btn-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" :class="((btnIndex == item.buttons.slice(-3).length - 1) && (btnChild.alias != 'small_order_can_cancel' && btnChild.alias != 'can_cancel' && btnChild.alias != 'is_show_change_address_new' && btnChild.alias != 'can_delete'))?'btn-model-red':''" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
+                      <div class="btn-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :class="(btnIndex == item.buttons.slice(-3).length - 1)?'btn-model-red':''" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
                     </template>
                   </div>
                 </div>
@@ -143,7 +130,6 @@
           <div class="noDesc">可以去看看有哪些想买的</div>
         </div>
       </div>
-      <recommend-column></recommend-column>
     </template>
     <template v-else>
       <div class="s-flex" style="padding: 0.2rem">
@@ -173,51 +159,90 @@
 </template>
 
 <script setup>
-import RecommendColumn from "@/components/recommendColumn/RecommendColumn.vue";
-import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
+import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { useRoute } from 'vue-router'
+import {getOrderList} from "@/api/order.js";
 const route = useRoute()
 const cns = getCurrentInstance().appContext.config.globalProperties
 const title = ref('我的订单')
-const tabActive = ref('')
 const orderListData = ref([])
-const show_search_icon = ref(false)
-const info = ref({
-  page: 1,
-  order_type: 0, // 订单类型 0全部 1待付款 2.待收货 3已取消 4待发货 5待确认 6已完成
-  order_id: ''
+const orderInfo = ref({
+    type: 'all',
+    keywords:'',
+    page: 1,
+    number:10
 })
 const page_load = ref(true)
 const order_load = ref(true)
 const noData =ref(false)
 const loading =ref(false)
 const finished =ref(false)
-const copyText =ref('')
-const canShare =ref(false)
-const shareData =ref({})
-const orderCheck =ref({})
-const addressIndex = ref(null)
-const orderAddressShow = ref(false)
-const addressList =ref([])
-const address_nodata = ref(false)
-const addressSource =ref(null)
-const address_order_index =ref(null)
-const orderAddressData =ref({})
-const orderDeliveryMethod =ref(null)
-const confirmReceiptShow =ref(false)
-const confirmReceiptForm =ref({})
-const phoneCodeText =ref('点击获取')
-const phoneCodeSecond =ref(60)
+
+watch(route, (value) => {
+    orderInfo.value.type = value.query.type ? value.query.type : 'all'
+    orderInfo.value.keywords = value.query.keywords ? value.query.keywords : ''
+    getOrderData()
+})
 
 onMounted(() => {
-  info.order_type = route.query.order_type ? route.query.order_type : 0
-  info.order_id = route.query.order_id ? route.query.order_id : ''
-  tabActive.value = (route.query.order_type ? route.query.order_type : 0).toString()
-  // getOrderData()
+      orderInfo.value.type = route.query.type ? route.query.type : 'all'
+      orderInfo.value.keywords = route.query.keywords ? route.query.keywords : ''
+          getOrderData()
 })
 
 const getOrderData = () => {
+    getOrderList(orderInfo.value).then(res => {
+        if (cns.$constant.isSuccessCode(res)) {
+            orderListData.value = res.data.list
+            orderListData.value.forEach(item => {
+                item.show_more_goods = false
+                item.showPopover = false
+            })
+            if (res.data.meta.total == 0){
+                noData.value = true
+            }else{
+                noData.value = false
+            }
+            if (res.data.meta.current_page * res.data.meta.per_page > res.data.meta.total){
+                loading.value = false
+                finished.value = true
+            }else{
+                orderInfo.value.page++
+            }
+            page_load.value = false
+            order_load.value = false
+        }else {
+            cns.$toast(res.message)
+        }
+    }).catch(err => {
+        console.log(err)
+    })
+}
 
+const clickTabItem = () =>{
+    cns.appRoute('orderList', {type: orderInfo.value.type}, 'replace')
+}
+
+const orderStatus = (status) => {
+    let status_txt = ''
+    if (status == 1){
+        status_txt = '待确认'
+    }else if (status == 2){
+        status_txt = '已取消'
+    }else if (status == 3){
+        status_txt = '待付款'
+    }else if (status == 4){
+        status_txt = '待发货'
+    }else if (status == 5){
+        status_txt = '待收货'
+    }else if (status == 6){
+        status_txt = '已完成'
+    }
+    return status_txt
+}
+
+const showMoreGoods =(index)=>{
+    orderListData.value[index].show_more_goods = true
 }
 
 </script>
@@ -230,21 +255,19 @@ const getOrderData = () => {
     margin: 0.2rem 0;
   }
   /*tab栏*/
-  .order-tab-box ::v-deep{
-    .van-sticky--fixed{
-      padding: 0 0.2rem;
-      box-sizing: border-box;
-    }
+  :deep(.order-tab-box){
+      border-radius: 0px 0px 0.3rem 0.3rem;
+      overflow: hidden;
     .van-tabs__nav {
-      background: #f8f8f8;
+        background: #ffffff;
     }
     .van-tabs--line .van-tabs__wrap {
-      height: 0.96rem;
+      height: 1rem;
     }
     .van-tab--active .van-tab__text--ellipsis {
-      color: var(--color);
+      color: var(--red-color);
       font-size: 0.32rem;
-      font-weight: bold;
+      font-weight: normal;
     }
     .van-tab__text--ellipsis {
       font-size: 0.28rem;
@@ -252,52 +275,25 @@ const getOrderData = () => {
       display: contents;
     }
     .van-tab--active::after{
-      position: absolute;
-      content: "";
-      width: 0.33rem;
-      height: 0.07rem;
-      bottom: 0.2rem;
-      border-radius: 3.3rem;
-      background: var(--color);
-      font-weight: 600;
+        display: none;
     }
     .van-tabs__line {
-      display: none;
       width: 0.34rem;
       height: 0.16rem;
       background-color: unset;
-      background-image: url("https://cdn.toodudu.com/uploads/2024/04/22/下划线@1x.svg");
+      background-image: url("@/assets/images/order/order-tab.svg");
       background-size: 100% 100%;
       background-repeat: no-repeat;
       bottom: 20px;
-      fill:var(--color);
-    }
-    .order-tab-icon{
-      width: 0.4rem;
-      height: 0.4rem;
-      margin-left: 0.17rem;
-      position: relative;
-      img{
-        width: 100%;
-        height: 100%;
-      }
-    }
-    .order-tab-icon::before{
-      content: '';
-      position: absolute;
-      left: -0.16rem;
-      top: 0;
-      bottom: 0;
-      width: 1px;
-      height:0.4rem;
-      background: linear-gradient(135deg, #999999 4%, rgba(216,216,216,0) 100%);
+      fill:var(--red-color);
     }
   }
   .order-content {
-    padding: 0 0.2rem 0.2rem;
+    padding: 0 0 0.2rem;
     /** 订单列表样式设置 **/
     .order-list {
       box-sizing: border-box;
+        padding: 0 0.2rem;
       width: 100%;
       .order-item {
         margin-top: 0.2rem;
@@ -308,32 +304,16 @@ const getOrderData = () => {
           border-bottom: 1px solid #EEEEEE;
           align-items: center;
           padding: 0 0.3rem;
+            .order-type{
+                font-size: 0.28rem;
+                color: #F71111;
+            }
+            .order-type.order-type-grey{
+                color: #999999;
+            }
         }
         .order-main{
           padding: 0.3rem 0.2rem;
-          .shop-box{
-            align-items: center;
-            .shop-name{
-              max-width: 3.56rem;
-              align-items: center;
-              span{
-                font-size: 0.32rem;
-                color: #333333;
-                font-weight: bold;
-              }
-              .iconfont{
-                font-size: 0.56rem;
-                color: #333333;
-              }
-            }
-            .order-type{
-              font-size: 0.28rem;
-              color: #F71111;
-            }
-            .order-type.order-type-grey{
-              color: #999999;
-            }
-          }
           .good-box{
             .good-model{
               margin-top: 0.4rem;
@@ -464,8 +444,8 @@ const getOrderData = () => {
               box-sizing: border-box;
             }
             .btn-model.btn-model-red{
-              border-color: var(--color);
-              color: var(--color);
+              border-color: var(--red-color);
+              color: var(--red-color);
             }
             .van-popover__wrapper{
               position: absolute;
@@ -534,7 +514,7 @@ const getOrderData = () => {
       letter-spacing: 3px;
     }
   }
-  ::v-deep .van-overlay {
+  :deep(.van-overlay) {
     z-index: 9900 !important;
   }
 }

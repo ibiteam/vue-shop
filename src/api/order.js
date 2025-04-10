@@ -22,3 +22,7 @@ export function payInit(no){
 export function wxPay(params){
   return $http.doPost('v1/order/cash/wechat/pay',params)
 }
+
+export function getOrderList(params){
+    return $http.doGet('v1/order/my/index',params || {})
+}
