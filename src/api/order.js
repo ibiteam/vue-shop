@@ -38,3 +38,11 @@ export function deleteOrderAxios(params){
 export function confirmOrderAxios(params){
     return $http.doPost('v1/order/my/receive',params || {})
 }
+
+export function editOrderAddressAxios(params){
+    return $http.doGet('v1/order/my/address/edit',params || {})
+}
+
+export function updateOrderAddressAxios(params){
+    return $http.doPost('v1/order/my/address/update',params || {})
+}

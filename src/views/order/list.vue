@@ -1,6 +1,6 @@
 <template>
-  <div class="myorder">
-    <common-header id="orderHead" :title="title"></common-header>
+  <div class="order-wrap">
+    <common-header :title="title"></common-header>
     <template v-if="!page_load">
       <div class="order-content">
         <van-sticky :offset-top="46">
@@ -43,7 +43,7 @@
                   <!--商品-->
                   <div class="good-box" v-if="item.items && item.items.length>0">
                     <template v-for="(childItem,childIndex) in item.items">
-                      <div class="good-model s-flex jc-bt" v-if="(item.show_more_goods && childIndex > 2) || childIndex < 3">
+                      <div class="good-model s-flex jc-bt" v-if="(item.show_more_goods && childIndex > 2) || childIndex < 3" @click="appRoute('orderDetail',{no:item.no})">
                         <div class="good-model-left flex-1 s-flex">
                           <van-image :src="childItem.goods_image" class="good-img">
                             <template v-slot:loading>
@@ -70,7 +70,7 @@
                     </div>
                   </div>
                   <!--物流模块-->
-                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics">
+                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click="appRoute('orderWuliu',{no:item.no})">
                     <div class="s-flex ai-ct flex-1">
                       <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
                       <div class="wuliu-type">{{ item.logistics.ship_info.status }}</div>
@@ -134,6 +134,55 @@
           <div class="noDesc">可以去看看有哪些想买的</div>
         </div>
       </div>
+        <!-- 修改地址弹窗 -->
+        <div class="order-address">
+            <van-popup class="order-address-pop" v-model:show="orderAddressShow" round position="bottom" :style="{ height: '85%' }" @close="handleClickAddressClose">
+                <div class="order-address-content" :style="{ overflow: !addressSource ? 'hidden' : ''}">
+                    <div class="order-address-fixed" ref="orderAddressFixed">
+                        <div class="order-address-title s-flex ai-ct jc-bt">
+                            <p>选择要修改的地址</p>
+                            <div class="close s-flex ai-ct jc-ct" @click="handleClickAddressClose">
+                                <em class="iconfont">&#xe68c;</em>
+                            </div>
+                        </div>
+                        <div class="order-address-warning">
+                            <em class="iconfont">&#xe710;</em>
+                            地址仅支持修改一次，修改后会影响物流时效，若因商品换仓， 已发货、运费变更等原因导致修改失败，请您谅解。
+                        </div>
+                        <dl class="order-address-source" v-if="originalAddress">
+                            <dt>原收货地址：</dt>
+                            <dd><span>{{ originalAddress.consignee }}</span><span>{{ originalAddress.phone }}</span></dd>
+                            <dd>{{ originalAddress.province_name }} {{ originalAddress.city_name }} {{ originalAddress.district_name }} {{ originalAddress.address }}</dd>
+                        </dl>
+                        <div class="order-address-list__title s-flex jc-bt">
+                            <p>选择新的收货地址</p>
+                            <router-link to="/address/0" class="order-address-add">
+                                <em class="iconfont">&#xe70f;</em>
+                                <span>添加新地址</span>
+                            </router-link>
+                        </div>
+                    </div>
+                    <div class="order-address-list" ref="orderAddressList">
+                        <template v-if="addressNoData">
+                            <div class="order-address-dd s-flex ai-ct" v-for="(address, key) in addressList" :key="key" :class="{ active: addressIndex == key }" @click="handleClickAddressItem(address, key)">
+                                <em class="iconfont check">{{ addressIndex == key ? '&#xe6ea;' : '&#xe7c9;' }}</em>
+                                <div class="order-address-detail">
+                                    <div class="s-flex"><span>{{ address.recipient_name }}</span> <span>{{ address.recipient_phone }}</span> <em class="tag s-flex ai-ct" v-if="address.is_default == 1">默认</em></div>
+                                    <p>{{ address.province }} {{ address.city }} {{ address.district }} {{ address.address_detail }}</p>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="is-nodata" v-if="!addressNoData">
+                            <img src="@/assets/images/address/nodata.png" alt="">
+                            <p>暂无收货地址</p>
+                        </div>
+                    </div>
+                    <div class="order-address-btn" ref="orderAddressBtn" :class="{ disabled: (!addressNoData || addressIndex == null) }">
+                        <p @click="handleClickAddressClose('sure')">确定</p>
+                    </div>
+                </div>
+            </van-popup>
+        </div>
     </template>
     <template v-else>
       <div class="s-flex" style="padding: 0.2rem">
@@ -165,7 +214,14 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { useRoute } from 'vue-router'
-import {cancelOrderAxios, confirmOrderAxios, deleteOrderAxios, getOrderList} from "@/api/order.js";
+import {
+    cancelOrderAxios,
+    confirmOrderAxios,
+    deleteOrderAxios, editOrderAddressAxios,
+    getOrderList,
+    updateOrderAddressAxios
+} from "@/api/order.js";
+import {getAddress} from "@/api/address.js";
 const route = useRoute()
 const cns = getCurrentInstance().appContext.config.globalProperties
 const title = ref('我的订单')
@@ -181,6 +237,18 @@ const order_load = ref(true)
 const noData =ref(false)
 const loading =ref(false)
 const finished =ref(false)
+
+const orderCheck = ref({})
+const addressIndex = ref(null)
+const orderAddressShow = ref(false)
+const addressList = ref([])
+const addressNoData =ref(false)
+const originalAddress = ref({})
+const addressSource = ref(null)
+const orderAddressFixed = ref(null)
+const orderAddressList = ref(null)
+const orderAddressBtn = ref(null)
+
 
 watch(route, (value) => {
     orderInfo.value.type = value.query.type ? value.query.type : 'all'
@@ -280,7 +348,7 @@ const btnOperate = (item,index,btnChild,btnIndex) => {
     }else if(btnChild.action == 'again'){//再次购买
         cns.appRoute('good', {goods_no: item.items[0].goods_no})
     }else if(btnChild.action == 'edit_address'){//修改地址
-
+        handleClickEditAddress(item, index)
     }else if(btnChild.action == 'pay'){//去支付
         cns.appRoute('payIndex', {no: item.no})
     }else if(btnChild.action == 'refund'){//申请售后
@@ -336,7 +404,7 @@ const deleteOrder = (item) =>{//删除订单
     })
 }
 
-const confirmOrder = (item,btnChild) =>{//确认收货
+const confirmOrder = (item) =>{//确认收货
     cns.$dialog.confirm({
         message: '确认收到货了吗?',
         confirmButtonText: '确认收货',
@@ -357,10 +425,69 @@ const confirmOrder = (item,btnChild) =>{//确认收货
     })
 }
 
+const handleClickEditAddress = (data, index) => {
+    orderCheck.value = Object.keys(data).length ? data : orderListData.value[index]
+    getAddress().then(ret => {
+        if (cns.$constant.isSuccessCode(ret)) {
+            addressList.value = ret.data
+            addressNoData.value = addressList.value.length > 0
+            editOrderAddressAxios({no:data.no}).then(res => {
+                if (cns.$constant.isSuccessCode(res)) {
+                    originalAddress.value = res.data
+                    orderAddressShow.value = true
+                    /** 计算收货地址列表高度 **/
+                    setTimeout(() => {
+                        const height = document.querySelector('.order-address-pop').clientHeight
+                        const setHeight = (+height) - (+orderAddressBtn.value.clientHeight) - (+orderAddressFixed.value.clientHeight) - 10
+                        orderAddressList.value.setAttribute('style', `max-height: ${setHeight}px`)
+                    }, 500)
+                } else if (cns.$constant.isUnLoginCode(res)) {
+                    cns.appRoute( 'login')
+                } else {
+                    cns.$toast(res.message);
+                }
+            })
+        } else if (cns.$constant.isUnLoginCode(ret)) {
+            cns.appRoute( 'login')
+        } else {
+            cns.$toast(ret.message);
+        }
+    })
+}
+
+const handleClickAddressItem = (item, index) => {
+    addressIndex.value = index
+}
+
+const handleClickAddressClose = async(type) =>{
+    if (type && type == 'sure') {
+        if (addressIndex.value == null) { cns.$toast('请选择收货地址'); return false }
+        const info = addressList.value[addressIndex.value]
+        updateOrderAddressAxios({ no: orderCheck.value.no, user_address_id: info.id }).then(res => {
+            if (cns.$constant.isSuccessCode(res)) {
+                cns.$toast(res.message)
+                resetParams()
+                getOrderData()
+                orderAddressShow.value = false
+                addressIndex.value = null
+                originalAddress.value = {}
+            } else if (cns.$constant.isUnLoginCode(res)) {
+                cns.appRoute('login')
+            }else {
+                cns.$toast(res.message)
+            }
+        })
+    } else {
+        orderAddressShow.value = false
+        addressIndex.value = null
+        originalAddress.value = {}
+    }
+}
+
 </script>
 
 <style scoped lang="scss">
-.myorder {
+.order-wrap {
   background-color: #F8F8F8;
   min-height: 100vh;
     :deep(.van-search__content){
@@ -611,38 +738,12 @@ const confirmOrder = (item,btnChild) =>{//确认收货
     color: #3D3D3D;
   }
 }
-.equity-share{
-  .share-img img {
-    width: 5.1rem;
-    height: 5.4rem;
-    margin: 1rem 1.9rem 0 1.9rem;
-  }
-  .share-txt{
-    width: 100%;
-    text-align: center;
-    margin-top: -0.2rem;
-    p {
-      font-size: 0.4rem;
-      color: #fff;
-      text-align: center;
-      line-height: 0.58rem;
-      letter-spacing: 3px;
-    }
-  }
-  :deep(.van-overlay) {
-    z-index: 9900 !important;
-  }
-}
 /*修改地址弹窗*/
 .order-address .van-popup { padding: 0.16rem 0; box-sizing: border-box; }
 .order-address .order-address-title { padding: 0.2rem 0; }
 .order-address .order-address-title p { font-size: 0.32rem; font-weight: 600; }
 .order-address .order-address-title .close { width: 0.36rem; height: 0.36rem; background-color: #F2F2F2; border-radius: 999px; }
 .order-address .order-address-title em { font-size: 0.2rem; font-weight: 600; color: #999999; }
-.order-address-mode { font-size: .26rem; color: #777; margin-bottom: .2rem;}
-.order-address-mode .mode-item { margin-left: .4rem;}
-.order-address-mode .mode-item em.iconfont { margin-right: .1rem; }
-.order-address-mode .mode-item .check { color:#f71111; }
 .order-address .order-address-warning { line-height: 1.5; padding: 0.1rem 0 0.3rem 0; font-size: 0.24rem; color: #FB9216; }
 .order-address .order-address-warning em { vertical-align: middle; font-size: 0.32rem; }
 .order-address .order-address-source { padding: 0.2rem 0.3rem; background-color: #F8F8F8; border: 1px solid #F0F0F0; border-radius: 0.1rem; }
@@ -669,28 +770,6 @@ const confirmOrder = (item,btnChild) =>{//确认收货
 .order-address .order-address-btn { width: 7.5rem; height: 1.2rem; background-color: #ffffff; position: fixed; bottom: 0; left: 50%; transform: translate(-50%); box-shadow: 0 0 0.1rem 0 rgba(0,0,0,0.1); }
 .order-address .order-address-btn p { width: 4rem; height: 0.88rem; line-height: 0.88rem; margin: 0.16rem auto; text-align: center; border-radius: 333px; background: linear-gradient(90deg, #FA5F5F, #F71111); font-size: 0.3rem; color: #ffffff; }
 .order-address .order-address-btn.disabled p { background: #999999; }
-/*确认收货弹窗*/
-.confirm-receipt {
-  .van-popup { padding: 0.16rem 0; box-sizing: border-box; }
-  .confirm-receipt-title { padding: 0.2rem 0.3rem; }
-  .confirm-receipt-title p { font-size: 0.32rem; font-weight: 600; }
-  .confirm-receipt-title .close { width: 0.36rem; height: 0.36rem; background-color: #F2F2F2; border-radius: 999px; }
-  .confirm-receipt-title em { font-size: 0.2rem; font-weight: 600; color: #999999; }
-
-  .confirm-receipt-form { padding: 0.2rem 0.3rem; }
-  .confirm-receipt-form .form-item { padding: 0.2rem 0; }
-  .confirm-receipt-form label { width: 25%; font-size: 0.28rem; }
-  .confirm-receipt-form .form-input { width: 100%; height: 0.78rem; padding: 0 0.16rem; border-radius: 0.1rem; border: 1px solid #cccccc; box-sizing: border-box; }
-  .confirm-receipt-form .form-input.disabled { background-color: #f2f2f2; }
-  .confirm-receipt-form .form-code { width: 100%; }
-  .confirm-receipt-form .form-code .form-input { width: 60%; }
-  .confirm-receipt-form input { width: 100%; border: none; outline: none; }
-
-  .confirm-receipt-form .form-btn,
-  .confirm-receipt-form .form-submit { width: 6.94rem; height: 0.68rem; line-height: 0.68rem; margin: 0.36rem auto 0.2rem auto; text-align: center; border-radius: 333px; background: linear-gradient(90deg, #FA5F5F, #F71111); font-size: 0.24rem; color: #ffffff; }
-  .confirm-receipt-form .form-btn.disabled,
-  .confirm-receipt-form .form-submit.disabled { background: #f2f2f2; color: #999999; }
-  .confirm-receipt-form .form-btn { width: 36%; height: 0.78rem; line-height: 0.78rem; margin: 0; border-radius: 0.1rem; font-size: 0.26rem; }
-  .confirm-receipt-form .form-warning { padding: 0.1rem 0 0.1rem 1.38rem; font-size: 0.24rem; color: #aaaaaa; }
-}
+.order-address .is-nodata img{width: 100%;height: auto;margin-top: 0.3rem}
+.order-address .is-nodata p{font-size: 0.28rem;color: #333333;margin-top: 0.2rem;text-align: center;}
 </style>
