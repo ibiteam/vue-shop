@@ -26,3 +26,15 @@ export function wxPay(params){
 export function getOrderList(params){
     return $http.doGet('v1/order/my/index',params || {})
 }
+
+export function cancelOrderAxios(params){
+    return $http.doPost('v1/order/my/cancel',params || {})
+}
+
+export function deleteOrderAxios(params){
+    return $http.doPost('v1/order/my/destroy',params || {})
+}
+
+export function confirmOrderAxios(params){
+    return $http.doPost('v1/order/my/receive',params || {})
+}

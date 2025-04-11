@@ -26,19 +26,13 @@ const order = [
     /*物流*/
     {
         path: '/order/wuliu',
-        name: 'wuliu',
+        name: 'orderWuliu',
         component: () => import('@/views/order/wuliu.vue'),
     },
-    /*物流*/
-    {
-        path: '/order/wuliu',
-        name: 'wuliu',
-        component: () => import('@/views/order/wuliu.vue'),
-    },
-    /*物流*/
+    /*售后*/
     {
         path: '/order/refund',
-        name: 'refund',
+        name: 'orderRefund',
         component: () => import('@/views/order/refund.vue'),
     },
     {
@@ -50,6 +44,12 @@ const order = [
         path: '/pay/success',
         name: 'paySuccess',
         component: () => import('@/views/pay/success.vue'),
-    }
+    },
+    /*评价*/
+    {
+        path: '/order/comment',
+        name: 'orderComment',
+        component: () => import('@/views/order/comment.vue'),
+    },
 ]
 export default order

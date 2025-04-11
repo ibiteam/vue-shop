@@ -4,7 +4,17 @@
     <template v-if="!page_load">
       <div class="order-content">
         <van-sticky :offset-top="46">
-          <div class="s-flex ai-ct order-tab-box" ref="orderTab">
+            <van-search
+                    v-model="orderInfo.keywords"
+                    show-action
+                    placeholder="搜索商品名称/货号/订单编号"
+                    @search="onSearch"
+            >
+                <template #action>
+                    <div @click="onSearch">搜索</div>
+                </template>
+            </van-search>
+          <div class="s-flex ai-ct order-tab-box">
             <van-tabs v-model:active="orderInfo.type" class="flex-1" @click="clickTabItem">
               <van-tab title="全部" name="all"></van-tab>
               <van-tab title="待付款" name="not_pay"></van-tab>
@@ -88,18 +98,12 @@
                   <!--操作模块-->
                   <div class="btn-box s-flex jc-fe ai-ct" v-if="item.buttons && item.buttons.length > 0">
                     <van-popover v-model="item.showPopover" trigger="click" placement="top" :offset="[0,5]" v-if="item.buttons.length > 3">
-                      <template v-for="(btnChild,btnIndex) in item.buttons.slice(0,item.buttons.length - 3)">
-                        <div class="btn-more-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
-                        <div class="btn-more-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
-                      </template>
+                        <div class="btn-more-model" v-for="(btnChild,btnIndex) in item.buttons.slice(0,item.buttons.length - 3)" :key="btnIndex" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
                       <template #reference>
                         <div class="btn-more">更多</div>
                       </template>
                     </van-popover>
-                    <template v-for="(btnChild,btnIndex) in item.buttons.slice(-3)">
-                      <div class="btn-model" :key="btnIndex" v-if="btnChild.alias != 'canShareGroup'" :class="((btnIndex == item.buttons.slice(-3).length - 1) && (btnChild.alias != 'small_order_can_cancel' && btnChild.alias != 'can_cancel' && btnChild.alias != 'is_show_change_address_new' && btnChild.alias != 'can_delete'))?'btn-model-red':''" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
-                      <div class="btn-model share_box" :key="btnIndex" v-if="btnChild.alias == 'canShareGroup'" :class="(btnIndex == item.buttons.slice(-3).length - 1)?'btn-model-red':''" :data-clipboard-text="item.group && item.group.share_data && item.group.share_data.share_url" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
-                    </template>
+                      <div class="btn-model" v-for="(btnChild,btnIndex) in item.buttons.slice(-3)" :key="btnIndex" :class="((btnIndex == item.buttons.slice(-3).length - 1) && (btnChild.action == 'pay' || btnChild.action == 'receive' || btnChild.action == 'again'))?'btn-model-red':''" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
                   </div>
                 </div>
               </div>
@@ -161,7 +165,7 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { useRoute } from 'vue-router'
-import {getOrderList} from "@/api/order.js";
+import {cancelOrderAxios, confirmOrderAxios, deleteOrderAxios, getOrderList} from "@/api/order.js";
 const route = useRoute()
 const cns = getCurrentInstance().appContext.config.globalProperties
 const title = ref('我的订单')
@@ -211,12 +215,29 @@ const getOrderData = () => {
             }
             page_load.value = false
             order_load.value = false
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            // 去登录
+            cns.appRoute('login')
         }else {
             cns.$toast(res.message)
         }
     }).catch(err => {
         console.log(err)
     })
+}
+
+const resetParams = () => {
+    orderInfo.value.page = 1
+    order_load.value = true
+    orderListData.value = []
+    loading.value = false
+    finished.value = false
+    noData.value = false
+}
+
+const onSearch = () => {
+    resetParams()
+    getOrderData()
 }
 
 const clickTabItem = () =>{
@@ -245,15 +266,109 @@ const showMoreGoods =(index)=>{
     orderListData.value[index].show_more_goods = true
 }
 
+const changeRate = (item) =>{
+    setTimeout(() => {//1秒刷新倒计时
+        cns.appRoute('orderComment',{'order_id':item.no,rank:item.evaluate.default_value})
+    }, 500)
+}
+
+const btnOperate = (item,index,btnChild,btnIndex) => {
+    if(btnChild.action == 'cancel'){//取消订单
+        cancelOrder(item)
+    }else if(btnChild.action == 'delete'){//删除订单
+        deleteOrder(item)
+    }else if(btnChild.action == 'again'){//再次购买
+        cns.appRoute('good', {goods_no: item.items[0].goods_no})
+    }else if(btnChild.action == 'edit_address'){//修改地址
+
+    }else if(btnChild.action == 'pay'){//去支付
+        cns.appRoute('payIndex', {no: item.no})
+    }else if(btnChild.action == 'refund'){//申请售后
+        cns.appRoute('orderRefund', {no: item.no})
+    }else if(btnChild.action == 'logistics'){//查看物流
+        cns.appRoute('orderWuliu', {no: item.no})
+    }else if(btnChild.action == 'receive'){//确认收货
+        confirmOrder(item)
+    }else if(btnChild.action == 'evaluate'){//去评价
+        cns.appRoute('orderComment', {no: item.no})
+    }
+}
+
+const cancelOrder = (item) =>{//取消订单
+    cns.$dialog.confirm({
+        message: '确定要取消订单吗?',
+        confirmButtonText: '确认取消',
+    }).then(() => {
+        cancelOrderAxios({no:item.no}).then(res => {
+            if (cns.$constant.isSuccessCode(res)) {
+                cns.$toast(res.message)
+                resetParams()
+                getOrderData()
+            } else if (cns.$constant.isUnLoginCode(res)) {
+                cns.appRoute('login')
+            }else {
+                cns.$toast(res.message)
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+}
+
+const deleteOrder = (item) =>{//删除订单
+    cns.$dialog.confirm({
+        message: '确定要删除订单吗?',
+        confirmButtonText: '确认删除',
+    }).then(() => {
+        deleteOrderAxios({no:item.no}).then(res => {
+            if (cns.$constant.isSuccessCode(res)) {
+                cns.$toast(res.message)
+                resetParams()
+                getOrderData()
+            } else if (cns.$constant.isUnLoginCode(res)) {
+                cns.appRoute('login')
+            }else {
+                cns.$toast(res.message)
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+}
+
+const confirmOrder = (item,btnChild) =>{//确认收货
+    cns.$dialog.confirm({
+        message: '确认收到货了吗?',
+        confirmButtonText: '确认收货',
+    }).then(() => {
+        confirmOrderAxios({no:item.no}).then(res => {
+            if (cns.$constant.isSuccessCode(res)) {
+                cns.$toast(res.message)
+                resetParams()
+                getOrderData()
+            } else if (cns.$constant.isUnLoginCode(res)) {
+                cns.appRoute('login')
+            }else {
+                cns.$toast(res.message)
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+}
+
 </script>
 
 <style scoped lang="scss">
 .myorder {
   background-color: #F8F8F8;
   min-height: 100vh;
-  .always-buy-box{
-    margin: 0.2rem 0;
-  }
+    :deep(.van-search__content){
+        border-radius: 0.3rem;
+    }
+    :deep(.van-search__action){
+        color: #9C9C9C;
+    }
   /*tab栏*/
   :deep(.order-tab-box){
       border-radius: 0px 0px 0.3rem 0.3rem;
