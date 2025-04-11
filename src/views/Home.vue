@@ -34,8 +34,8 @@
 
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
-import HorizontalScroller from '@/components/swiper/horizontalScroller'
-import RecommendColumn from '../components/recommendColumn/RecommendColumn'
+import HorizontalScroller from '@/components/swiper/HorizontalScroller'
+import RecommendColumn from '@/components/recommendColumn/RecommendColumn'
 </script>
 
 <style lang='scss' scoped>

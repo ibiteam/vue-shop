@@ -1,6 +1,6 @@
 {
-  "name": "shop-m-consumer",
-  "version": "0.0.0",
+  "name": "vue-shop",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
