@@ -30,9 +30,8 @@
 						</div>
 					</div>
 					<div class="sele-box" v-if="item.can_use">
-						<img v-if="payInfo.pay_alias === item.alias"
-						     src="https://cdn.toodudu.com/uploads/2020/03/13/select_03.png" alt="">
-						<img v-else src="https://cdn.toodudu.com/uploads/2020/03/13/nosele_03.png" alt="">
+						<img v-if="payInfo.pay_alias === item.alias" src="@/assets/images/cart/select.png" alt="">
+						<img v-else src="@/assets/images/cart/select-no.png" alt="">
 					</div>
 				</div>
 			</div>

@@ -507,7 +507,7 @@ onMounted(() => {
         width: 0.34rem;
         height: 0.34rem;
         border-radius: 50%;
-        background: url("https://cdn.toodudu.com/uploads/2021/02/20/select-icon.png") 0 0/100% 100%;
+        background: url("@/assets/images/cart/select.png") 0 0/100% 100%;
         margin: 0 0.3rem 0 0;
     }
     .cart-container{
