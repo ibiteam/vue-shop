@@ -1,10 +1,6 @@
 import axios from 'axios'
 import { useCookies } from 'vue3-cookies'
 import request from './request'
-import router from '@/router'
-import { useConfigStore } from '@/stores'
-import md5 from 'js-md5'
-import dialog from "./dialog";
 import publics from "./public";
 import Loading from './loading'
 
@@ -80,10 +76,8 @@ axios.interceptors.response.use(
     response => {
         Loading.close()
         if (response.status === 200) {
-            if (response.data.code === 403) {
+            if (response.data.code === 401) {
                 cookies.remove('m-token')
-            } else if (response.data.code === 404) { // 需要重新请求config接口
-                publics.getShopConfig()
             }
             return Promise.resolve(response)
         } else {
