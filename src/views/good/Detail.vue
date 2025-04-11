@@ -120,8 +120,8 @@
 							<template v-if="goodsInfo.sku_params&&goodsInfo.sku_params.spec_values.length">
 								<skuSelect :list="skuParamList" :mainImg="banner.images[0]" :httpIng="isSkuIng" @select="selectSkuFirst"></skuSelect>
 							</template>
-							<div class="bg-pink price-ladder new" style="width: 100%;background: none;padding: 0 0.2rem;">
-								<div class="s-flex flex-wrap ladder-style jc-bt ai-fs">
+							<div style="width: 100%;background: none;padding: 0 0.2rem;">
+								<div class="s-flex flex-wrap price-style jc-bt ai-fs">
 									<div class="duan s-flex ai-ct">
 										<p style="padding: 0;">
 											<form-price :price="skuShopPrice.price ? skuShopPrice.price : goodsInfo.price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
@@ -137,13 +137,6 @@
 							</div>
 						</div>
 						<div class="shop-box">
-							<!--优惠券新-->
-							<div class="coupon_box s-flex ai-ct fs20" @click="couponPopup=true" v-if="couponList.length&&goodsInfo.status">
-								<div class="flex-1 elli-1 flex-wrap" style="overflow: hidden;">
-									<span class="coupon elli-1" style="color: var(--red-color);">优惠券</span>
-								</div>
-								<span class="get-more">详情<i></i></span>
-							</div>
 							<!--商品名称-->
 							<p class="shop-name">{{ goodsInfo.name }}</p>
 							<!--副标题-->
@@ -198,7 +191,7 @@
 						</div>
 					</section>
 				</div>
-				<div style="padding: 0 0.2rem;" class="border-wrap" v-if="evaluate.items.length">
+				<div style="padding: 0 0.2rem;" class="border-wrap">
 					<!--评价-->
 					<div class="comment MT10 bg-fff" ref="commentRef" id="comment">
 						<!--商品评价-->
@@ -213,7 +206,7 @@
 						<div class="eva-class">
 							<span v-for="tag in evaluate.tag_data">{{ tag.name }} <i>{{ tag.value }}</i></span>
 						</div>
-						<div class="eva-list-wrap">
+						<div class="eva-list-wrap" v-if="evaluate.items.length">
 							<div class="eva-list" v-for="(item,index) in evaluate.items" :style="{borderBottom: 'none'}">
 								<div class="users s-flex jc-bt ai-ct">
 									<div class="user-left s-flex ai-ct">
@@ -241,6 +234,7 @@
 								</div>
 							</div>
 						</div>
+						<p class="fs24 co-666 text-center" v-else style="padding: 5px 0 20px;">暂无评价</p>
 					</div>
 				</div>
 				<div style="padding: 0 0.2rem;" class="border-wrap">
@@ -253,23 +247,13 @@
 							<div style="padding-bottom: 0.1rem;">
 								<p v-for="item in goodsAttr"><span>{{ item.name }}</span>{{ item.value }}</p>
 							</div>
-							<div class="more-attr s-flex jc-ct">
+							<div class="more-attr s-flex jc-ct" v-if="goodsAttr.length>8">
 								<div class="fs28 co-333" @click="openPopup('propPopup')">更多详细参数<em class="iconfont co-999" style="font-size: 0.26rem;">&#xe773;</em></div>
 							</div>
 						</div>
 						<div class="detail MT10 bg-fff" ref="detailRef" id="detail">
 							<div class="content">
 								<div class="goods-attr-last vhtml" v-html="goodsInfo.content" style="padding: 0.3rem 0;"></div>
-							</div>
-						</div>
-						<div class="detail MT10 bg-fff" style="padding: 0.2rem;">
-							<div class="content">
-								<!--售后服务-->
-								<div class="MT10 bg-fff customer-service">
-									<p class="co-333 fs32 MB20" style="font-weight: bold">售后保障</p>
-									<div v-if="!goodsInfo.customer_service" class="fs24">暂无数据</div>
-									<div class='fs24 vhtml goods-attr-sale' v-else v-html="goodsInfo.customer_service"></div>
-								</div>
 							</div>
 						</div>
 					</template>
@@ -321,7 +305,7 @@
 								<p class="co-333 fs24">{{ isAttention ? '收藏' : '收藏' }}</p>
 							</div>
 
-							<a @click="showChatActionFunc('shop')" class="attention flex-1 s-flex flex-dir ai-ct jc-ct breathe">
+							<a @click="goChat()" class="attention flex-1 s-flex flex-dir ai-ct jc-ct breathe">
 								<div><img class="footer-icon2" src="@/assets/images/good/good-service.png"/></div>
 								<p class="co-333 fs24">客服</p>
 							</a>
@@ -355,13 +339,6 @@
 						</div>
 					</section>
 				</footer>
-				<van-action-sheet
-					v-model:show="showChatAction"
-					:actions="chatActions"
-					cancel-text="取消"
-					close-on-click-action
-					@select="clickOnlineCustomerServer"
-				></van-action-sheet>
 			</template>
 			<template v-else>
 				<div style="width:7.5rem;background:#fff;border:1px solid transparent;box-sizing: border-box;margin-bottom:-0.2rem">
@@ -450,60 +427,6 @@
 				</div>
 			</div>
 		</van-popup>
-		<!--领取优惠券-->
-		<div class="coupon" v-if="couponPopup">
-			<van-popup
-				v-model:show="couponPopup"
-				round
-				position="bottom"
-				:close-on-click-overlay="false"
-				:style="{ 'max-height': '10.12rem','min-height': '5rem', overflow: 'hidden', 'padding-bottom': 'constant(safe-area-inset-bottom)','padding-bottom': 'env(safe-area-inset-bottom)'}">
-				<div style="padding-top: 1.3rem;max-height: 10.12rem;overflow-y: auto;">
-					<div class="close-btn" @click="couponPopup = false">
-						<i class="iconfont">&#xea13;</i>
-					</div>
-					<div class="goods-popup-title">
-						<h3>优惠券</h3>
-					</div>
-					<div style="max-height:8.8rem;overflow-y:auto;">
-						<p class="co-333 fs30 ML20 s-flex ai-ct" style="line-height: 1;margin-bottom: 0.3rem;font-size: 0.3rem;" v-if="couponList&&couponList.length"><img src="@/assets/images/good/new-coupon-title.png" alt="" style="width: 0.33rem;margin-right: 0.1rem;">可领取优惠券</p>
-						<div class="list-box" style="padding: 0 0.4rem 0.3rem;">
-							<div class="coupon_list" :class="[item.show_limit? 'coupon-mit' : '']" v-for="(item,index) in couponList">
-								<div class="s-flex ai-ct jc-bt">
-									<div class="s-flex ai-ct jc-ct flex-wrap"
-									     style="width: 2.1rem;padding: 0.33rem 0;flex: none;">
-										<div style="width: 100%;line-height: 0.45rem;" class="s-flex jc-ct">
-											<form-price :price="item.money" color="#E12A61" sign_size="20" INT_size="50" DF_size="24" class="elli-1" style="max-width: 3.5rem;"></form-price>
-										</div>
-										<div style="width: 100%;line-height: 0.3rem;" class="s-flex jc-ct">
-											<span style="color: #E12A61;" class="fs20">{{ item.desc }}</span>
-										</div>
-									</div>
-									<div style="padding: 0 0.2rem;width: 4.6rem;" class="s-flex ai-ct jc-bt">
-										<div style="padding: 0.3rem 0 0.2rem;line-height: 0.4rem;">
-											<h4 class="elli-1 fs24 fw-b" style="color: #E12A61;">{{ item.name }}</h4>
-											<p class="fs20 co-999" v-if="item.end_time&&item.start_time">{{ item.start_time }} - {{ item.end_time }}</p>
-											<!--<p class="fs20 co-666 s-flex ai-ct" v-if="item.limit_info&&item.limit_info.length" @click="changeShowInfo(index)">-->
-											<!--	详细信息-->
-											<!--	<em class="iconfont" v-if="!item.show_limit">&#xe67a;</em>-->
-											<!--	<em class="iconfont" v-else>&#xe61e;</em>-->
-											<!--</p>-->
-										</div>
-										<div>
-											<span class="coupon-btn" v-if="!item.max_limit" @click="getCoupon(item)">点击领取</span>
-											<span class="coupon-btn can-use" v-else @click="goUrl(item.btn.url)">去使用</span>
-										</div>
-									</div>
-								</div>
-								<!--<div class="fs20 co-999" style="padding: 0.2rem 0.24rem;line-height: 0.26rem;" v-if="item.show_limit&&item.limit_info&&item.limit_info.length">-->
-								<!--	<p v-for="info in item.limit_info" class="fs20 co-999 elli-1">{{ info }}</p>-->
-								<!--</div>-->
-							</div>
-						</div>
-					</div>
-				</div>
-			</van-popup>
-		</div>
 		<AddressListPopup v-model:show="selectAddressPopup" :addressId="addressId" @changeAddress="changeAddress"></AddressListPopup>
 	</div>
 </template>
@@ -514,6 +437,7 @@ import {useRoute, useRouter} from 'vue-router'
 
 import {useGoodStore} from "@/stores";
 import {getGoodData, goodsCollect, updateSku} from '@/api/good'
+import { getChatUrl } from '@/api/common'
 import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 import $ from 'jquery'
 import ShoppingCard from '@/components/shoppingCard/ShoppingCard'
@@ -538,7 +462,7 @@ const evaluate = ref({
 })
 
 const selectAddressPopup = ref(false)
-const selectAddress = ref('')
+const selectAddress = ref('选择收货地址')
 const addressId = ref('')
 
 const changeAddress = (item) => {
@@ -554,8 +478,6 @@ const active = ref('good')
 const nodata = ref(false)
 const goodsInfo = ref({})
 const isAttention = ref(false)
-const couponList = ref([])
-const couponPopup = ref(false)
 const shoppingType = ref(-1)
 const carNum = ref(0)
 const chooseAttr = ref(false)
@@ -583,20 +505,11 @@ const skuShopPrice = ref({
 })
 const skuId = ref('')
 const isSkuIng = ref(false)
-const chatType = ref('shop')
-const showChatAction = ref(false)
-const chatActions = ref([])
 const propPopup = ref(false)
 
 
 const toEvaluate = (type)=> {
 	cns.appRoute('evaluate', {'no': goodsNo.value })
-}
-// 方法
-const changeShowInfo = (index) => {
-	let data = couponList.value[index]
-	data.show_limit = !data.show_limit
-	couponList.value[index] = data
 }
 
 const selectSku = ({item, skuParamListProp, specNameProp, specIdProp}) => {
@@ -801,21 +714,6 @@ const toCart = () => {
 	cns.appRoute('cart', {hasBack: true})
 }
 
-const getCoupon = (item) => {
-	cns.$http.doPost('v3/usercoupon/add', {id: item.coupon_id})
-		.then((res) => {
-			if (isSuccessCode(res)) {
-				cns.$toast('领取成功！')
-				item.max_limit = !!res.data.status
-				item.btn.url = res.data.searchUrl
-			} else if (isUnLoginCode(res)) {
-				cns.appRoute('login')
-			} else {
-				cns.$toast(res.message)
-			}
-		})
-}
-
 //const getZhiRecommend = () => {
 //	cns.$http.doGet('v4/goods/hotSale', {goods_no: goodsNo.value, page: pageRecommend.value}).then(res => {
 //		if (isSuccessCode(res)) {
@@ -841,21 +739,13 @@ const getCoupon = (item) => {
 //	})
 //}
 
-const showChatActionFunc = (type) => {
-	if (type == 'shop') {
-		chatActions.value = [
-			{name: '010-6668888'}
-		]
-	}
-	chatType.value = type
-	showChatAction.value = true
-}
-
-const clickOnlineCustomerServer = (action, index) => {
-	cns.$dialog.alert({
-		title: '热线电话',
-		message: '010-6668888',
-	}).then(() => {
+const goChat = (type) => {
+	getChatUrl({no: goodsNo.value, source_url: window.location.href}).then(res=>{
+		if (isSuccessCode(res)&&res.data.url){
+			window.location.href = res.data.url
+		}else {
+			cns.$toast(res.message)
+		}
 	})
 }
 
@@ -910,11 +800,6 @@ const getData = () => {
 			if (res.data.banner.video.url) {
 				goodTab.value = 0
 			}
-			/**优惠券**/
-			couponList.value = res.data.center.coupon_list || []
-			couponList.value.length && couponList.value.forEach((d, i) => {
-				d.show_limit = false
-			})
 			/**规格参数**/
 			goodsAttr.value = res.data.center.parameters
 			/**购物车数量**/
@@ -946,7 +831,6 @@ const getData = () => {
 		} else {
 			placeholder.value = false
 			goodsInfo.value = {}
-			couponList.value = []
 			goodsAttr.value = []
 			carNum.value = 0
 			recommend.value = []
@@ -988,485 +872,600 @@ router.beforeEach((to, from, next) => {
 </script>
 
 <style scoped lang="scss">
-.have-em :deep(em) {
-	color: var(--red-color);
-	font-size: 0.24rem;
-	font-style: normal;
-}
-
-.prop-cont {
-	padding: 0 0.4rem;
-
-	div {
-		margin-bottom: 0.2rem;
-		line-height: 0.36rem;
-	}
-
-	span {
-		display: inline-block;
-		width: 8em;
-		flex: none;
-	}
-}
-
-.coupon-btn {
-	display: inline-block;
-	width: 1.3rem;
-	height: 0.5rem;
-	line-height: 0.5rem;
-	text-align: center;
-	color: #fff;
-	background: linear-gradient(-270deg, #FFA494 0%, #FF3250 100%);
-	border-radius: 0.25rem;
-	font-size: 0.20rem;
-	cursor: pointer;
-	padding: 0;
-	box-sizing: border-box;
-}
-
-.coupon-btn.can-use {
-	background: none;
-	color: #E12A61;
-	border: 1px solid #E12A61;
-	line-height: 0.48rem;
-}
-
-.close-btn {
-	i {
-		font-size: 0.28rem;
-		color: #999;
-		font-weight: bold;
-	}
-
-	.co-000 {
-		color: #000;
-	}
-
-	position: absolute;
-	right: 0.4rem;
-	top: 0.44rem;
-	z-index: 9999;
-}
-
-.service-title {
-	text-align: center;
-	padding-top: 0.4rem;
-	margin-bottom: 0.3rem;
-
-	h3 {
-		font-size: 0.42rem;
-		font-weight: bold;
-		color: #9E4C0A;
-		font-family: HelloFont WenYiHei-Regular, HelloFont WenYiHei;
-		margin-bottom: 0.1rem;
-	}
-
-	p {
-		color: #9E4C0A;
-		font-size: 0.24rem;
-	}
-}
-
-.service-cont {
-	padding: 0.3rem 0.3rem;
-	border-radius: 0.3rem;
-	background: #fff;
-	width: 7.1rem;
-	box-sizing: border-box;
-}
-
-.service-cont > div {
-	padding-left: 0.4rem;
-	position: relative;
-	margin-bottom: 0.3rem;
-}
-
-.service-cont > div:last-of-type {
-	margin-bottom: 0;
-}
-
-.service-cont > div > p {
-	font-size: 0.28rem;
-	color: #999;
-	line-height: 0.4rem;
-}
-
-.service-cont > div > h4 {
-	font-size: 0.32rem;
-	color: #333;
-	font-weight: 600;
-	line-height: 0.36rem;
-	margin-bottom: 0.2rem;
-}
-
-.service-cont > div > img {
-	width: 0.3rem;
-	height: 0.32rem;
-	position: absolute;
-	left: 0;
-	top: 0.02rem;
-}
-
-.card-wrap {
-	padding: 0 0.2rem;
-	width: 100%;
-	height: 100%;
-	box-sizing: border-box;
-}
-
-.coupon-wrap .coupon-item {
-	padding: 0 0.25rem 0 0.11rem;
-	color: #E12A61;
-	width: 2.8rem;
-	height: 1.4rem;
-	margin-right: 0.2rem;
-	flex: none;
-	background: url("@/assets/images/good/coupon-no.png") no-repeat center;
-	background-size: 100% 100%;
-	box-sizing: border-box;
-}
-
-.coupon-wrap .coupon-item.active {
-	background: url("@/assets/images/good/coupon-have.png") no-repeat center;
-	background-size: 100% 100%;
-}
-
-.coupon-wrap::-webkit-scrollbar {
-	height: 0; /* 横向滚动条高度 */
-}
-
-.coupon-wrap::-webkit-scrollbar-thumb {
-	background: #fff;
-	border-radius: 0;
-}
-
-.coupon-wrap::-webkit-scrollbar-track {
-	background: #fff;
-	border-radius: 0;
-}
-
-.coupon-wrap::-webkit-scrollbar-thumb:horizontal {
-	background: #fff; /* 横向滚动条thumb颜色 */
-}
-
-.container::-webkit-scrollbar-track:horizontal {
-	background: #fff; /* 横向滚动条轨道颜色 */
-}
-
-.coupon-wrap {
-	display: flex;
-	flex-wrap: nowrap;
-	overflow: auto;
-}
-
-.coupon-wrap .coupon-item:last-of-type {
-	margin-right: 0;
-}
-
-.coupon-wrap .coupon-item p {
-	font-size: 0.2rem;
-	line-height: 0.28rem;
-	margin-bottom: 0.07rem;
-}
-
-.coupon-wrap .coupon-item h6 {
-	font-size: 0.2rem;
-	padding-top: 0.06rem;
-	display: inline-block;
-	margin-bottom: 0.04rem;
-}
-
-.more-attr > div {
-	width: 2.5rem;
-	height: 0.6rem;
-	background: #F3F3F3;
-	border-radius: 0.3rem;
-	line-height: 0.6rem;
-	text-align: center;
-	color: #333;
-	font-size: 0.28rem;
-}
-
-.good-attr > div p {
-	line-height: 0.36rem;
-	font-size: 0.28rem;
-	color: #333;
-	padding: 0.12rem 0;
-	display: flex;
-	align-items: flex-start;
-}
-
-.good-attr > div span {
-	line-height: 0.36rem;
-	font-size: 0.28rem;
-	color: #999;
-	width: 1.7rem;
-	text-align: left;
-	display: inline-block;
-}
-
-.attr-title {
-	position: relative;
-	padding: 0.4rem 0 0.4rem !important;
-	text-align: center;
-	color: #666;
-	font-size: 0.32rem;
-}
-
-.attr-title:after {
-	content: '';
-	position: absolute;
-	left: 2rem;
-	top: 0;
-	bottom: 0;
-	margin: auto;
-	width: 0.6rem;
-	height: 0.02rem;
-	background: linear-gradient(297deg, #666666 0%, rgba(153, 153, 153, 0.2) 100%)
-}
-
-.attr-title:before {
-	content: '';
-	position: absolute;
-	right: 2rem;
-	top: 0;
-	bottom: 0;
-	margin: auto;
-	width: 0.6rem;
-	height: 0.02rem;
-	background: linear-gradient(-297deg, #666666 0%, rgba(153, 153, 153, 0.2) 100%)
-}
-
-.store-recomend :deep(.van-swipe__indicator) {
-	height: 0.08rem;
-	width: 0.08rem;
-	background: #E2E2E2;
-}
-
-.store-recomend :deep(.van-swipe__indicator--active) {
-	width: 0.16rem !important;
-	background: linear-gradient(180deg, #FA5F5F 0%, var(--red-color) 98%);
-}
-
-.store-recomend :deep(.van-swipe__indicators) {
-	bottom: 0.1rem;
-}
-
-.store-prop {
-	padding-top: 0.2rem;
-}
-
-.store-prop > div {
-	line-height: 0.38rem;
-	margin-bottom: 0.1rem;
-}
-
-.store-prop > div:last-of-type {
-	margin-bottom: 0;
-}
-
-.store-prop > div span img {
-	height: 0.24rem;
-	width: auto;
-	margin-right: 0.1rem;
-	position: relative;
-	top: 0.03rem;
-}
-
-.store-prop > div span {
-	width: 1.4rem;
-	text-align: left;
-	color: #999;
-	font-size: 0.26rem;
-	display: inline-block;
-	flex: none;
-	margin-right: 0.16rem;
-}
-
-.eva-list {
-	border-bottom: 1px solid #E5E5E5;
-	padding-bottom: 0.3rem;
-	padding-top: 0.3rem;
-}
-
-.eva-list-wrap .eva-list:first-of-type {
-	padding-top: 0.2rem;
-}
-
-.eva-list :deep(.van-image) {
-	border-radius: 0.2rem;
-	overflow: hidden;
-	margin-right: 0.06rem;
-	margin-bottom: 0.06rem;
-}
-
-:deep(.van-image img) {
-	width: 100%;
-	height: 100%;
-}
-
-.eva-list .img-box :deep(.van-image:nth-of-type(3n+3)) {
-	margin-right: 0;
-}
-
-.eva-class {
-	span {
-		height: 0.5rem;
-		border-radius: 0.25rem;
-		line-height: 0.5rem;
-		padding: 0 0.2rem;
-		font-size: 0.24rem;
-		background: #FDEFEF;
-		color: var(--red-color);
-		display: inline-block;
-		margin-right: 0.2rem;
-		margin-bottom: 0.1rem;
-
-		i {
-			font-style: normal;
-			color: var(--red-color);
-		}
-	}
-}
-.user-img {
-	max-width: 100%;
-	max-height: 100%;
-}
-
-.goods-other {
-	padding: 0.1rem 0.2rem !important;
-	line-height: 0.4rem;
-}
-
-.goods-other > div {
-	padding: 0.2rem 0;
-	line-height: 0.4rem;
-}
-
-.goods-other .other-name {
-	color: #666;
-	font-size: 0.26rem;
-	margin-right: 0.3rem;
-	width: 2.4em;
-	flex: none;
-}
-
-.goods-other .other-cont {
-	color: #333;
-	font-size: 0.26rem;
-	width: 5.4rem;
-}
-
-.goods-other .other-cont.select span {
-	padding: 0 0.1rem;
-	height: 0.58rem;
-	line-height: 0.58rem;
-	background: #F8F8F8;
-	border-radius: 0.1rem;
-	font-size: 0.26rem;
-	color: #666;
-	display: inline-block;
-	margin-right: 0.1rem;
-}
-
-.goods-other .other-cont img {
-	width: 0.34rem;
-	height: 0.34rem;
-	margin-right: 0.08rem;
-	position: relative;
-	top: -1px;
-}
-
-.goods-other .other-cont .s-flex {
-	width: 50%;
-	margin-top: 0.06rem;
-}
-
-.goods-other .other-cont .s-flex:first-of-type {
-	margin-top: 0;
-}
-
-.border-wrap > div {
-	border-radius: 0.2rem;
-	overflow: hidden;
-	padding: 0 0.2rem;
-}
-
-.border-wrap > section {
-	border-radius: 0.2rem;
-	overflow: hidden;
-	padding: 0 0.2rem;
-}
-
-.goods-header {
-	background: #fff;
-	height: 0.98rem;
-	padding: 0 0.2rem;
-}
-
-.goods-header .view-input {
-	height: 0.6rem;
-	width: 6rem;
-	line-height: 0.6rem;
-	padding: 0 0.2rem;
-	background-color: #F4F4F4;
-	border-radius: 0.3rem;
-	font-size: 0.28rem;
-	color: #9C9C9C;
-	flex: none;
-}
-
-.goods-header .view-input .iconfont {
-	margin-right: 0.24rem;
-}
-
-.price-on-sale-no {
-	line-height: 0.5rem;
-	color: #333;
-	font-size: 0.40rem;
-	font-weight: bold;
-}
-
-.goods-gray {
-	line-height: 0.9rem;
-	font-size: 0.28rem;
-	text-align: center;
-	font-weight: 600;
-	color: #999;
-	height: 0.9rem;
-	background: #EAEAEA;
-	position: fixed;
-	bottom: 1.28rem;
-	left: 0;
-	width: 100%;
-	z-index: 111;
-	box-sizing: border-box;
-	border-radius: 0 !important;
-}
-
-.goods-alone {
-	line-height: 0.9rem;
-	font-size: 0.28rem;
-	text-align: center;
-	font-weight: 600;
-	color: var(--red-color);
-	height: 0.9rem;
-	background: #FFF4EF;
-	position: fixed;
-	bottom: 1.28rem;
-	left: 0;
-	width: 100%;
-	z-index: 111;
-	box-sizing: border-box;
-	border-radius: 0 !important;
-}
-
-
-.good-detail {
+.good-detail{
 	width: 7.5rem;
 	margin: 0 auto;
 	background: #F8F8F8;
 	overflow-x: hidden;
+	.nav {
+		position: fixed;
+		top: 0.98rem;
+		width: 7.5rem;
+		height: 0.8rem;
+		background: rgba(255, 255, 255, 1);
+		opacity: 0;
+		z-index: 1000;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		.tabs {
+			width: 100%;
+			padding: 0 0.44rem;
+			height: 100%;
+			a {
+				height: 0.8rem;
+				line-height: 0.8rem;
+				display: block;
+				flex: 1;
+				text-align: center;
+				span {
+					color: #999;
+					font-size: 0.30rem;
+				}
+				&.active {
+					position: relative;
+					span {
+						color: #333;
+						font-weight: 600;
+					}
+					&:after {
+						content: '';
+						width: 1rem;
+						height: 0.04rem;
+						background: #333;
+						position: absolute;
+						bottom: 0.025rem;
+						left: 0;
+						right: 0;
+						margin: auto;
+						border-radius: 0.04rem;
+					}
+				}
+			}
+		}
+	}
+	.card-wrap {
+		padding: 0 0.2rem;
+		width: 100%;
+		height: 100%;
+		box-sizing: border-box;
+		.prop-cont {
+			padding: 0 0.4rem;
+
+			div {
+				margin-bottom: 0.2rem;
+				line-height: 0.36rem;
+			}
+
+			span {
+				display: inline-block;
+				width: 8em;
+				flex: none;
+			}
+		}
+
+		.close-btn {
+			i {
+				font-size: 0.28rem;
+				color: #999;
+				font-weight: bold;
+			}
+
+			.co-000 {
+				color: #000;
+			}
+
+			position: absolute;
+			right: 0.4rem;
+			top: 0.44rem;
+			z-index: 9999;
+		}
+	}
+	.good-attr{
+		& > div{
+			p {
+				line-height: 0.36rem;
+				font-size: 0.28rem;
+				color: #333;
+				padding: 0.12rem 0;
+				display: flex;
+				align-items: flex-start;
+			}
+			span {
+				line-height: 0.36rem;
+				font-size: 0.28rem;
+				color: #999;
+				width: 1.7rem;
+				text-align: left;
+				display: inline-block;
+			}
+		}
+		.more-attr > div {
+			width: 2.5rem;
+			height: 0.6rem;
+			background: #F3F3F3;
+			border-radius: 0.3rem;
+			line-height: 0.6rem;
+			text-align: center;
+			color: #333;
+			font-size: 0.28rem;
+		}
+		&.attr-title {
+			position: relative;
+			padding: 0.4rem 0 0.4rem !important;
+			text-align: center;
+			color: #666;
+			font-size: 0.32rem;
+			&:after {
+				content: '';
+				position: absolute;
+				left: 2rem;
+				top: 0;
+				bottom: 0;
+				margin: auto;
+				width: 0.6rem;
+				height: 0.02rem;
+				background: linear-gradient(297deg, #666666 0%, rgba(153, 153, 153, 0.2) 100%)
+			}
+			&:before {
+				content: '';
+				position: absolute;
+				right: 2rem;
+				top: 0;
+				bottom: 0;
+				margin: auto;
+				width: 0.6rem;
+				height: 0.02rem;
+				background: linear-gradient(-297deg, #666666 0%, rgba(153, 153, 153, 0.2) 100%)
+			}
+		}
+	}
+	.comment{
+		.eva-list-wrap {
+			.eva-list {
+				border-bottom: 1px solid #E5E5E5;
+				padding-bottom: 0.3rem;
+				padding-top: 0.3rem;
+				&:first-of-type{
+					padding-top: 0.2rem;
+				}
+				:deep(.van-image) {
+					border-radius: 0.2rem;
+					overflow: hidden;
+					margin-right: 0.06rem;
+					margin-bottom: 0.06rem;
+				}
+				.img-box :deep(.van-image:nth-of-type(3n+3)) {
+					margin-right: 0;
+				}
+				.user-img {
+					max-width: 100%;
+					max-height: 100%;
+				}
+
+			}
+		}
+		.eva-class {
+			span {
+				height: 0.5rem;
+				border-radius: 0.25rem;
+				line-height: 0.5rem;
+				padding: 0 0.2rem;
+				font-size: 0.24rem;
+				background: #FDEFEF;
+				color: var(--red-color);
+				display: inline-block;
+				margin-right: 0.2rem;
+				margin-bottom: 0.1rem;
+
+				i {
+					font-style: normal;
+					color: var(--red-color);
+				}
+			}
+		}
+	}
+	:deep(.van-image img) {
+		width: 100%;
+		height: 100%;
+	}
+	.goods-other {
+		padding: 0.1rem 0.2rem !important;
+		line-height: 0.4rem;
+		& > div {
+			padding: 0.2rem 0;
+			line-height: 0.4rem;
+		}
+		.other-name {
+			color: #666;
+			font-size: 0.26rem;
+			margin-right: 0.3rem;
+			width: 2.4em;
+			flex: none;
+		}
+		.other-cont {
+			color: #333;
+			font-size: 0.26rem;
+			width: 5.4rem;
+			img {
+				width: 0.34rem;
+				height: 0.34rem;
+				margin-right: 0.08rem;
+				position: relative;
+				top: -1px;
+			}
+			.s-flex {
+				width: 50%;
+				margin-top: 0.06rem;
+				&:first-of-type {
+					margin-top: 0;
+				}
+			}
+			&.select span {
+				padding: 0 0.1rem;
+				height: 0.58rem;
+				line-height: 0.58rem;
+				background: #F8F8F8;
+				border-radius: 0.1rem;
+				font-size: 0.26rem;
+				color: #666;
+				display: inline-block;
+				margin-right: 0.1rem;
+			}
+		}
+	}
+	.border-wrap{
+		& > div, & > section{
+			border-radius: 0.2rem;
+			overflow: hidden;
+			padding: 0 0.2rem;
+		}
+	}
+	.goods-header {
+		background: #fff;
+		height: 0.98rem;
+		padding: 0 0.2rem;
+		.view-input {
+			height: 0.6rem;
+			width: 6rem;
+			line-height: 0.6rem;
+			padding: 0 0.2rem;
+			background-color: #F4F4F4;
+			border-radius: 0.3rem;
+			font-size: 0.28rem;
+			color: #9C9C9C;
+			flex: none;
+			.iconfont {
+				margin-right: 0.24rem;
+			}
+		}
+	}
+	.price-on-sale-no {
+		line-height: 0.5rem;
+		color: #333;
+		font-size: 0.40rem;
+		font-weight: bold;
+	}
+	.goods-gray {
+		line-height: 0.9rem;
+		font-size: 0.28rem;
+		text-align: center;
+		font-weight: 600;
+		color: #999;
+		height: 0.9rem;
+		background: #EAEAEA;
+		position: fixed;
+		bottom: 1.28rem;
+		left: 0;
+		width: 100%;
+		z-index: 111;
+		box-sizing: border-box;
+		border-radius: 0 !important;
+	}
+	.goods{
+		width: 100%;
+		.swiper-box{
+			width: 7.5rem;
+			height: 7.5rem;
+			background: #fff;
+			position: relative;
+			/*视频播放按钮*/
+			.main-btn-wrap {
+				position: absolute;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				margin: auto;
+				bottom: 1.15rem;
+				background: rgba(0, 0, 0, 0.3);
+				height: 0.6rem;
+				border-radius: 0.3rem;
+				z-index: 0;
+				width: fit-content;
+
+				> div {
+					border-radius: 0.3rem;
+					padding: 0 0.3rem;
+					height: 0.6rem;
+					line-height: 0.6rem;
+					color: #fff;
+					font-size: 0.28rem;
+				}
+
+				> div.active {
+					background: rgba(0, 0, 0, 0.6);
+					font-weight: 600;
+					padding: 0 0.4rem;
+				}
+			}
+			.van-swipe {
+				width: 100%;
+				height: 7.5rem;
+			}
+			.play-btn {
+				position: absolute;
+				width: 1.6rem;
+				height: 1.6rem;
+
+				img {
+					width: 100%;
+					height: 100%;
+				}
+
+				left: 0;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				margin: auto;
+				z-index: 2;
+			}
+			.indicator-wrap {
+				position: absolute;
+				bottom: 0.7rem;
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				.custom-indicator {
+					width: 0.9rem;
+					height: 0.08rem;
+					background: rgba(255, 255, 255, 0.2);
+					border-radius: 0.04rem;
+					margin: 0 0.15rem;
+					position: relative;
+				}
+
+				.custom-indicator.indicator-active:after {
+					content: '';
+					width: 0;
+					height: 0.08rem;
+					background: rgba(0, 0, 0, 0.7);
+					border-radius: 0.04rem;
+					position: absolute;
+					left: 0;
+					top: 0;
+					animation: aniswipergoods 3s linear;
+				}
+			}
+			:deep(.van-swipe-item) {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			:deep(.van-image) {
+				width: 100%;
+				height: 100%;
+			}
+			:deep(.van-image__img) {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+			}
+		}
+	}
+	.shop-box {
+		background: #fff;
+		padding: 0 0.2rem 0.28rem;
+		/*商品名称*/
+		.shop-name {
+			font-size: 0.32rem;
+			line-height: 0.38rem;
+			color: #3d3d3d;
+			padding-top: 0.3rem;
+			font-weight: bold;
+		}
+		.goods-desc {
+			color: var(--red-color);
+			font-size: 0.24rem;
+			line-height: 0.36rem;
+			padding-top: 0.1rem;
+		}
+	}
+	.price-style{
+		 p.co-red {
+			 height: .4rem;
+			 line-height: .4rem;
+			 background: #feecec;
+			 border-radius: .08rem;
+			 font-size: .22rem;
+			 color: var(--red-color);
+			 padding: 0 .15rem;
+			 display: inline-block;
+			 width: fit-content;
+			 opacity: 1;
+			 margin-top: .1rem;
+		 }
+	}
+	.item-tit2 {
+		padding: 0.26rem 0;
+	}
+	.detail {
+		padding: 0 0.2rem 0.2rem;
+		.goods-attr-last {
+			width: 100%;
+			overflow: hidden;
+
+			:deep(p) {
+				font-size: 0.28rem;
+				line-height: 0.5rem;
+			}
+		}
+
+		.goods-attr-sale {
+			:deep(p) {
+				font-size: 0.28rem;
+				line-height: 0.5rem;
+			}
+		}
+		.content :deep(table){
+			width: 100% !important;
+		}
+
+		.content :deep(img) {
+			max-width: 7.1rem;
+			height: auto;
+		}
+
+		:deep(.vhtml *) {
+			width: 100% !important;
+			box-sizing: border-box !important;
+		}
+
+	}
+	/*底部*/
+	footer {
+		width: 100%;
+		height: 1.24rem;
+		box-sizing: content-box;
+		margin-top: 0.2rem;
+		.footer-menu {
+			width: 100%;
+			max-width: 750px;
+			background-color: #ffffff;
+			position: fixed;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 10;
+			padding: 0.24rem 0;
+			.footer-icon2 {
+				width: auto;
+				height: 0.36rem;
+				margin-bottom: 0.1rem;
+			}
+
+			.footer-icon3 {
+				width: auto;
+				height: 0.36rem;
+				margin-bottom: 0.1rem;
+			}
+			.shop-car{
+				position: relative;
+				.car-num {
+					position: absolute;
+					height: 0.24rem;
+					padding: 0 0.1rem;
+					border: 1px solid var(--red-color);
+					top: -0.1rem;
+					left: 50%;
+					border-radius: 0.12rem;
+					color: var(--red-color);
+					line-height: 0.24rem;
+					z-index: 10;
+					background: #fff;
+				}
+			}
+			.buying-box{
+				padding-right: 0.1rem;
+				.buying {
+					width: 2.1rem;
+					height: 0.8rem;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					flex-direction: column;
+					border-radius: 0.4rem;
+				}
+				.buying09 {
+					opacity: 0.9;
+					cursor: not-allowed;
+
+					span {
+						color: rgba(255, 255, 255, 0.3);
+					}
+				}
+				.add-car {
+					background: linear-gradient(270deg, #FACB37 0%, #FACB37 100%);
+					color: #ffffff;
+				}
+				.to-buy {
+					background: var((--red-color));
+					color: #ffffff;
+				}
+				.sell-out {
+					color: var(--color-text-desc);
+					background-color: #cccccc;
+					width: 3.4rem;
+				}
+
+			}
+		}
+	}
+	/*推荐*/
+	.recommend-box {
+		padding: 0 0.2rem;
+		.recommend-item {
+			border-radius: 0.2rem;
+			overflow: hidden;
+			background: #fff;
+			width: 3.5rem;
+			padding-bottom: 0.1rem;
+			margin-bottom: 0.1rem;
+			.re-img {
+				width: 3.5rem;
+				height: 3.5rem;
+				border-radius: 5px 5px 0 0;
+			}
+			.goods_type {
+				width: 0.6rem;
+				height: 0.3rem;
+				line-height: 0.3rem;
+				background: rgba(247, 17, 17, 0.04);
+				border-radius: 0.04rem;
+				color: var(--red-color);
+				font-size: 0.2rem;
+				text-align: center;
+				display: inline-block;
+			}
+			&:nth-child(2n+1) {
+				margin-right: 0.1rem;
+			}
+			.recommend-item-img {
+				width: 3.5rem;
+				height: 3.5rem;
+			}
+			.item-name {
+				width: 3.15rem;
+				height: 0.72rem;
+				line-height: 0.36rem;
+				margin-bottom: 0.1rem;
+				span {
+					line-height: 0.36rem;
+					height: 0.36rem;
+					margin-right: 0.1rem;
+					min-width: auto;
+					font-size: 0.2rem;
+					padding: 0 0.1rem;
+				}
+			}
+		}
+	}
 }
 
 /*轮播图片样式*/
@@ -1476,750 +1475,6 @@ router.beforeEach((to, from, next) => {
 	}
 	100% {
 		width: 0.9rem;
-	}
-}
-
-.h-img {
-	height: 100%;
-}
-
-.w-img {
-	width: 100%;
-}
-
-.swiper-box .play-btn {
-	position: absolute;
-	width: 1.6rem;
-	height: 1.6rem;
-
-	img {
-		width: 100%;
-		height: 100%;
-	}
-
-	left: 0;
-	top: 0;
-	bottom: 0;
-	right: 0;
-	margin: auto;
-	z-index: 2;
-}
-
-.swiper-box .indicator-wrap {
-	position: absolute;
-	bottom: 0.7rem;
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	.custom-indicator {
-		width: 0.9rem;
-		height: 0.08rem;
-		background: rgba(255, 255, 255, 0.2);
-		border-radius: 0.04rem;
-		margin: 0 0.15rem;
-		position: relative;
-	}
-
-	.custom-indicator.indicator-active:after {
-		content: '';
-		width: 0;
-		height: 0.08rem;
-		background: rgba(0, 0, 0, 0.7);
-		border-radius: 0.04rem;
-		position: absolute;
-		left: 0;
-		top: 0;
-		animation: aniswipergoods 3s linear;
-	}
-}
-
-.swiper-box :deep(.van-swipe-item) {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.swiper-box :deep(.van-image) {
-	width: 100%;
-	height: 100%;
-}
-
-.swiper-box :deep(.van-image__img) {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-}
-
-.swiper-box :deep(.van-image.h-img img) {
-	height: 100%;
-}
-
-.swiper-box :deep(.van-image.w-img img) {
-	width: 100%;
-}
-
-/*头*/
-.nav {
-	position: fixed;
-	top: 0.98rem;
-	width: 7.5rem;
-	height: 0.8rem;
-	background: rgba(255, 255, 255, 1);
-	opacity: 0;
-	z-index: 1000;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.tabs {
-	width: 100%;
-	padding: 0 0.44rem;
-	height: 100%;
-}
-
-.tabs a {
-	height: 0.8rem;
-	line-height: 0.8rem;
-	display: block;
-	flex: 1;
-	text-align: center;
-}
-
-.tabs a span {
-	color: #999;
-	font-size: 0.30rem;
-}
-
-.tabs a.active {
-	position: relative;
-}
-
-.tabs a.active:after {
-	content: '';
-	width: 1rem;
-	height: 0.04rem;
-	background: #333;
-	position: absolute;
-	bottom: 0.025rem;
-	left: 0;
-	right: 0;
-	margin: auto;
-	border-radius: 0.04rem;
-}
-
-.tabs a.active span {
-	color: #333;
-	font-weight: 600;
-}
-
-/*轮播图*/
-.goods {
-	width: 100%;
-}
-
-.swiper-box {
-	width: 7.5rem;
-	height: 7.5rem;
-	background: #fff;
-	position: relative;
-}
-
-.swiper-box .van-swipe {
-	width: 100%;
-	height: 7.5rem;
-}
-
-.bg-pink {
-	background-color: #fee8ed;
-	padding: 0.12rem;
-}
-
-.bg-pink.price-ladder.new {
-	background: #fff;
-	border-radius: 0;
-	color: #ffffff;
-	padding: 0.3rem 0.2rem 0.3rem;
-}
-
-.price-ladder .duan p {
-	padding: 0.06rem 0;
-}
-
-.price-ladder .ladder-style p.co-red {
-	height: 0.4rem;
-	line-height: 0.4rem;
-	background: #FEECEC;
-	border-radius: 0.08rem;
-	font-size: 0.22rem;
-	color: var(--red-color);
-	padding: 0 0.15rem;
-	display: inline-block;
-	width: fit-content;
-	opacity: 1;
-	margin-top: 0.1rem;
-}
-
-.shop-box {
-	background: #fff;
-	padding: 0 0.2rem 0.28rem;
-}
-
-
-/*自营/商家直营*/
-.small-fun {
-	padding: 0 0.20rem 0 0;
-	height: 0.5rem;
-	background: #F0F0F0;
-	border-radius: 0.08rem;
-	width: fit-content;
-}
-
-.is-ziying {
-	line-height: 0.5rem;
-	font-size: 0.24rem;
-	min-width: 0.7rem;
-	height: 0.5rem;
-	color: #ffffff;
-	text-align: center;
-	display: inline-block;
-	background: linear-gradient(-90deg, #FA5F5F 0%, var(--red-color) 100%);
-	border-radius: 0.08rem;
-	padding: 0 0.1rem;
-	margin: 0 0.2rem 0 0;
-}
-
-.is-ziying.def {
-	background: linear-gradient(-270deg, #5436D5 4%, #735CFF 100%);
-}
-
-/*商品名称*/
-.shop-name {
-	font-size: 0.32rem;
-	line-height: 0.38rem;
-	color: #3d3d3d;
-	padding-top: 0.3rem;
-	font-weight: bold;
-}
-
-.goods-desc {
-	color: var(--red-color);
-	font-size: 0.24rem;
-	line-height: 0.36rem;
-	padding-top: 0.1rem;
-}
-
-/*优惠券*/
-.coupon_box {
-	padding: 0.2rem 0 0;
-	height: 0.5rem;
-}
-
-.coupon_box > div {
-	height: 0.5rem;
-	white-space: nowrap;
-	display: flex;
-	align-items: center;
-}
-
-.coupon {
-	background: linear-gradient(103deg, #FBEAF4 0%, #FDEFEF 100%);
-	border-radius: 0.08rem;
-	padding: 0 0.11rem;
-	margin-right: 0.2rem;
-	font-size: 0.24rem;
-	display: inline-block;
-	height: 0.5rem;
-	line-height: 0.5rem;
-	max-width: 5.8rem;
-}
-
-.get-more {
-	width: 1.04rem;
-	height: 0.5rem;
-	line-height: 0.5rem;
-	background: linear-gradient(116deg, #FF3F37 0%, #FF614D 100%);
-	border-radius: 0.25rem;
-	color: #fff;
-	text-align: center;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	i {
-		width: 0.22rem;
-		height: 0.22rem;
-		display: inline-block;
-		margin-left: 0.04rem;
-		background: url("@/assets/images/good/goods-coupon-more.png") no-repeat 0 0 / 100% 100%;
-	}
-}
-
-/*优惠券弹框*/
-.coupon_title {
-	height: 1.3rem;
-	font-size: 0.32rem;
-	color: #333;
-	position: relative;
-}
-
-.coupon_fixed {
-	padding: 0.1rem 0.25rem 0;
-	height: 1.3rem;
-	line-height: 1.3rem;
-	font-size: 0.32rem;
-	color: #333;
-	position: fixed;
-	width: 7.5rem;
-	box-sizing: border-box;
-	background: #fff;
-	border-radius: 16px 16px 0 0;
-}
-
-.coupon_fixed img {
-	position: absolute;
-	right: 0.28rem;
-	top: 0.43rem;
-	width: 0.36rem;
-	height: 0.36rem;
-}
-
-.list-box {
-	padding: 0 0.11rem 0.35rem;
-}
-
-.coupon_list {
-	border-radius: 0.2rem;
-	border: 1px solid transparent;
-	border-top: 0;
-	margin-bottom: 0.2rem;
-	width: 6.7rem;
-}
-
-.coupon-mit {
-	border: 1px solid #F6DEE2;
-	border-top: none;
-}
-
-.coupon_list > div.s-flex {
-	width: 6.7rem;
-	position: relative;
-	height: 1.6rem;
-	box-sizing: border-box;
-	background: url('@/assets/images/good/coupon-bg-new1.png') no-repeat 0 0 / 100% 100%;
-	display: flex;
-}
-
-.price, .xian {
-	color: var(--red-color);
-}
-
-.coupon-act-col {
-	color: #343434;
-}
-
-.price, .limit {
-	margin-top: 0.04rem;
-	margin-bottom: 0.08rem;
-}
-
-/*促销*/
-.discount {
-	padding: 0 0.2rem;
-}
-
-.cuxiao {
-	white-space: nowrap;
-}
-
-.discount .act-name {
-	padding: 0 0.1rem;
-	line-height: 0.3rem;
-	height: 0.3rem;
-	margin-right: 0.2rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 1px solid var(--red-color);
-	border-radius: 0.06rem;
-	font-size: 0.20rem;
-	color: var(--red-color);
-	white-space: nowrap;
-}
-
-.item-tit2 {
-	padding: 0.26rem 0;
-}
-
-/*店铺*/
-.logo-box {
-	width: 1.1rem;
-	height: 1.1rem;
-	border: 1px solid #E5E5E5;
-	border-radius: 50%;
-	margin-right: 0.2rem;
-}
-
-.shop-msg {
-	padding: 0.2rem 0.2rem !important;
-}
-
-.store-head {
-	background: #FAFAFA;
-	border-radius: 0.2rem;
-	padding: 0.3rem 0.2rem;
-}
-
-.shop-logo {
-	width: 1.1rem;
-	height: 1.1rem;
-	border-radius: 50%;
-}
-
-.star-level {
-	height: 0.26rem;
-	padding: 0.08rem 0;
-}
-
-.star-level span {
-	height: 0.3rem;
-	border-radius: 0.06rem;
-	line-height: 0.3rem;
-	padding: 0 0.1rem;
-	display: inline-block;
-	margin-right: 0.1rem;
-	width: fit-content;
-	flex: none;
-}
-
-.enter-store-btn {
-	height: 0.56rem;
-	border-radius: 0.3rem;
-	line-height: 0.56rem;
-	color: #fff;
-	font-size: 0.32rem;
-	text-align: center;
-	background: var(--red-color);
-	padding: 0 0.23rem;
-	display: inline-block;
-}
-
-.store-num span {
-	font-size: 0.24rem;
-	color: #ADADAD;
-}
-
-.store-num i {
-	margin: 0 0.15rem;
-	color: #ADADAD;
-}
-
-/*商品详情*/
-.detail {
-	padding: 0 0.2rem 0.2rem;
-}
-
-.goods-attr-last {
-	width: 100%;
-	overflow: hidden;
-
-	:deep(p) {
-		font-size: 0.28rem;
-		line-height: 0.5rem;
-	}
-}
-
-.goods-attr-sale {
-	:deep(p) {
-		font-size: 0.28rem;
-		line-height: 0.5rem;
-	}
-}
-
-// 限制编译器详情最大宽度，防止超出750
-.content :deep(table){
-	width: 100% !important;
-}
-
-.content :deep(img) {
-	max-width: 7.1rem;
-	height: auto;
-}
-
-.customer-service span {
-	display: inline;
-}
-
-.price-text p {
-	font-size: 0.22rem;
-	line-height: 0.3rem;
-	color: #3D3D3D;
-}
-
-.price-text {
-	font-size: 0.22rem;
-	line-height: 0.3rem;
-	color: #3D3D3D;
-}
-
-//限制编译器详情最大宽度，防止超出750
-:deep(.vhtml *) {
-	width: 100% !important;
-	box-sizing: border-box !important;
-}
-
-/*推荐*/
-.re-tit {
-	width: 100%;
-	padding: 0.2rem 0 0.2rem;
-}
-
-.re-tit-img {
-	width: 0.36rem;
-	height: 0.3rem;
-}
-
-.recommend-box {
-	padding: 0 0.2rem;
-}
-
-.recommend-item {
-	border-radius: 0.2rem;
-	overflow: hidden;
-	background: #fff;
-	width: 3.5rem;
-	padding-bottom: 0.1rem;
-	margin-bottom: 0.1rem;
-}
-
-.recommend-item .goods_type {
-	width: 0.6rem;
-	height: 0.3rem;
-	line-height: 0.3rem;
-	background: rgba(247, 17, 17, 0.04);
-	border-radius: 0.04rem;
-	color: var(--red-color);
-	font-size: 0.2rem;
-	text-align: center;
-	display: inline-block;
-}
-
-.recommend-item .qihuo {
-	background: rgba(255, 195, 0, 0.12);
-	color: #FF8F1F;
-}
-
-.store-recomend .recommend-item {
-	width: 2.1rem;
-}
-
-.store-recomend .recommend-box {
-	padding: 0;
-}
-
-.recommend-item:nth-child(2n+1) {
-	margin-right: 0.1rem;
-}
-
-.store-recomend .recommend-item:nth-child(2n+1) {
-	margin-right: 0;
-}
-
-.store-recomend .recommend-item:nth-child(3n+1), .store-recomend .recommend-item:nth-child(3n+2) {
-	margin-right: 0.2rem;
-}
-
-.store-recomend .item-name {
-	width: 100%;
-	line-height: 0.3rem;
-	font-size: 0.28rem;
-	height: 0.6rem;
-	margin-bottom: 0.2rem;
-}
-
-.store-recomend .recommend-item-img {
-	width: 2.1rem;
-	height: 2.1rem;
-}
-
-.store-recomend .re-img {
-	width: 2.1rem;
-	height: 2.1rem;
-}
-
-.recommend-item-img {
-	width: 3.5rem;
-	height: 3.5rem;
-}
-
-.re-img {
-	width: 3.5rem;
-	height: 3.5rem;
-	border-radius: 5px 5px 0 0;
-}
-
-.item-name {
-	width: 3.15rem;
-	height: 0.72rem;
-	line-height: 0.36rem;
-	margin-bottom: 0.1rem;
-}
-
-.item-name span {
-	line-height: 0.36rem;
-	height: 0.36rem;
-	margin-right: 0.1rem;
-	min-width: auto;
-	font-size: 0.2rem;
-	padding: 0 0.1rem;
-}
-
-/*底部*/
-footer {
-	width: 100%;
-	height: 1.24rem;
-	box-sizing: content-box;
-}
-
-footer {
-	margin-top: 0.2rem;
-}
-
-.footer-menu {
-	width: 100%;
-	max-width: 750px;
-	background-color: #ffffff;
-	position: fixed;
-	bottom: 0;
-	left: 50%;
-	transform: translateX(-50%);
-	z-index: 10;
-	padding: 0.24rem 0;
-}
-
-.footer-icon1 {
-	width: auto;
-	height: 0.36rem;
-	margin-bottom: 0.1rem;
-}
-
-.footer-icon2 {
-	width: auto;
-	height: 0.36rem;
-	margin-bottom: 0.1rem;
-}
-
-.footer-icon3 {
-	width: auto;
-	height: 0.36rem;
-	margin-bottom: 0.1rem;
-}
-
-.shop-car .car-num {
-	position: absolute;
-	height: 0.24rem;
-	padding: 0 0.1rem;
-	border: 1px solid var(--red-color);
-	top: -0.1rem;
-	left: 50%;
-	border-radius: 0.12rem;
-	color: var(--red-color);
-	line-height: 0.24rem;
-	z-index: 10;
-	background: #fff;
-}
-
-.shop-car {
-	position: relative;
-}
-
-.buying {
-	width: 2.1rem;
-	height: 0.8rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	border-radius: 0.4rem;
-}
-
-.buying09 {
-	opacity: 0.9;
-	cursor: not-allowed;
-
-	span {
-		color: rgba(255, 255, 255, 0.3);
-	}
-}
-
-.to-long {
-	width: 3.5rem;
-}
-
-.buying-box {
-	padding-right: 0.1rem;
-}
-
-.add-car {
-	background: linear-gradient(270deg, #FACB37 0%, #FACB37 100%);
-	color: #ffffff;
-}
-
-.sell-out {
-	color: var(--color-text-desc);
-	background-color: #cccccc;
-	width: 3.4rem;
-}
-
-.onsale-btn {
-	background: linear-gradient(-270deg, #F64651 0%, var(--red-color) 99%);
-	width: 2.9rem;
-	color: #fff !important;
-}
-
-.to-buy {
-	background: linear-gradient(270deg, #F64651 0%, var(--red-color) 99%);
-	color: #ffffff;
-}
-
-.arrow {
-	margin-top: 0.02rem;
-}
-
-/*视频播放按钮*/
-.main-btn-wrap {
-	position: absolute;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	left: 0;
-	right: 0;
-	margin: auto;
-	bottom: 1.15rem;
-	background: rgba(0, 0, 0, 0.3);
-	height: 0.6rem;
-	border-radius: 0.3rem;
-	z-index: 0;
-	width: fit-content;
-
-	> div {
-		border-radius: 0.3rem;
-		padding: 0 0.3rem;
-		height: 0.6rem;
-		line-height: 0.6rem;
-		color: #fff;
-		font-size: 0.28rem;
-	}
-
-	> div.active {
-		background: rgba(0, 0, 0, 0.6);
-		font-weight: 600;
-		padding: 0 0.4rem;
 	}
 }
 </style>

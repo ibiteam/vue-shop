@@ -8,3 +8,7 @@ import $http from '@/utils/http'
 export const shopCommonConfig = () => {
     return $http.getNotLoading('v1/shop/config')
 }
+
+export const getChatUrl = (params) => {
+    return $http.getNotLoading('v1/chat/url', params)
+}
