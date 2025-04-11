@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LayoutComponent from '@/components/layout/Layout'
+import { getShopConfig } from '@/utils/public.js'
 import user from "./user";
 import account from "./account";
 import good from "./good";
@@ -56,6 +57,46 @@ const router = createRouter({
         ...mine,
         ...order
     ],
+})
+
+const goWechatAuth = async (to, next) => {
+    // 保存当前路由地址，授权后还会跳到此地址
+    let urlData = {name: to.name, query: to.query}
+    localStorage.setItem('wxRedirectUrl', JSON.stringify(urlData))
+    let shopConfig = await getShopConfig()
+    // 请求微信授权,并跳转到 /WxAuth 路由
+    if(shopConfig.wechat_app_id){
+        let appId = shopConfig.wechat_app_id
+        let redirectUrl = 'https://' + document.location.hostname + '/auth'
+        redirectUrl = encodeURIComponent(redirectUrl);
+        window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUrl}&response_type=code&scope=snsapi_userinfo&state=STATE&connect_redirect=1#wechat_redirect`
+    }else{
+        next()
+    }
+}
+router.beforeEach((to, from, next) => {
+    if (!/micromessenger/i.test(navigator.userAgent)){
+        next()
+    }else {
+        if (to.name === 'auth') {
+            next()
+            return
+        }
+        let wxUserInfo = localStorage.getItem('wxUserInfo')
+        if (!wxUserInfo) {
+            goWechatAuth(to, next)
+        } else {
+            let time = JSON.parse(wxUserInfo).time
+            let now = new Date().getTime()
+            if (now - time > 1800000) {
+                localStorage.removeItem('wxUserInfo')
+                goWechatAuth(to, next)
+            } else {
+                next()
+            }
+        }
+    }
+
 })
 
 export default router

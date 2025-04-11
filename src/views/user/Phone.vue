@@ -90,7 +90,7 @@ const codeSubmit = () => {
 		phone: phone.value,
 		code: phoneCode.value
 	}
-	registerOrPhoneLogin({info, action: action.value}).then(res => {
+	registerOrPhoneLogin(info).then(res => {
 		if (isSuccessCode(res)) {
 			cns.$toast(res.message)
 			cns.$cookies.set('m-token', res.data.token, res.data.expires_at)

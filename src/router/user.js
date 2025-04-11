@@ -5,6 +5,12 @@ const user = [
         name: 'login',
         component: () => import('@/views/user/Login.vue'),
     },
+    /*微信授权*/
+    {
+        path: '/auth',
+        name: 'auth',
+        component: () => import('@/views/user/Auth.vue'),
+    },
     /*手机验证码*/
     {
         path: '/phone',
