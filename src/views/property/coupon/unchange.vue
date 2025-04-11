@@ -449,7 +449,7 @@ const loadMore = () =>{
         content: "";
         width: 1.2rem;
         height: 1.24rem;
-        background: url("@/assets/images/property/couponUsed.png") center no-repeat;
+        background: url("@/assets/images/property/coupon/couponUsed.png") center no-repeat;
         background-size: 100% 100%;
         position: absolute;
         right: 0;
@@ -460,7 +460,7 @@ const loadMore = () =>{
         content: "";
         width: 1.2rem;
         height: 1.24rem;
-        background: url("@/assets/images/property/couponDis.png") center no-repeat;
+        background: url("@/assets/images/property/coupon/couponDis.png") center no-repeat;
         background-size: 100% 100%;
         position: absolute;
         right: 0;
