@@ -105,26 +105,26 @@
                 <div class="order-box">
                     <div class="order-join s-flex ai-ct jc-bt">
                         <strong>订单</strong>
-                        <p class="s-flex ai-ct">全部 <em class="iconfont">&#xe60b;</em></p>
+                        <p class="s-flex ai-ct" @click="toPage('orderList','all')">全部 <em class="iconfont">&#xe60b;</em></p>
                     </div>
                     <div class="order-main s-flex">
-                        <div class="order-model">
+                        <div class="order-model" @click="toPage('orderList','not_pay')">
                             <img src="@/assets/images/ucenter/order_2.png" alt="">
                             <div>待付款</div>
                             <div class="order-model-num">99+</div>
                         </div>
-                        <div class="order-model">
+                        <div class="order-model" @click="toPage('orderList','wait_receive')">
                             <img src="@/assets/images/ucenter/order_3.png" alt="">
                             <div>待收货</div>
                             <div class="order-model-num">99+</div>
                         </div>
 
-                        <div class="order-model">
+                        <div class="order-model" @click="toPage('orderList','wait_evaluate')">
                             <img src="@/assets/images/ucenter/order_4.png" alt="">
                             <div>待评价</div>
                             <div class="order-model-num">99+</div>
                         </div>
-                        <div class="order-model">
+                        <div class="order-model" @click="toPage('orderRefund')">
                             <img src="@/assets/images/ucenter/order_5.png" alt="">
                             <div>退款/售后</div>
                         </div>
@@ -136,19 +136,19 @@
                         <strong>资产</strong>
                     </div>
                     <div class="assert-main s-flex jc-bt">
-                        <div class="assert-model">
+                        <div class="assert-model" @click="toPage('coupon')">
                             <img src="@/assets/images/ucenter/coupon.png" alt="">
                             <div>优惠券</div>
                         </div>
-                        <div class="assert-model">
+                        <div class="assert-model" @click="toPage('redPack')">
                             <img src="@/assets/images/ucenter/redPack.png" alt="">
                             <div>红包</div>
                         </div>
-                        <div class="assert-model">
+                        <div class="assert-model" @click="toPage('integral')">
                             <img src="@/assets/images/ucenter/integral.png" alt="">
                             <div>积分</div>
                         </div>
-                        <div class="assert-model">
+                        <div class="assert-model" @click="toPage('balance')">
                             <img src="@/assets/images/ucenter/balance.png" alt="">
                             <div>余额</div>
                         </div>
@@ -157,15 +157,15 @@
 <!--                菜单模块-->
                 <div class="menu-box">
                     <div class="menu-main s-flex flex-wrap">
-                        <div class="menu-model">
+                        <div class="menu-model" @click="toPage('address')">
                             <img src="@/assets/images/ucenter/address.png" alt="">
                             <div>收货地址</div>
                         </div>
-                        <div class="menu-model">
+                        <div class="menu-model" @click="toPage('attention')">
                             <img src="@/assets/images/ucenter/attention.png" alt="">
                             <div>商品收藏</div>
                         </div>
-                        <div class="menu-model">
+                        <div class="menu-model" @click="toPage('record')">
                             <img src="@/assets/images/ucenter/history.png" alt="">
                             <div>浏览记录</div>
                         </div>
@@ -235,11 +235,15 @@ onMounted(() => {
     }, 1000)
 })
 
-const toPage = (name) => {
+const toPage = (name,type) => {
     if (unLogin.value && name != 'set' && name != 'register'){
         cns.appRoute('login')
     }else{
-        cns.appRoute(name)
+        if (name == 'orderList'){
+            cns.appRoute(name,{type:type})
+        }else{
+            cns.appRoute(name)
+        }
     }
 }
 </script>
