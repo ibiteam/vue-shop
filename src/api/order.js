@@ -46,3 +46,7 @@ export function editOrderAddressAxios(params){
 export function updateOrderAddressAxios(params){
     return $http.doPost('v1/order/my/address/update',params || {})
 }
+
+export function getOrderDetail(params){
+    return $http.doGet('v1/order/my/detail',params || {})
+}
