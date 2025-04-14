@@ -50,6 +50,6 @@ const order = [
         path: '/order/comment',
         name: 'orderComment',
         component: () => import('@/views/order/comment.vue'),
-    },
+    }
 ]
 export default order
