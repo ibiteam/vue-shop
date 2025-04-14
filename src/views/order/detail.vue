@@ -171,15 +171,12 @@ import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed}
 import {getOrderDetail,} from "@/api/order.js";
 import { useRoute } from 'vue-router'
 import Clipboard from "clipboard"
-import {copyText} from "@/utils/public.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const title = ref('订单详情')
 const page_load = ref(true)
 const expand = ref(false)
-const orderNo = ref('')
 const orderDetailData = ref({})
-const has_data = ref(true)
 const page_title = ref('请求出错了')
 const copyOrder = ref('')
 const integral_name = ref('')
@@ -195,13 +192,12 @@ const getData = () => {
             page_load.value = false
             orderDetailData.value = res.data
             copyOrder.value = res.data.order.no
-            has_data.value = true
+            title.value = orderStatus(res.data.order.status)
         } else if (cns.$constant.isUnLoginCode(res)) {
             // 去登录
             cns.appRoute('login')
         }else {
-            page_load.value = false
-            has_data.value = false
+            cns.$toast(res.message)
             page_title.value = res.message
         }
     }).catch(err => {
