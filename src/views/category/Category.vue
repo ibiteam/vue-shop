@@ -208,6 +208,7 @@
 
 <script setup>
 import {ref , reactive , computed , onMounted , watch , nextTick} from 'vue'
+import { useRoute } from "vue-router";
 import $public from '@/utils/public'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
@@ -216,6 +217,8 @@ import { searchKeywordsAxios } from '@/api/search.js'
 import { showToast } from 'vant';
 import { appRoute } from "@/router/appRoute";
 import { isSuccessCode } from "@/utils/constant.js";
+
+const route = useRoute();
 
 const serachSwiper_1 = ref(null);
 const serachSwiper_2 = ref(null)
@@ -228,6 +231,7 @@ const isScroll = ref(false);
 const loading = ref(true)
 const navigation_data = ref([])
 const active = ref(0) // 左侧选中分类
+const catId = ref('');
 const serachPlaceholder = ref('搜索关键词')
 const searchKey = ref('')
 const navActive = ref(0); // 右侧头部选中
@@ -254,6 +258,7 @@ const setSwiper = (swiper) => {
 }
 
 onMounted(() => {
+	catId.value = route.query.cat_id || '';
     getData();
 	getKeywords()
     if (keyword_hot.value) {
@@ -276,6 +281,10 @@ const getData = () => {
         noData.value = false;
         if (isSuccessCode(res)) {
             categoryArr.value = res.data;
+			if(catId.value){
+				const index = categoryArr.value.findIndex(item => item.id == catId.value)
+				active.value = index > -1 ? index : 0
+			}
             nextTick(() => {
                 document.querySelector(".category-content-scroll") && document.querySelector(".category-content-scroll").addEventListener("scroll", doubleScroll);
             });

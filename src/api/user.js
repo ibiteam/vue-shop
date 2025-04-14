@@ -35,5 +35,5 @@ export function updatePhone(info) {//绑定/修改手机号
 }
 
 export function wechatAuth(code) {
-    return $http.doGet('v1/wechat/auth', {code})
+    return $http.doPost('v1/auth/wechat', {code})
 }
