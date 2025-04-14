@@ -336,7 +336,7 @@ const showMoreGoods =(index)=>{
 
 const changeRate = (item) =>{
     setTimeout(() => {//1秒刷新倒计时
-        cns.appRoute('orderComment',{'order_id':item.no,rank:item.evaluate.default_value})
+        cns.appRoute('orderComment',{no:item.no,rank:item.evaluate.default_value})
     }, 500)
 }
 

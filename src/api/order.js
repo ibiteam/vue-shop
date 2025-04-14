@@ -50,3 +50,11 @@ export function updateOrderAddressAxios(params){
 export function getOrderDetail(params){
     return $http.doGet('v1/order/my/detail',params || {})
 }
+
+export function initEvaluate(params){
+    return $http.doGet('v1/order/my/evaluate/init',params || {})
+}
+
+export function storeEvaluate(params){
+    return $http.doPost('v1/order/my/evaluate/store',params || {})
+}
