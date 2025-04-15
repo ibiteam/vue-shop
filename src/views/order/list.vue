@@ -33,7 +33,7 @@
               offset="0"
           >
             <div class="order-list" v-if="!order_load">
-              <div class="order-item" v-for="(item,index) in orderListData" :key="index">
+              <div class="order-item" v-for="(item,index) in orderListData" :key="index" @click="appRoute('orderDetail',{no:item.no})">
                 <!--订单头部-->
                 <div class="order-info s-flex jc-bt">
                   <div class="fs24 co-666">订单号：{{ item.no }}</div>
@@ -43,7 +43,7 @@
                   <!--商品-->
                   <div class="good-box" v-if="item.items && item.items.length>0">
                     <template v-for="(childItem,childIndex) in item.items">
-                      <div class="good-model s-flex jc-bt" v-if="(item.show_more_goods && childIndex > 2) || childIndex < 3" @click="appRoute('orderDetail',{no:item.no})">
+                      <div class="good-model s-flex jc-bt" v-if="(item.show_more_goods && childIndex > 2) || childIndex < 3">
                         <div class="good-model-left flex-1 s-flex">
                           <van-image :src="childItem.goods_image" class="good-img">
                             <template v-slot:loading>
@@ -64,13 +64,13 @@
                         </div>
                       </div>
                     </template>
-                    <div class="good-more s-flex" v-if="item.items.length>3 && !item.show_more_goods" @click="showMoreGoods(index)">
+                    <div class="good-more s-flex" v-if="item.items.length>3 && !item.show_more_goods" @click.stop="showMoreGoods(index)">
                       <span>查看剩余{{ item.items.length - 3 }}个商品</span>
                       <em class="iconfont" style="margin-left: 0.07rem">&#xe604;</em>
                     </div>
                   </div>
                   <!--物流模块-->
-                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click="appRoute('orderWuliu',{no:item.no})">
+                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click.stop="appRoute('orderWuliu',{no:item.no})">
                     <div class="s-flex ai-ct flex-1">
                       <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
                       <div class="wuliu-type">{{ item.logistics.ship_info.status }}</div>
@@ -98,12 +98,12 @@
                   <!--操作模块-->
                   <div class="btn-box s-flex jc-fe ai-ct" v-if="item.buttons && item.buttons.length > 0">
                     <van-popover v-model="item.showPopover" trigger="click" placement="top" :offset="[0,5]" v-if="item.buttons.length > 3">
-                        <div class="btn-more-model" v-for="(btnChild,btnIndex) in item.buttons.slice(0,item.buttons.length - 3)" :key="btnIndex" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
+                        <div class="btn-more-model" v-for="(btnChild,btnIndex) in item.buttons.slice(0,item.buttons.length - 3)" :key="btnIndex" @click.stop="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
                       <template #reference>
                         <div class="btn-more">更多</div>
                       </template>
                     </van-popover>
-                      <div class="btn-model" v-for="(btnChild,btnIndex) in item.buttons.slice(-3)" :key="btnIndex" :class="((btnIndex == item.buttons.slice(-3).length - 1) && (btnChild.action == 'pay' || btnChild.action == 'receive' || btnChild.action == 'again'))?'btn-model-red':''" @click="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
+                      <div class="btn-model" v-for="(btnChild,btnIndex) in item.buttons.slice(-3)" :key="btnIndex" :class="((btnIndex == item.buttons.slice(-3).length - 1) && (btnChild.action == 'pay' || btnChild.action == 'receive' || btnChild.action == 'again'))?'btn-model-red':''" @click.stop="btnOperate(item,index,btnChild,btnIndex)">{{ btnChild.text }}</div>
                   </div>
                 </div>
               </div>
