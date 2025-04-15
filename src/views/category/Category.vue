@@ -180,7 +180,7 @@
                                 @slideChange="slideChange">
                                 <swiper-slide v-for="(item, index) in navigationData" :key="index">
                                     <div class="s_flex" style="height: 0.66rem; line-height: 0.66rem;">
-                                        <p class="ellipsis-1">{{item}}</p>
+                                        <p class="ellipsis-1">{{item.title}}</p>
                                     </div>
                                 </swiper-slide>
                             </swiper>
@@ -659,8 +659,8 @@ const isScrolledToBottom = (element) => {
     width: 7.5rem;
     padding: 0 0.3rem;
     box-sizing: border-box;
-    //left: 50%;
-    //transform: translate(-50%);
+    left: 50%;
+    transform: translate(-50%);
     overflow: hidden;
     .search{
         padding: 0.2rem 0;

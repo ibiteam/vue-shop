@@ -21,6 +21,7 @@ const route = useRoute()
 .shop-layout-container {
     width: 7.5rem;
     height: 100%;
+	margin: 0 auto;
     .shop-view {
         overflow: hidden auto
     }
