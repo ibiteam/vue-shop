@@ -37,32 +37,32 @@
                 <div class="rate">
                     <span class="title">综合评分</span>
                     <van-rate v-model="commentInfo.rank" color="#F71111" void-icon="star" void-color="#eee" @change="onChange"/>
-                    <span>{{ commentInfo.rank==1?'非常不满意':commentInfo.rank==2?'不满意':commentInfo.rank==3?'一般':commentInfo.rank==4?'满意':commentInfo.rank==5?'非常满意':''}}</span>
+                    <span>{{ formatRank(commentInfo.rank) }}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">产品服务</span>
                     <van-rate v-model="commentInfo.goods_rank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.goods_rank==1?'非常不满意':commentInfo.goods_rank==2?'不满意':commentInfo.goods_rank==3?'一般':commentInfo.goods_rank==4?'满意':commentInfo.goods_rank==5?'非常满意':''}}</span>
+                    <span>{{ formatRank(commentInfo.goods_rank) }}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">价格合理度</span>
                     <van-rate v-model="commentInfo.price_rank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.price_rank==1?'非常不满意':commentInfo.price_rank==2?'不满意':commentInfo.price_rank==3?'一般':commentInfo.price_rank==4?'满意':commentInfo.price_rank==5?'非常满意':''}}</span>
+                    <span>{{ formatRank(commentInfo.price_rank) }}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">商家服务</span>
                     <van-rate v-model="commentInfo.bus_rank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.bus_rank==1?'非常不满意':commentInfo.bus_rank==2?'不满意':commentInfo.bus_rank==3?'一般':commentInfo.bus_rank==4?'满意':commentInfo.bus_rank==5?'非常满意':''}}</span>
+                    <span>{{ formatRank(commentInfo.bus_rank) }}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">交货速度</span>
                     <van-rate v-model="commentInfo.delivery_rank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.delivery_rank==1?'非常不满意':commentInfo.delivery_rank==2?'不满意':commentInfo.delivery_rank==3?'一般':commentInfo.delivery_rank==4?'满意':commentInfo.delivery_rank==5?'非常满意':''}}</span>
+                    <span>{{ formatRank(commentInfo.delivery_rank) }}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">售后服务</span>
                     <van-rate v-model="commentInfo.service_rank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.service_rank==1?'非常不满意':commentInfo.service_rank==2?'不满意':commentInfo.service_rank==3?'一般':commentInfo.service_rank==4?'满意':commentInfo.service_rank==5?'非常满意':''}}</span>
+                    <span>{{ formatRank(commentInfo.service_rank) }}</span>
                 </div>
             </div>
         </div>
@@ -123,6 +123,7 @@ const getPageData = () => {
             result.value = { ...res.data };
             if (route.query.rank){
                 commentInfo.value.rank = route.query.rank
+                is_show_other.value = true
             }
             loading.value = true;
         } else if (cns.$constant.isUnLoginCode(res)) {
@@ -134,6 +135,22 @@ const getPageData = () => {
 }
 const onChange = () => {
     is_show_other.value = true
+}
+
+const formatRank = (rank) => {
+    let rank_title = ''
+    if (rank == 1){
+        rank_title = '非常不满意'
+    }else if (rank == 2){
+        rank_title = '不满意'
+    }else if (rank == 3){
+        rank_title = '一般'
+    }else if (rank == 4){
+        rank_title = '满意'
+    }else if (rank == 5){
+        rank_title = '非常满意'
+    }
+    return rank_title
 }
 
 const save = () =>{
@@ -161,6 +178,7 @@ const save = () =>{
             return false;
         }
     })
+    if (flag) return;
     if (commentInfo.value.rank == 0) {
         flag = true;
         cns.$toast("您还没给商品评分哦~");
