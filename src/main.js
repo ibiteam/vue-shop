@@ -5,6 +5,7 @@ import { createApp } from 'vue'
 import pinia from '@/stores/index'
 import mitt from 'mitt'
 import Vant from 'vant'
+import VConsole from "vconsole";
 import $http from '@/utils/http'
 import $public from '@/utils/public'
 import $dialog from '@/utils/dialog'
@@ -14,13 +15,16 @@ import App from './App.vue'
 import router from './router'
 import VueCookies from 'vue3-cookies'
 import { appRoute } from "@/router/appRoute";
+import { isTest } from '@/utils/constant.js'
 // 公用组件
 import CommonHeader from '@/components/layout/Navbar'
 import CommonImage from '@/components/common/Image'
 import CommonPrice from '@/components/common/Price'
 import FormPrice from '@/components/price/form-price'
-const app = createApp(App)
 
+isTest() && new VConsole()
+
+const app = createApp(App)
 app.use(pinia)
 app.use(router)
 app.use(Vant)
