@@ -50,7 +50,7 @@
                                         <span v-if="item.limit_info != ''">{{item.limit_title}}{{item.limit_info}}</span>
                                     </div>
                                     <em class="iconfont co_999" v-if="!item.isShowDesc">&#xe604;</em>
-                                    <em class="iconfont co_999" v-else>&#xe61e;</em>
+                                    <em class="iconfont co_999" v-else>&#xe6b2;</em>
                                 </div>
                                 <div class="new-guest disabled" v-if="item.is_new_guest == '1'">新客专享</div>
                             </div>

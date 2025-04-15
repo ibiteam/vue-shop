@@ -1,7 +1,7 @@
 <template>
     <div class="search-history">
         <div class="search-history-header s-flex ai-ct" ref="historyHeader">
-            <em class="search-back iconfont" @click="handleClickRouterBack">&#xe605;</em>
+            <em class="search-back iconfont" @click="handleClickRouterBack">&#xe607;</em>
             <van-search
                 v-model="info.keywords"
                 :placeholder="search_placeholder || '请输入搜索关键词'"
@@ -11,7 +11,7 @@
                 @input="handleInputSearchOptions"
             >
                 <template #left-icon>
-                    <em class="iconfont cursor-p" style="color: var(--color-text-desc);padding:0;font-size: 0.36rem;">&#xe7c3;</em>
+                    <em class="iconfont cursor-p" style="color: var(--color-text-desc);padding:0;font-size: 0.36rem;">&#xe60a;</em>
                 </template>
             </van-search>
             <div class="search-btn" @click="handleSearchConfirm(info.keywords || search_placeholder)">搜索</div>

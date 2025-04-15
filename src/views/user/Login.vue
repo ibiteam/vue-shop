@@ -1,7 +1,7 @@
 <template>
 	<div class="login-wrap">
 		<div class="login-header">
-			<span class="iconfont" @click="router.back()">&#xe605;</span>
+			<span class="iconfont" @click="router.back()">&#xe607;</span>
 		</div>
 		<div class="login-company">
             <span>

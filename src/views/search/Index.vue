@@ -4,9 +4,9 @@
             <div class="search-selection"
                  @touchmove.prevent @mousemove.prevent>
                 <div class="search-box backF bg-fff">
-                    <span class="iconfont" @click="router.back()" style="font-size: 24px;margin-left: 0;">&#xe605;</span>
+                    <span class="iconfont" @click="router.back()" style="font-size: 24px;margin-left: 0;">&#xe607;</span>
                     <div class="search" @click="hisSearchCancel">
-                        <span class="iconfont icon" style="color: var(--color-text-desc);font-size: 14px;">&#xe610;</span>
+                        <span class="iconfont icon" style="color: var(--color-text-desc);font-size: 14px;">&#xe60a;</span>
                         <p class="van-ellipsis keywords-word" v-if="keywords">
                             {{keywords}}
                         </p>
@@ -29,7 +29,7 @@
                         <span>价格</span>
                         <div style="width: 20px;">
                             <em class="iconfont" :class="{ active : searchType == 'price_asc' }">&#xe6b2;</em>
-                            <em class="iconfont" :class="{ active : searchType == 'price_desc' }">&#xebbe;</em>
+                            <em class="iconfont" :class="{ active : searchType == 'price_desc' }">&#xe604;</em>
                         </div>
                     </div>
                 </div>

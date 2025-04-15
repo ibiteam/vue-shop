@@ -142,7 +142,7 @@
                         <div class="order-address-title s-flex ai-ct jc-bt">
                             <p>选择要修改的地址</p>
                             <div class="close s-flex ai-ct jc-ct" @click="handleClickAddressClose">
-                                <em class="iconfont">&#xe68c;</em>
+                                <em class="iconfont">&#xea13;</em>
                             </div>
                         </div>
                         <div class="order-address-warning">

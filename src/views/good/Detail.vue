@@ -14,9 +14,9 @@
 		<template v-else>
 			<van-sticky :offset-top="0.05">
 				<div class="goods-header s-flex ai-ct jc-bt">
-					<em class="iconfont co-333" style="font-size: 21px;" @click="handleBack">&#xe605;</em>
+					<em class="iconfont co-333" style="font-size: 21px;" @click="handleBack">&#xe607;</em>
 					<div class="view-input s-flex flex-1" @click="clickToSearch()">
-						<div class="iconfont" style="font-size: 16px;color: #bbb;">&#xe7c3;</div>
+						<div class="iconfont" style="font-size: 16px;color: #bbb;">&#xe60a;</div>
 						<div style="font-size: 14px;min-width: 4rem;">
 							<span style="font-size: 14px;color: #bbb;">请输入关键词搜索</span>
 						</div>

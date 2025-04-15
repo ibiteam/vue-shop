@@ -3,7 +3,7 @@
         <div class="search s-flex ai-ct">
             <div class="search-item s-flex ai-ct">
                     <div class="imgs s-flex ai-ct jc-ct">
-                        <em class="iconfont">&#xe7c3;</em>
+                        <em class="iconfont">&#xe60a;</em>
                     </div>
                     <div class="home-search-item">
                         <template v-if="Object.keys(navigationData).length">
@@ -155,7 +155,7 @@
             <div class="search s-flex ai-ct">
                 <div class="search-item s-flex ai-ct">
                     <div class="imgs s-flex ai-ct jc-ct">
-                        <em class="iconfont">&#xe7c3;</em>
+                        <em class="iconfont">&#xe60a;</em>
                     </div>
                     <div class="home-search-item">
                         <template v-if="Object.keys(navigationData).length">

@@ -4,7 +4,7 @@
             <!-- 购物车头部 -->
             <div class="cart-header">
                 <div class="header s-flex ai-ct jc-ct" :class="is_placeholder ? 'bg-main' : (hasLogin && (shopList.length > 0 || invalid_goods.length>0) ? 'bg-main' : 'bg-fff')">
-                    <em class="iconfont" v-if="hasBack" @click="router.back(-1)">&#xe605;</em>
+                    <em class="iconfont" v-if="hasBack" @click="router.back(-1)">&#xe607;</em>
                     <span class="cart-title fs32 co-333 flex-1">购物车</span>
                     <span class="fs26 co-333" v-if="hasLogin && (shopList.length > 0 || invalid_goods.length>0)" @click="editAll=!editAll">{{editAll? "完成" : "编辑"}}</span>
                 </div>

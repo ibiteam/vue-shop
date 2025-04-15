@@ -2,7 +2,7 @@
     <div class="login-wrap">
         <van-sticky>
             <div class="login-header">
-                <span class="iconfont" @click="router.back()">&#xe605;</span>
+                <span class="iconfont" @click="router.back()">&#xe607;</span>
             </div>
         </van-sticky>
         <div class="login-company">
