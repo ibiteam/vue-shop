@@ -265,7 +265,11 @@ onMounted(() => {
 const getOrderData = () => {
     getOrderList(orderInfo.value).then(res => {
         if (cns.$constant.isSuccessCode(res)) {
-            orderListData.value = res.data.list
+            if (orderInfo.value.page == 1){
+                orderListData.value = res.data.list
+            }else{
+                orderListData.value.push(...res.data.list)
+            }
             orderListData.value.forEach(item => {
                 item.show_more_goods = false
                 item.showPopover = false

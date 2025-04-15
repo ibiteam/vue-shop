@@ -1,13 +1,416 @@
 <template>
-
+    <div class="myorder">
+        <common-header :title="title"></common-header>
+        <div class="integral-search">
+            <van-search v-model="info.keywords" @search="searchkeywords"   @cancel="onCancel" @focus="search_old = info.keywords" placeholder="搜索商品名称/退款编号">
+                <template #left-icon>
+                    <em class="iconfont cursor-p" style="color: #cccccc;">&#xe610;</em>
+                </template>
+            </van-search>
+        </div>
+        <div class="order-list">
+            <template>
+                <van-list
+                        v-model="loading"
+                        :finished="finished"
+                        :finished-text="orderListData.length<=10?'':'没有更多订单了~'"
+                        @load="getOrderData()"
+                >
+                    <div class="order-item" v-for="(item,index) in orderListData" :key="index">
+                        <div class="order-info s-flex jc-bt act-border">
+                            <div class="fs22 co-333">退款编号：{{item.flow_sn}}</div>
+                            <div class="fs22 co-333">{{item.created_at}}</div>
+                        </div>
+                        <!--商品-->
+                        <div class="goods-wrap">
+                            <template>
+                                <div class="goods-box" @click="appRoute('refundDetail', {}, { apply_refund_id: item.id })">
+                                    <div class="img_box"><img :src="item.goods_thumb" alt=""></div>
+                                    <div class="left s-flex flex-dir jc-bt">
+                                        <div>
+                                            <div class="top">{{item.goods_name}}</div>
+                                            <div class="">
+                                                <span style="font-size: 0.22rem;color: #ccc;">{{ item.goods_attr }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="refund-price fs22"><span class="refund">退款：</span><span class="price">￥{{ item.money }}</span></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                        <!-- 订单状态 -->
+                        <div class="status_refund">
+                            <div style="display: flex;justify-content: center;" v-if="item.status==0">
+                                <div style="color:#F71111;font-weight: 600;">待卖家处理</div>
+                                <template v-if="item.status==0&&item.seller_deal_end_time-item.now_time>0">
+                                    <div >&nbsp;&nbsp;&nbsp;卖家将在&nbsp;&nbsp;</div>
+                                    <div style="color:#F71111;display: flex;align-items: center;font-weight: 600;"><van-count-down  :time="(item.seller_deal_end_time-item.now_time)*1000" format="DD天HH时mm分ss秒" @finish="getData()"/></div>
+                                    <div>&nbsp;&nbsp;内处理</div>
+                                </template>
+                            </div>
+                            <span style="color: #F71111;font-weight: 600;" v-if="item.status==1">卖家已拒绝退款</span>
+                            <span style="color: #333333;font-weight: 600;" v-if="item.status==2">待买家发货</span>
+                            <span style="color: #333333;font-weight: 600;" v-if="item.status==3">待卖家收货</span>
+                            <span style="color: #333333;font-weight: 600;" v-if="item.status==4">退款中</span>
+                            <div v-if="item.status==5">
+                                <span style="color: #F71111;font-weight: 600;">退款成功&nbsp;&nbsp;&nbsp;</span><span>退款金额：</span><span style="color: #F71111;font-weight: 600;">￥{{ item.money }}</span>
+                            </div>
+                            <span style="color: #333333;font-weight: 600;" v-if="item.status==6">退款已关闭</span>
+                        </div>
+                        <!--订单操作-->
+                        <div class="total_box">
+                            <div class="operate">
+                                <div @click="appRoute('refundDetail', {}, { apply_refund_id: item.id })">查看详情</div>
+                            </div>
+                        </div>
+                    </div>
+                </van-list>
+            </template>
+            <!--没有数据-->
+            <div class="noData" v-if="notData">
+                <img class="noImg" src="@/assets/images/nodata.png"/>
+                <div class="noTex">暂无数据！</div>
+            </div>
+        </div>
+    </div>
 </template>
 
-<script>
-export default {
-    name: "list"
+<script setup>
+import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
+import { useRoute } from 'vue-router'
+import {refundListAxios} from "@/api/refund.js";
+const cns = getCurrentInstance().appContext.config.globalProperties
+const route = useRoute()
+
+const title = ref('退款/售后')
+const info = ref({
+    page: 1,
+    keywords: '',
+})
+const orderListData =ref([])
+const notData = ref(false)
+const loading = ref(false)
+const finished = ref(false)
+
+
+onMounted( () => {
+    getData()
+})
+
+const getData = () =>{
+    refundListAxios().then((res) => {
+        if (cns.$constant.isSuccessCode(res)) {
+            if (info.value.page == 1){
+                orderListData.value = res.data.list
+            }else{
+                orderListData.value.push(...res.data.list)
+            }
+            if(res.data.meta.last_page <= info.value.page){
+                finished.value = true
+            }else{
+                finished.value = false
+                info.value.page++
+            }
+            if(res.data.meta.total <= 0){
+                notData.value = true
+            }
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            cns.appRoute('login')
+        }else {
+            cns.$toast(res.message)
+        }
+    });
 }
+const searchkeywords = () =>{
+    if(info.value.keywords){
+        loading.value = false
+        finished.value = false
+        info.value.page = 1
+        orderListData.value=[]
+        getData()
+    }
+}
+
+const onCancel = () =>{
+    info.value.page = 1
+    orderListData.value=[]
+    getData()
+}
+
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.status_refund{
+    height: 1rem;
+    background: #F8F8F8;
+    border-radius: 0.1rem;
+    text-align: center;
+    line-height: 1rem;
+    margin: 0.2rem 0.2rem 0;
+}
+body {
+    background-color: #f4f4fa;
+}
+/*搜索*/
+.integral-search {
+    padding: 0.2rem 0.2rem 0;
+}
+.integral-search .van-search {
+    padding: 0;
+    background: #ffffff;
+    border-radius:0.4rem;
 
+
+}
+::v-deep .van-search__content {
+    background: #ffffff;
+    border-radius: 0.5rem;
+}
+::v-deep .van-cell {
+    height: 35px;
+    align-items: center;
+}
+
+::v-deep .van-field__left-icon {
+    margin-right: 8px;
+}
+::v-deep .van-search__action{
+    color: #666666;
+    padding: 0 0.3rem 0 0.1rem;
+}
+/** 订单列表样式设置 **/
+.order-list{
+    box-sizing:border-box;
+    width:100%;
+    padding: 0 0.2rem 0.4rem;
+}
+.order-list .order-item {
+    margin-top: 0.2rem;
+    background-color:#fff;
+    border-radius: 20px;
+}
+.order-list .order-info {
+    padding: 0 0.2rem;
+    height: 0.8rem;
+    align-items: center;
+}
+.order-list .act-border {
+    border-bottom: 0.02rem solid #F2F2F2;
+}
+.order-list .goods-wrap .goods-box .left .goods_attr {
+    padding: 0.15rem 0;
+    font-size: 0.22rem;
+    color: #999999;
+}
+.order-list .goods-wrap{
+    margin:0 0.2rem;
+}
+.order-list .goods-wrap .goods-box{
+    width:100%;
+    height:1.6rem;
+    display:flex;
+    box-sizing:border-box;
+}
+.goods-box:not(:first-child) {
+    margin-top: 0.3rem;
+}
+.order-list .goods-wrap .goods-box .img_box{
+    width:1.6rem;
+    height:1.6rem;
+    vertical-align:middle;
+    flex-shrink:0;
+    box-shadow: 0 4px 21px 0 rgba(233, 233, 233, 0.55);
+}
+.order-list .goods-wrap .goods-box .img_box img{
+    width:100%;
+    height:100%;
+    vertical-align:middle;
+    border-radius: 10px;
+}
+.order-list .goods-wrap .goods-box .left{
+    flex-shrink:1;
+    flex-grow:1;
+    margin-left:0.2rem;
+    height: 1.6rem;
+    width: 4.8rem;
+}
+.order-list .goods-wrap .goods-box .left .top{
+    font-size:0.22rem;
+    color:#333;
+    width:100%;
+    max-height: 1rem;
+    max-height: 0.64rem;
+    line-height: 0.32rem;
+    overflow:hidden;
+    display: -webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient: vertical;
+}
+.order-list .goods-wrap .goods-box .left .bottom{
+    display:flex;
+    justify-content:space-between;
+    height:0.22rem;
+    line-height:0.22rem;
+    margin-top:0.32rem;
+}
+.order-list .goods-wrap .goods-box .left .bottom .price{
+    font-size:0.28rem;
+    color:#F61D4A;
+}
+.order-list .goods-wrap .goods-box .left .bottom .number{
+    font-size:0.26rem;
+    color:#999;
+}
+.goods-box >>> .van-swipe-item {
+    display: flex;
+    white-space: nowrap;
+}
+.goods-box .img_box:last-child {
+    margin-right: 0;
+}
+.refund-price{
+    line-height: 0.3rem;
+    .refund{
+        color: #777777 ;
+    }
+    .price{
+        font-weight: 600;
+    }
+}
+
+.order-list .total_box{
+    /*height:1.70rem;*/
+    width:100%;
+    box-sizing:border-box;
+    padding: 0.3rem 0 0rem 0;
+
+}
+.order-list .total_box .statistics{
+    display:flex;
+    justify-content:flex-end;
+    height:0.55rem;
+    line-height:0.55rem;
+    padding-bottom: 0.2rem;
+    margin: 0 .2rem;
+    border-bottom: 1px solid #F2F2F2;
+}
+/* 提示内容 */
+::v-deep .van-notice-bar{
+    padding: 0;
+    margin: 0.2rem 0.2rem 0;
+}
+::v-deep .van-notice-bar__wrap{
+    justify-content: center;
+}
+/* 倒计时 */
+::v-deep  .van-count-down{
+    font-weight: 600;
+    color: #F71111;
+    font-size: 0.26rem;
+}
+
+.order-list .total_box .operate{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    height:1.16rem;
+    line-height:1.16rem;
+    margin: 0 .2rem;
+    border-top: 1px solid #F2F2F2;
+}
+.order-list .total_box .statistics span{
+    display:inline-block;
+    font-size:0.24rem;
+}
+.order-list .total_box .operate div{
+    height:0.56rem;
+    line-height:0.56rem;
+    width:1.5rem;
+    border: 1px solid #333333;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    -ms-border-radius:5px;
+    -o-border-radius:5px;
+    border-radius:26px;
+    text-align:center;
+    margin-left:0.2rem;
+    font-size:0.24rem;
+    color:#333;
+}
+/* .order-list .total_box .operate div:last-child{
+    color:#F93B62;
+    border-color: #F93B62;
+} */
+.order-list .total_box .statistics .total_num{
+    color:#999;
+    margin-left: 0.17rem;
+}
+.order-list .total_box .statistics .total{
+    color:#333;
+    margin-left: 0.17rem;
+}
+.order-list .total_box .statistics .total_price{
+    color:#f61d4a;
+}
+
+
+.group_time{
+    height: 0.76rem;
+    align-items: center;
+    justify-content: center;
+    background: #FFF9EE;
+}
+.model-title{
+    font-size: 0.24rem;
+}
+.model-time{
+    font-size: 0.24rem;
+    color: #F71111;
+}
+.model-time>div{
+    background: #F71111;
+    color: #ffffff;
+    height: 0.36rem;
+    line-height: 0.36rem;
+    min-width: 0.36rem;
+    text-align: center;
+    border-radius: 0.08rem;
+    margin: 0 0.1rem;
+}
+.model-time>.day{
+    /*width: 0.62rem;*/
+}
+.equity-share .share-img img {
+    width: 5.1rem;
+    height: 5.4rem;
+    margin: 1rem 1.9rem 0 1.9rem;
+}
+.equity-share .share-txt{
+    width: 100%;
+    text-align: center;
+    margin-top: -0.2rem;
+}
+.equity-share .share-txt p {
+    font-size: 0.4rem;
+    color: #fff;
+    text-align: center;
+    line-height: 0.58rem;
+    letter-spacing: 3px;
+}
+.equity-share ::v-deep .van-overlay {
+    z-index: 9900 !important;
+}
+
+.noData {
+    margin-top: 2.3rem;
+}
+
+>>> .van-list {
+    border: 1px solid transparent;
+}
+.gift-icon{
+    font-size: 0.26rem;
+    font-weight: 600;
+    color: #F71111;
+}
 </style>

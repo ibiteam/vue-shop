@@ -17,7 +17,7 @@ const refund = [
         name: 'refundForm',
         component: () => import('@/views/refund/form.vue'),
     },
-    /*协商劣势*/
+    /*协商历史*/
     {
         path: '/refund/history',
         name: 'refundHistory',
