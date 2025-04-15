@@ -14,8 +14,8 @@
 					</p>
 					<p class="fs30 co-333 fw-b elli-2">{{ address.address_detail }}</p>
 					<p>
-						<span class="fs24 co-333">{{ address.recipient_name }}</span>
-						<span class="fs24 co-333">{{ address.recipient_phone }}</span>
+						<span class="fs24 co-333">{{ address.consignee }}</span>
+						<span class="fs24 co-333">{{ address.phone }}</span>
 					</p>
 				</div>
 				<img class="ML10" style="width:0.11rem;height:0.19rem" src="@/assets/images/arrow-right.png" alt="">

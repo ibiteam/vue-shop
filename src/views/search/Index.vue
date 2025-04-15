@@ -100,7 +100,7 @@
 import {ref, reactive, onMounted, onBeforeUnmount, computed, watch, nextTick} from 'vue';
 import { useRouter , useRoute , onBeforeRouteLeave } from 'vue-router';
 import { showToast } from 'vant';
-import {searchAxios , searchShopAxios} from '@/api/search'
+import {searchAxios} from '@/api/search'
 
 import searchType1 from '@/assets/images/search/search_type_row_2.png'
 import searchType2 from '@/assets/images/search/search_type_row_1.png'
