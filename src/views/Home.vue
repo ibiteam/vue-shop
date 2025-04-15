@@ -5,6 +5,7 @@
             <HorizontalCarousel v-if="item.component_name == 'horizontal_carousel'" :key="index" v-bind="{content: item}"></HorizontalCarousel>
             <QuickLink v-if="item.component_name == 'quick_link'" :key="index" v-bind="{content: item}"></QuickLink>
             <AdvertisingBanner v-if="item.component_name == 'advertising_banner'" :key="index" v-bind="{content: item}"></AdvertisingBanner>
+            <HotZone v-if="item.component_name == 'hot_zone'" :key="index" v-bind="{content: item}"></HotZone>
             <GoodsRecommend v-if="item.component_name == 'goods_recommend'" :key="index" v-bind="{content: item}"></GoodsRecommend>
             <Recommend v-if="item.component_name == 'recommend'" :key="index" v-bind="{content: item, paging: index == decoration.content.length - 1}"></Recommend>
         </template>
@@ -21,6 +22,7 @@ import FullScreenAdvertising from '@/views/home/FullScreenAdvertising'
 import HorizontalCarousel from '@/views/home/HorizontalCarousel'
 import QuickLink from '@/views/home/QuickLink'
 import AdvertisingBanner from '@/views/home/AdvertisingBanner'
+import HotZone from '@/views/home/HotZone'
 import GoodsRecommend from '@/views/home/GoodsRecommend'
 import Recommend from '@/views/home/Recommend'
 import { getHomeData } from '@/api/home'
