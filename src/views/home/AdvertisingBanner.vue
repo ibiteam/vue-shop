@@ -13,8 +13,7 @@
                     <span class="fs28 fw-b" :style="{color: content.title.color}">{{content.title.name}}</span>
                 </div>
                 <div class="ad-title-link s-flex ai-ct fs24" @click.stop="handleOpenLink(content.title.url)">
-                    {{ content.title.suffix }}<em class="iconfont" style="font-size: .2rem;" v-if="content.title.url.value">&#xe773;</em>
-                    
+                    {{ content.title.suffix }}<em class="iconfont icon-gengduo" v-if="content.title.url.value"></em>
                 </div>
             </div>
             <div class="ad-banner-wrapper s-flex ai-ct jc-bt flex-wrap">

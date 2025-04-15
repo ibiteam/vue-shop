@@ -6,16 +6,18 @@
             <QuickLink v-if="item.component_name == 'quick_link'" :key="index" v-bind="{content: item}"></QuickLink>
             <AdvertisingBanner v-if="item.component_name == 'advertising_banner'" :key="index" v-bind="{content: item}"></AdvertisingBanner>
             <GoodsRecommend v-if="item.component_name == 'goods_recommend'" :key="index" v-bind="{content: item}"></GoodsRecommend>
-            <Recommend v-if="item.component_name == 'recommend'" :key="index" v-bind="{content: item}"></Recommend>
-
+            <Recommend v-if="item.component_name == 'recommend'" :key="index" v-bind="{content: item, paging: index == decoration.content.length - 1}"></Recommend>
         </template>
+        <SideAdvertising v-if="findNotForData('suspended_advertisement')" v-bind="{content: findNotForData('suspended_advertisement')}"></SideAdvertising>
+        <FullScreenAdvertising v-if="findNotForData('danping_advertisement') && !screenImageSession" v-bind="{content: findNotForData('danping_advertisement')}"></FullScreenAdvertising>
     </main>
 </template>
 
 <script setup>
-// import "@/assets/css/iconfont-public.css"
 import { ref, reactive, onMounted, nextTick, getCurrentInstance, onUnmounted } from 'vue'
 import HomeSearch from '@/views/home/Search'
+import SideAdvertising from '@/views/home/SideAdvertising'
+import FullScreenAdvertising from '@/views/home/FullScreenAdvertising'
 import HorizontalCarousel from '@/views/home/HorizontalCarousel'
 import QuickLink from '@/views/home/QuickLink'
 import AdvertisingBanner from '@/views/home/AdvertisingBanner'
@@ -30,6 +32,8 @@ const decoration = reactive({
     not_for_data: [],
     temp_index: ''
 })
+
+const screenImageSession = ref(sessionStorage.getItem('screen_img_session'))
 
 // 查找固定数据
 const findNotForData = (component_name) => {
@@ -60,12 +64,17 @@ onMounted(() => {
             cns.$bus.on('homeOpenLink', (res) => {
                 window.open(res, '_self')
             })
+            cns.$bus.on('homeCloseScreenImage', (res) => {
+                sessionStorage.setItem('screen_img_session', true)
+                screenImageSession.value = true
+            })
         })
     })
 })
 
 onUnmounted(() => {
     cns.$bus.off('homeOpenLink')
+    cns.$bus.off('homeCloseScreenImage')
 })
 
 </script>
@@ -95,5 +104,6 @@ onUnmounted(() => {
 <style lang='scss' scoped>
 .home-main-container {
     padding-bottom: 1rem;
+    position: relative;
 }
 </style>

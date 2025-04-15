@@ -1,31 +1,35 @@
 <template>
     <div class="goods-recommend-you-wrapper home-item-wrapper">
         <div class="recommend-wrapper">
-            <div class="recommend-title-wrapper">
+            <div class="recommend-title-wrapper fs28">
                 {{content.title ? content.title : '为您推荐'}}
             </div>
-            <div class="goods-wrapper2 s-flex ai-ct jc-bt flex-wrap" v-if="content.items.list">
-                <div class="goods-item" v-for="item in content.items.list" :key="item.no" @click.stop="appRoute('good', {goods_no: item.no})">
-                    <common-image v-bind="{ src: item.image, width: '100%', height: '100%', radius: '0.2rem 0.2rem 0 0' }"/>
-                    <div class="goods-info s-flex jc-bt flex-dir">
-                        <div class="goods-name elli-2 s-flex ai-ct fs26">
-                            <van-tag color="linear-gradient(90deg, #5436D5 4%, #735CFF 99%)" v-if="item.label">{{item.label}}</van-tag>
-                            {{item.name}}
-                        </div>
-                        <div class="s-flex ai-ct jc-bt">
-                            <common-price v-bind="{price: item.price, priceColor: '#f71111'}"></common-price>
-                            <span class="fs20 co-999" v-if="item.sales_volume">已售{{item.sales_volume}}</span>
+            <van-list v-model:loading="pageInfo.loading" :finished="pageInfo.finished" @load="loadRecommend" :finished-text="paging ? '没有更多了' : ''" :immediate-check="false" :offset="50">
+                <div class="goods-wrapper2 s-flex ai-ct jc-bt flex-wrap" v-if="recommend.length">
+                    <div class="goods-item" v-for="item in recommend" :key="item.no" @click.stop="appRoute('good', {goods_no: item.no})">
+                        <common-image v-bind="{ src: item.image, width: '100%', height: '100%', radius: '0.2rem 0.2rem 0 0' }"/>
+                        <div class="goods-info s-flex jc-bt flex-dir">
+                            <div class="goods-name elli-2 s-flex ai-ct fs26">
+                                <van-tag color="linear-gradient(90deg, #5436D5 4%, #735CFF 99%)" v-if="item.label">{{item.label}}</van-tag>
+                                {{item.name}}
+                            </div>
+                            <div class="s-flex ai-ct jc-bt">
+                                <common-price v-bind="{price: item.price, priceColor: '#f71111'}"></common-price>
+                                <span class="fs20 co-999" v-if="item.sales_volume">已售{{item.sales_volume}}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </van-list>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, getCurrentInstance } from 'vue'
-import { appRoute } from '@/router/appRoute'
+import { ref, reactive, getCurrentInstance, watch } from 'vue'
+import {getRecommend} from '@/api/common.js'
+import {appRoute} from "@/router/appRoute.js";
+import {isSuccessCode} from "@/utils/constant.js";
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 const props = defineProps({
@@ -35,11 +39,66 @@ const props = defineProps({
             return {}
         }
     },
+    paging: {
+        type: Boolean,
+        default: false,
+    }
 })
+
+const recommend = ref([])
+const pageInfo = reactive({
+    loading: false,
+    finished: false,
+	total: 0,
+	per_page: 6,
+	current_page: 2
+})
+
+const countLastPage = () => {
+	return (pageInfo.total % pageInfo.per_page ? 1 : 0) + Math.floor(pageInfo.total / pageInfo.per_page)
+}
+
+const loadRecommend = () => {
+	pageInfo.loading = true
+	getRecommend({page: pageInfo.current_page}).then(res => {
+		pageInfo.loading = false
+		if (isSuccessCode(res)) {
+			recommend.value = recommend.value.concat(res.data.list)
+			pageInfo.current_page = res.data.meta.current_page
+            pageInfo.per_page = res.data.meta.per_page
+            pageInfo.total = res.data.meta.total
+			if (res.data.meta.current_page == countLastPage()) {
+				pageInfo.finished = true
+			} else {
+				pageInfo.current_page++
+			}
+		}else {
+			pageInfo.finished = false
+		}
+	})
+}
 
 const handleOpenLink = (res) => {
     res.value && cns.$bus.emit('homeOpenLink', res.value)
 }
+
+watch(() => props.content, (val) => {
+    if (val) {
+        recommend.value = val.items.list
+    }
+},{
+    immediate: true,
+    deep: true,
+})
+
+watch(() => props.paging, (val) => {
+	if (!val) {
+        pageInfo.finished = true
+        pageInfo.loading = false
+	}
+}, {
+    immediate: true
+})
 
 </script>
 

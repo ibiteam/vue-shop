@@ -17,7 +17,7 @@ export default ({ mode }) => {
         plugins: [
             vue({ reactivityTransform: true }),
             vueJsx(), // 添加JSX支持
-            is_dev && vueDevTools(),
+            // is_dev && vueDevTools(),
             createHtmlPlugin({
                 minify: true,
                 inject: {

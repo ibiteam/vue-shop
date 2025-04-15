@@ -7,7 +7,7 @@
                     <span class="fs28 fw-b" :style="{color: content.title.color}">{{content.title.name}}</span>
                 </div>
                 <div class="recommend-title-link s-flex ai-ct fs24" @click.stop="handleOpenLink(content.title.url)">
-                    {{ content.title.suffix }}<em class="iconfont" style="font-size: .2rem;" v-if="content.title.url.value">&#xe773;</em>
+                    {{ content.title.suffix }}<em class="iconfont icon-gengduo" v-if="content.title.url.value"></em>
                 </div>
             </div>
             <div class="goods-wrapper1" v-if="content.layout == 1 && content.items.goods_data">
