@@ -9,7 +9,7 @@ export function searchAxios(params){
   return $http.doPost("v1/search/goods", params)
 }
 
-export function searchKeywordsAxios(params){
-  return $http.doGet("v1/search/keywords",params)
+export function searchKeywords(){
+  return $http.doGet("v1/search", {})
 }
 

@@ -6,7 +6,7 @@
                         <em class="iconfont">&#xe7c3;</em>
                     </div>
                     <div class="home-search-item">
-                        <template v-if="Object.keys(navigation_data).length">
+                        <template v-if="Object.keys(navigationData).length">
                             <swiper
                                     style="height: 0.66rem"
                                     @swiper="swiper => serachSwiper_1 = swiper"
@@ -22,11 +22,11 @@
                                         stopOnLastSlide: false,
                                         disableOnInteraction: true,
                                     }"
-                                    @tap="handleClickSearch(navigation_data[currentIndex], 'history');"
+                                    @tap="handleClickSearch(navigationData[currentIndex], 'history');"
                                     @slideChange="slideChange">
-                                <swiper-slide v-for="(item, index) in navigation_data" :key="index">
-                                    <div class="s_flex" style="height: 0.66rem; line-height: 0.66rem;">
-                                        <p class="ellipsis-1">{{item}}</p>
+                                <swiper-slide v-for="(item, index) in navigationData" :key="index">
+                                    <div class="s-flex" style="height: 0.66rem; line-height: 0.66rem;">
+                                        <p class="elli-1">{{item.title}}</p>
                                     </div>
                                 </swiper-slide>
                             </swiper>
@@ -158,7 +158,7 @@
                         <em class="iconfont">&#xe7c3;</em>
                     </div>
                     <div class="home-search-item">
-                        <template v-if="Object.keys(navigation_data).length">
+                        <template v-if="Object.keys(navigationData).length">
                             <swiper
                                 :key="currentIndex"
                                 style="height: 0.66rem"
@@ -176,9 +176,9 @@
                                     stopOnLastSlide: false,
                                     disableOnInteraction: true,
                                 }"
-                                @tap="handleClickSearch(navigation_data[currentIndex], 'history');"
+                                @tap="handleClickSearch(navigationData[currentIndex], 'history');"
                                 @slideChange="slideChange">
-                                <swiper-slide v-for="(item, index) in navigation_data" :key="index">
+                                <swiper-slide v-for="(item, index) in navigationData" :key="index">
                                     <div class="s_flex" style="height: 0.66rem; line-height: 0.66rem;">
                                         <p class="ellipsis-1">{{item}}</p>
                                     </div>
@@ -213,7 +213,7 @@ import $public from '@/utils/public'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import {getCategory} from "@/api/category.js";
-import { searchKeywordsAxios } from '@/api/search.js'
+import {searchKeywords} from '@/api/search.js'
 import { showToast } from 'vant';
 import { appRoute } from "@/router/appRoute";
 import { isSuccessCode } from "@/utils/constant.js";
@@ -229,7 +229,7 @@ const contentRef = ref(null)
 const isScroll = ref(false);
 
 const loading = ref(true)
-const navigation_data = ref([])
+const navigationData = ref([])
 const active = ref(0) // 左侧选中分类
 const catId = ref('');
 const serachPlaceholder = ref('搜索关键词')
@@ -267,9 +267,9 @@ onMounted(() => {
 });
 
 const getKeywords = () => {
-    searchKeywordsAxios().then(res => {
+	searchKeywords().then(res => {
         if (isSuccessCode(res)) {
-            navigation_data.value = [...res.data];
+            navigationData.value = [...res.data.items];
         }
     });
 };
@@ -381,7 +381,7 @@ const to_detail = (its, itas) => {
 	appRoute('search', query);
 };
 const handleClickSearch = (item, type) => {
-    appRoute('search_history', {placeholder: item});
+    appRoute('search_history', {placeholder: item.title});
 };
 
 const isScrolledToBottom = (element) => {
