@@ -12,7 +12,7 @@
             :name="tab.alias"
             :icon="active == tab.alias ? tab.selection_image : tab.default_image"
             :badge="tab.is_show_number && tab.number ? tab.number : ''"
-            :to="tab.url"
+            :to="{name:tab.alias}"
         >{{ active == tab.alias ? tab.check_title : tab.title }}</van-tabbar-item>
     </van-tabbar>
 </template>
