@@ -191,7 +191,7 @@ watch(()=> props, (val) => {
             if (!value.length) return
             form.value = value[0]
             nextTick(() => {
-                document.querySelector('#addressItemRef' + form.value[0]).scrollIntoView({
+                document.querySelector('#addressItemRef' + form.value[0]) && document.querySelector('#addressItemRef' + form.value[0]).scrollIntoView({
                     behavior: 'smooth'
                 })
                 formInit()
