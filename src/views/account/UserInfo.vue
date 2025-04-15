@@ -100,7 +100,7 @@ const beforeRead = (file) => {
 
 const afterRead = (file) => {
     let info = {
-        file: file.content,
+        file: file.file,
     };
     uploadFileAxios(info).then(res => {
         if (cns.$constant.isSuccessCode(res)) {

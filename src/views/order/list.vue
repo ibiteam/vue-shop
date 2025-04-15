@@ -28,7 +28,7 @@
           <van-list
               v-model:loading="loading"
               :finished="finished"
-              finished-text="没有更多订单了~"
+              :finished-text="orderListData.length > 10?'没有更多订单了~':''"
               @load="getOrderData"
               offset="0"
           >

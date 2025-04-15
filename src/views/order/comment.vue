@@ -24,10 +24,10 @@
                         <img class="upload-img-delete" src="@/assets/images/order/comment_close.png"
                              @click.stop="deleteImage(index, imageIdx)" />
                     </div>
-                    <van-uploader :before-read="beforeRead" :after-read="afterRead(index)" v-if="item.images.length < 6">
+                    <van-uploader :before-read="beforeRead" :after-read="afterRead(index)" v-if="item.images.length < 5">
                         <div class="upload-btn">
                             <img src="@/assets/images/order/comment_camera.png" alt="" />
-                            <p>{{item.images.length == 0 ? "添加图片" : item.images.length + "/6" }}</p>
+                            <p>{{item.images.length == 0 ? "添加图片" : item.images.length + "/5" }}</p>
                         </div>
                     </van-uploader>
                 </div>
@@ -69,7 +69,7 @@
         <div class="publish-group" v-if="result.items">
             <div class="check">
                 <div>
-                    <van-checkbox v-model="commentInfo.is_anonymous" checked-color="#F71111"></van-checkbox>
+                    <van-checkbox v-model="is_anonymous" checked-color="#F71111"></van-checkbox>
                     <span>匿名</span>
                 </div>
                 <span>您写的评价会以匿名的形式展现</span>
@@ -93,10 +93,11 @@ const loading = ref(false)
 const is_show_other = ref(false)
 const result = ref({})
 const saveFlag = ref(false)
+const is_anonymous = ref(true)
 const commentInfo = ref({
     no:'',
     items:[],
-    is_anonymous:true,
+    is_anonymous:1,
     rank:0,
     goods_rank:0,
     price_rank:0,
@@ -159,6 +160,7 @@ const save = () =>{
     let items = [];
     result.value.items.forEach(ite => {
         items.push({
+            id:ite.id,
             comment:ite.comment,
             images:ite.images
         })
@@ -211,6 +213,7 @@ const save = () =>{
     }
     if (flag) return;
     commentInfo.value.items = items
+    commentInfo.value.is_anonymous = is_anonymous.value?1:0
     saveFlag.value = true;
     storeEvaluate(commentInfo.value).then((res) => {
         saveFlag.value = false
@@ -243,8 +246,9 @@ const beforeRead = (file) => {
 
 const afterRead = (index) =>{
     return (file) => {
+        console.log(file)
         let info = {
-            file: file.content,
+            file: file.file,
         };
         uploadFileAxios(info).then((res) => {
             if (cns.$constant.isSuccessCode(res)) {
