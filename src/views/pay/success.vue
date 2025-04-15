@@ -9,12 +9,14 @@
 				<div class="btn-com btn-right" @click="appRoute('orderList')">我的订单</div>
 			</div>
 		</div>
+		<Recommend></Recommend>
 	</div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { appRoute } from "@/router/appRoute.js";
+import Recommend from "@/components/recommend/Recommend.vue"
 
 const title = ref('订单支付成功')
 

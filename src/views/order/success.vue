@@ -10,7 +10,7 @@
 	        </div>
         </div>
         <!--为您推荐-->
-        <!--<recommend :recommend="recommend"></recommend>-->
+        <Recommend></Recommend>
     </div>
 </template>
 
@@ -20,13 +20,13 @@ import {useRoute} from "vue-router";
 import {isSuccessCode,isUnLoginCode} from "@/utils/constant.js";
 import { appRoute } from "@/router/appRoute.js";
 import {getOrderSuccess} from "@/api/order.js";
+import Recommend from "@/components/recommend/Recommend.vue"
 
 const route = useRoute()
 const cns = getCurrentInstance().appContext.config.globalProperties
 
 const loading = ref(true)
 const title = ref('订单提交成功')
-const recommend = ref([])
 
 const getData = () => {
 	const no = route.query.no
@@ -39,7 +39,7 @@ const getData = () => {
 			cns.$dialog.alert({
 				message: res.message
 			}).then(() => {
-				this.appRoute('ucenter', {}, 'replace')
+				appRoute('ucenter', {}, 'replace')
 			})
 		}
 	})

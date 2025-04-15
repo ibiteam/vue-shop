@@ -109,7 +109,7 @@
                         </div>
                     </div>
                     <!--购物车猜你喜欢部分-->
-                    <RecommendColumn :recommend="recommend"></RecommendColumn>
+                    <Recommend></Recommend>
                 </van-pull-refresh>
             </section>
             <section v-else class="loaded padding-horizontal-02">
@@ -188,13 +188,13 @@ import {
     deleteAxios,
     editByGoodsAxios,
     emptyInvalidAxios,
-    getDataAxios, getZhiRecommendAxios,
+    getDataAxios,
     newAddAttensionAxios, placeOrderAxios
 } from "@/api/cart.js";
 import { showToast } from 'vant';
 import { appRoute } from "@/router/appRoute.js";
 import { isUnLoginCode, isSuccessCode} from "@/utils/constant.js";
-import RecommendColumn from '@/components/recommendColumn/RecommendColumn'
+import Recommend from '@/components/recommend/Recommend.vue'
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 
@@ -211,7 +211,6 @@ const selectAll = ref(false)
 
 const shopList = ref([])
 const invalid_goods = ref([])
-const recommend = ref([]) // 为你推荐
 
 const total_price = ref(0) // 结算金额
 const total_integral = ref(0) // 结算积分
@@ -451,17 +450,6 @@ const clearInvalid = () => {
     }).catch(() => {})
 }
 
-const getRecommend = () => {
-    getZhiRecommendAxios()
-        .then((res) => {
-            if (isSuccessCode(res)) {
-                recommend.value = res.data
-            } else {
-                showToast(res.message)
-            }
-        })
-}
-
 const toLogin = () => {
     appRoute('login')
 }
@@ -497,7 +485,6 @@ onMounted(() => {
     document.querySelector('body').setAttribute('style', 'background-color: var(--page-bg-color)')
     hasBack.value = route.query.hasBack
     getData()
-    // getRecommend()
 })
 
 </script>

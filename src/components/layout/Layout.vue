@@ -7,7 +7,7 @@
             <component :is="Component" v-else />
 
         </router-view>
-        <Tabbar></Tabbar>
+        <Tabbar v-if="!route.query.hasBack"></Tabbar>
     </div>
 </template>
 

@@ -6,40 +6,9 @@
 				<img src="@/assets/images/good/no-data-shop.png" alt="" style="width: 4rem;">
 				<p class="fs26 co-3D text-center" style="position: relative;bottom: 0.6rem;">商品过期不存在</p>
 			</div>
-			<div style="padding: 0 0.2rem;" class="border-wrap">
-				<!--推荐-->
-				<div class="recommend" ref="recommendRef" id="recommend" style="padding: 0;">
-					<div class="item-tit2 s-flex ai-ct jc-bt" v-if="recommend&&recommend.length > 0">
-						<div class="s-flex ai-ct">
-							<span class="tit-sign" style="width: 0.08rem;height: 0.3rem;background: linear-gradient(270deg, #F64651 0%, var(--red-color) 99%);margin-right: 0.1rem;border-radius: 0.04rem;"></span>
-							<div class="co-333 fs32 fw-b">为您推荐</div>
-						</div>
-					</div>
-					<div class="recommend-box s-flex flex-wrap" style="padding: 0;">
-						<div class="recommend-item" v-for="(item, index) in recommend" :key="index"
-						     style="border-radius: 0.2rem;overflow: hidden;" @click="reToDetail(item)">
-							<div class="recommend-item-img">
-								<van-image :src="item.thumb" class="re-img">
-									<template v-slot:loading>
-										<img src="@/assets/images/common/no-pic.png" alt="" class="re-img">
-									</template>
-									<template v-slot:error>
-										<img src="@/assets/images/common/no-pic.png" alt=""
-										     class="re-img">
-									</template>
-								</van-image>
-							</div>
-							<div class="MT10" style="padding: 0 0.15rem;">
-								<div class="item-name fs26 co-333 elli-2">
-									{{ item.goods_name }}
-								</div>
-								<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct jc-bt">
-									<form-price :price="item.price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+			<!--推荐-->
+			<div ref="recommendRef">
+				<Recommend></Recommend>
 			</div>
 		</template>
 		<template v-else>
@@ -260,38 +229,10 @@
 					<template v-if="!goodsInfo.status">
 						<div class="goods-gray MT10">商品已下架</div>
 					</template>
-					<!--推荐-->
-					<div class="recommend" ref="recommendRef" id="recommend" style="padding: 0;">
-						<div class="item-tit2 s-flex ai-ct jc-bt" v-if="recommend&&recommend.length > 0">
-							<div class="s-flex ai-ct">
-								<span class="tit-sign"
-								      style="width: 0.08rem;height: 0.3rem;background: linear-gradient(270deg, #F64651 0%, var(--red-color) 99%);margin-right: 0.1rem;border-radius: 0.04rem;"></span>
-								<div class="co-333 fs32 fw-b">为您推荐</div>
-							</div>
-						</div>
-						<div class="recommend-box s-flex flex-wrap" style="padding: 0;">
-							<div class="recommend-item" v-for="(item, index) in recommend" :key="index" style="border-radius: 0.2rem;overflow: hidden;" @click="reToDetail(item)">
-								<div class="recommend-item-img">
-									<van-image :src="item.thumb" class="re-img">
-										<template v-slot:loading>
-											<img src="@/assets/images/common/no-pic.png" alt="" class="re-img">
-										</template>
-										<template v-slot:error>
-											<img src="@/assets/images/common/no-pic.png" alt="" class="re-img">
-										</template>
-									</van-image>
-								</div>
-								<div class="MT10" style="padding: 0 0.15rem;">
-									<div class="item-name fs26 co-333 elli-2">
-										{{ item.goods_name }}
-									</div>
-									<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct jc-bt">
-										<form-price :price="item.price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+				</div>
+				<!--推荐-->
+				<div ref="recommendRef">
+					<Recommend ></Recommend>
 				</div>
 				<!--底部菜单-->
 				<footer class="breathe">
@@ -442,6 +383,7 @@ import { isSuccessCode, isUnLoginCode } from "@/utils/constant.js";
 import $ from 'jquery'
 import ShoppingCard from '@/components/shoppingCard/ShoppingCard'
 import AddressListPopup from "@/components/common/AddressListPopup.vue";
+import Recommend from "@/components/recommend/Recommend.vue";
 import skuSelect from './SkuSelect.vue'
 import shopRate from './ShopRate.vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
@@ -482,12 +424,8 @@ const shoppingType = ref(-1)
 const carNum = ref(0)
 const chooseAttr = ref(false)
 const goodsAttr = ref({})
-const recommend = ref([])
-const bottomlineRecommend = ref(false)
-const pageRecommend = ref(1)
 const initFlag = ref(0)
 const placeholder = ref(true)
-const loadRecommend = ref(true)
 const showPreviewer = ref(false)
 const startIndex = ref(0)
 const showIndex = ref(false)
@@ -588,13 +526,6 @@ const lookBig = (url) => {
 	showPreviewer.value = true
 }
 
-const goUrl = (url) => {
-	if (!url) {
-		return
-	}
-	window.location.href = url
-}
-
 const handleScroll = () => {
 	// 获取当前的滚动距离
 	let scrollTopVal = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
@@ -621,11 +552,6 @@ const handleScroll = () => {
 	} else if (scrollTopVal >= recommendTop) {
 		if (active.value != 'recommend') active.value = 'recommend'
 	}
-
-	//if (loadRecommend.value && scrollTopVal > recommendTop - window.innerHeight - 100 + recommendHeight && !bottomlineRecommend.value) {
-	//	loadRecommend.value = false
-	//	getZhiRecommend()
-	//}
 }
 
 const onScrollGoods = () => {
@@ -644,11 +570,6 @@ const onScrollDetail = () => {
 
 const onScrollRecommend = () => {
 	if (!opacity.value) return
-	if (!recommend.value.length) {
-		onScrollDetail()
-		active.value = 'detail'
-		return
-	}
 	window.scrollTo({top: recommendRef.value.offsetTop - 44, behavior: "smooth"})
 }
 
@@ -703,41 +624,12 @@ const changeCar = (e) => {
 
 const unusual = () => {
 	initFlag.value = 0
-	loadRecommend.value = true
 	goodStore.setBuyNumber(-1)
 	getData()
-}
-const reToDetail = (data) => {
-	cns.appRoute('good', {goods_no: data.no})
 }
 const toCart = () => {
 	cns.appRoute('cart', {hasBack: true})
 }
-
-//const getZhiRecommend = () => {
-//	cns.$http.doGet('v4/goods/hotSale', {goods_no: goodsNo.value, page: pageRecommend.value}).then(res => {
-//		if (isSuccessCode(res)) {
-//			if (pageRecommend.value == 1) {
-//				recommend.value = res.data.data
-//				recommendTitle.value = res.data.title
-//			} else {
-//				recommend.value.push(...res.data.data)
-//			}
-//			if (res.data.on_last_page) {
-//				bottomlineRecommend.value = true
-//			} else {
-//				bottomlineRecommend.value = false
-//			}
-//			nextTick(() => {
-//				loadRecommend.value = true
-//			})
-//			pageRecommend.value++
-//		} else {
-//			bottomlineRecommend.value = true
-//			cns.$toast(res.message)
-//		}
-//	})
-//}
 
 const goChat = (type) => {
 	getChatUrl({no: goodsNo.value, source_url: window.location.href}).then(res=>{
@@ -773,8 +665,6 @@ const getData = () => {
 		if (isSuccessCode(res)) {
 			placeholder.value = false
 			banner.value = res.data.banner
-
-			recommend.value = res.data.center.recommend
 			/**商品信息**/
 			goodsInfo.value = res.data.center
 			evaluate.value = res.data.center.evaluate
@@ -824,16 +714,11 @@ const getData = () => {
 				// 滚到顶
 				window.scrollTo({top: 0})
 			})
-			//if (goodsInfo.value.status == 0) {
-			//	loadRecommend.value = false
-			//	getZhiRecommend()
-			//}
 		} else {
 			placeholder.value = false
 			goodsInfo.value = {}
 			goodsAttr.value = []
 			carNum.value = 0
-			recommend.value = []
 
 			nextTick(() => {
 				// 滚到顶
@@ -876,7 +761,7 @@ router.beforeEach((to, from, next) => {
 	width: 7.5rem;
 	margin: 0 auto;
 	background: #F8F8F8;
-	overflow-x: hidden;
+	//overflow-x: hidden;
 	.nav {
 		position: fixed;
 		top: 0.98rem;
@@ -1414,55 +1299,6 @@ router.beforeEach((to, from, next) => {
 					width: 3.4rem;
 				}
 
-			}
-		}
-	}
-	/*推荐*/
-	.recommend-box {
-		padding: 0 0.2rem;
-		.recommend-item {
-			border-radius: 0.2rem;
-			overflow: hidden;
-			background: #fff;
-			width: 3.5rem;
-			padding-bottom: 0.1rem;
-			margin-bottom: 0.1rem;
-			.re-img {
-				width: 3.5rem;
-				height: 3.5rem;
-				border-radius: 5px 5px 0 0;
-			}
-			.goods_type {
-				width: 0.6rem;
-				height: 0.3rem;
-				line-height: 0.3rem;
-				background: rgba(247, 17, 17, 0.04);
-				border-radius: 0.04rem;
-				color: var(--red-color);
-				font-size: 0.2rem;
-				text-align: center;
-				display: inline-block;
-			}
-			&:nth-child(2n+1) {
-				margin-right: 0.1rem;
-			}
-			.recommend-item-img {
-				width: 3.5rem;
-				height: 3.5rem;
-			}
-			.item-name {
-				width: 3.15rem;
-				height: 0.72rem;
-				line-height: 0.36rem;
-				margin-bottom: 0.1rem;
-				span {
-					line-height: 0.36rem;
-					height: 0.36rem;
-					margin-right: 0.1rem;
-					min-width: auto;
-					font-size: 0.2rem;
-					padding: 0 0.1rem;
-				}
 			}
 		}
 	}
