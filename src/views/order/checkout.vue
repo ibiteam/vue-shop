@@ -227,6 +227,10 @@ const choosenPayType = () => {
 }
 
 const done = () => {
+	if(!formData.user_address_id){
+		cns.$toast('请选择收货地址')
+		return false
+	}
 	if (doLoading.value) return false
 
 	doLoading.value = true

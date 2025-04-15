@@ -624,7 +624,7 @@ const changeCar = (e) => {
 
 const unusual = () => {
 	initFlag.value = 0
-	goodStore.setBuyNumber(-1)
+	goodStore.setBuyNumber(1)
 	getData()
 }
 const toCart = () => {
@@ -747,7 +747,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-	goodStore.setBuyNumber(-1)
+	goodStore.setBuyNumber(1)
 })
 
 router.beforeEach((to, from, next) => {
