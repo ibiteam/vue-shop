@@ -241,7 +241,11 @@ const beforeRead = (file) => {
         cns.$toast("请上传 jpg/jpeg/png 格式图片");
         return false;
     }
-    return true;
+    var isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+        this.$toast("文件大小不得超过5M");
+    }
+    return isLt5M;
 }
 
 const afterRead = (index) =>{
