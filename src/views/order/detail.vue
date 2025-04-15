@@ -219,6 +219,8 @@ const orderStatus = (status) => {
         status_txt = '待收货'
     }else if (status == 6){
         status_txt = '已完成'
+    }else if (status == 7){
+        status_txt = '部分发货'
     }
     return status_txt
 }

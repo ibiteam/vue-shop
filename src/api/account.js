@@ -5,11 +5,6 @@ export function getUserInfoAxios() {
     return $http.doGet('v1/account_set/get_info')
 }
 
-// 上传图片
-export function uploadFileAxios(info) {
-    return $http.doPost('v1/upload', info)
-}
-
 // 更换头像
 export function updatePortraitAxios(url) {
     return $http.doPost('v1/account_set/avatar', {avatar: url})

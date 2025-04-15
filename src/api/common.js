@@ -12,3 +12,8 @@ export const shopCommonConfig = () => {
 export const getChatUrl = (params) => {
     return $http.getNotLoading('v1/chat/url', params)
 }
+
+// 上传图片
+export function uploadFileAxios(info) {
+    return $http.doFile('v1/upload', info)
+}

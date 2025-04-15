@@ -16,25 +16,23 @@
                     </div>
                 </div>
                 <div class="item-textarea">
-                    <textarea v-model="result.items[index].content" maxlength="500" placeholder="请发表您的评价..."></textarea>
+                    <textarea v-model="item.comment" maxlength="500" placeholder="请发表您的评价..."></textarea>
                 </div>
                 <div class="item-upload">
-                    <div class="upload-img" v-for="(image, imageIdx) in item.imagesGroup" :key="imageIdx" :style="{
+                    <div class="upload-img" v-for="(image, imageIdx) in item.images" :key="imageIdx" :style="{
 							'margin-right': (imageIdx + 1) % 3 == 0 ? '0' : '0.2rem',
-						}" @click="imgView(item.imagesGroup, imageIdx)">
+						}" @click="imgView(item.images, imageIdx)">
                         <img :src="image" />
                         <img class="upload-img-delete" src="@/assets/images/order/comment_close.png"
                              @click.stop="deleteImage(index, imageIdx)" />
                     </div>
                     <van-uploader :before-read="beforeRead" :after-read="afterRead(index)"
-                                  v-if="item.imagesGroup.length < 6">
+                                  v-if="item.images.length < 6">
                         <div class="upload-btn">
                             <img src="@/assets/images/order/comment_camera.png" alt="" />
                             <p>
                                 {{
-                                    item.imagesGroup.length == 0
-                                            ? "添加图片"
-                                            : item.imagesGroup.length + "/6"
+                                    item.images.length == 0 ? "添加图片" : item.images.length + "/6"
                                 }}
                             </p>
                         </div>
@@ -93,7 +91,7 @@ import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed}
 import { showImagePreview } from 'vant';
 import { useRoute } from 'vue-router'
 import {initEvaluate,storeEvaluate} from "@/api/order.js";
-import {uploadFileAxios} from "@/api/account.js";
+import {uploadFileAxios} from "@/api/common.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 
@@ -125,18 +123,12 @@ const getPageData = () => {
     initEvaluate(info).then((res) => {
         if (cns.$constant.isSuccessCode(res)) {
             res.data.items.map((item) => {
-                item.rank = 0;
-                item.productRank = 0;
-                item.priceRank = 0;
-                item.busRank = 0;
-                item.deliveryRank = 0;
-                item.salesRank = 0;
-                item.content = "";
-                item.imagesGroup = [];
+                item.comment = ''
+                item.images = []
             });
             result.value = { ...res.data };
             if (route.query.rank){
-                result.value.items[0].rank = route.query.rank
+                commentInfo.value.rank = route.query.rank
             }
             loading.value = true;
         } else if (cns.$constant.isUnLoginCode(res)) {
@@ -163,7 +155,7 @@ const save = () =>{
             deliveryRank: result.items.value[k].deliveryRank,
             salesRank: result.items.value[k].salesRank,
             content: result.items.value[k].content,
-            images: result.items.value[k].imagesGroup,
+            images: result.items.value[k].images,
             goods_id: result.items.value[k].goods_id,
         };
         items.push(obj);
@@ -243,7 +235,7 @@ const save = () =>{
 }
 
 const deleteImage = (index, imageIdx) =>{
-    result.value.items[index].imagesGroup.splice(imageIdx, 1);
+    result.value.items[index].images.splice(imageIdx, 1);
 }
 
 const beforeRead = (file) => {
@@ -262,11 +254,10 @@ const afterRead = (index) =>{
     return (file) => {
         let info = {
             file: file.content,
-            auth: 0
         };
         uploadFileAxios(info).then((res) => {
             if (cns.$constant.isSuccessCode(res)) {
-                result.value.items[index].imagesGroup.push(res.data.url);
+                result.value.items[index].images.push(res.data.url);
             } else if (cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login')
             }else {

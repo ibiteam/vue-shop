@@ -52,8 +52,9 @@ import ImgCropperPop from './../../components/imgCropper/imgCropperPop'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
 import {
-    getUserInfoAxios, updateNickNameAxios, updatePortraitAxios, updateUserNameAxios, uploadFileAxios
+    getUserInfoAxios, updateNickNameAxios, updatePortraitAxios, updateUserNameAxios
 } from "@/api/account.js";
+import {uploadFileAxios} from "@/api/common.js";
 const title = ref('用户信息')
 const page_loading = ref(false)
 const portrait = ref('')
