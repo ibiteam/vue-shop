@@ -624,7 +624,7 @@ const changeCar = (e) => {
 
 const unusual = () => {
 	initFlag.value = 0
-	goodStore.setBuyNumber(-1)
+	goodStore.setBuyNumber(1)
 	getData()
 }
 const toCart = () => {
@@ -736,18 +736,17 @@ onMounted(() => {
 	goodsNo.value = route.query.goods_no
 	skuId.value = route.query.sku_id
 	// 如果从新增收货地址来的，则打开选择收货地址
-	if (fromPath.value == 'addressForm') {
+	if (fromPath.value.name == 'addressForm') {
 		openSelectAddress()
 	}
 	// 初始化
 	getData()
 	// 绑定滚动事件
 	window.addEventListener('scroll', handleScroll)
-	// 小程序环境不显示头
 })
 
 onBeforeUnmount(() => {
-	goodStore.setBuyNumber(-1)
+	goodStore.setBuyNumber(1)
 })
 
 router.beforeEach((to, from, next) => {

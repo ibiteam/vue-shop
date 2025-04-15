@@ -14,11 +14,11 @@
                     <em class="iconfont cursor-p" style="color: var(--color-text-desc);padding:0;font-size: 0.36rem;">&#xe7c3;</em>
                 </template>
             </van-search>
-            <div class="search-btn" @click="handleSearchConfirm">搜索</div>
+            <div class="search-btn" @click="handleSearchConfirm(info.keywords || search_placeholder)">搜索</div>
         </div>
         <!--搜索关键词下拉数据-->
-        <div class="search-history-options" v-if="search_keywords_optiosn.length">
-            <van-cell v-for="(item, index) in search_keywords_optiosn" :key="index" :title="item" @click="handleSearchConfirm(item)" />
+        <div class="search-history-options" v-if="searchKeywordsOptiosn.length">
+            <van-cell v-for="(item, index) in searchKeywordsOptiosn" :key="index" :title="item.title" @click="handleSearchConfirm(item.title)" />
         </div>
         <template v-else>
             <!--搜索历史列表-->
@@ -46,7 +46,7 @@
 import {ref, reactive, watch, computed, onMounted, onBeforeMount, onActivated} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import $public from '@/utils/public'
-import {searchKeywordsAxios} from '@/api/search'
+import {searchKeywords} from '@/api/search'
 import { isSuccessCode } from "@/utils/constant.js";
 
 const router = useRouter();
@@ -56,7 +56,7 @@ const search_placeholder = ref('');
 const info = reactive({
     keywords: '',
 });
-const search_keywords_optiosn = ref([]);
+const searchKeywordsOptiosn = ref([]);
 const search_keywords_list = ref([]);
 
 watch(
@@ -67,8 +67,8 @@ watch(
 );
 
 const handleClickRouterBack = () => {
-    if(search_keywords_optiosn.value.length){
-        search_keywords_optiosn.value = []
+    if(searchKeywordsOptiosn.value.length){
+        searchKeywordsOptiosn.value = []
     }else{
         router.back();
     }
@@ -97,9 +97,9 @@ const handleSearchConfirm = (value) => {
 };
 
 const handleInputSearchOptions = $public.debounce(() => {
-    searchKeywordsAxios({ keywords: info.keywords }).then(res => {
+	searchKeywords().then(res => {
         if (isSuccessCode(res)) {
-            search_keywords_optiosn.value = res.data;
+            searchKeywordsOptiosn.value = res.data.items;
         }
     });
 },300);

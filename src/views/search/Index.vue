@@ -100,11 +100,12 @@
 import {ref, reactive, onMounted, onBeforeUnmount, computed, watch, nextTick} from 'vue';
 import { useRouter , useRoute , onBeforeRouteLeave } from 'vue-router';
 import { showToast } from 'vant';
-import {searchAxios , searchShopAxios} from '@/api/search'
+import {searchAxios} from '@/api/search'
 
 import searchType1 from '@/assets/images/search/search_type_row_2.png'
 import searchType2 from '@/assets/images/search/search_type_row_1.png'
 import {isSuccessCode} from "@/utils/constant.js";
+import {appRoute} from "@/router/appRoute.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -234,9 +235,7 @@ const searchTypeChange = (type) => {
 }
 /** 点击显示搜索历史 **/
 const hisSearchCancel = () => {
-    router.push({
-        name: 'search_history',
-    })
+	appRoute('search_history', {placeholder: keywords.value || info.keywords})
 }
 const scrolls = () => {
     const sTop = window.scrollY || document.documentElement.scrollTop;

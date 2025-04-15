@@ -33,4 +33,10 @@ const handleBeforChange = (name) => {
 :deep(.van-badge) {
     background-color: var(--main-color);
 }
+:deep(.van-tabbar){
+	max-width: 7.5rem;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+}
 </style>

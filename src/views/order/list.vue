@@ -167,7 +167,7 @@
                             <div class="order-address-dd s-flex ai-ct" v-for="(address, key) in addressList" :key="key" :class="{ active: addressIndex == key }" @click="handleClickAddressItem(address, key)">
                                 <em class="iconfont check">{{ addressIndex == key ? '&#xe6ea;' : '&#xe7c9;' }}</em>
                                 <div class="order-address-detail">
-                                    <div class="s-flex"><span>{{ address.recipient_name }}</span> <span>{{ address.recipient_phone }}</span> <em class="tag s-flex ai-ct" v-if="address.is_default == 1">默认</em></div>
+                                    <div class="s-flex"><span>{{ address.consignee }}</span> <span>{{ address.phone }}</span> <em class="tag s-flex ai-ct" v-if="address.is_default == 1">默认</em></div>
                                     <p>{{ address.province }} {{ address.city }} {{ address.district }} {{ address.address_detail }}</p>
                                 </div>
                             </div>

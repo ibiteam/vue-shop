@@ -42,8 +42,8 @@
 										<div class="address-info flex-1">
 											<p class="elli-2">{{ item.province }}{{ item.city }}{{ item.district }} {{ item.address_detail }}</p>
 											<div class="address-name s-flex">
-												<label class="elli-1">{{ item.recipient_name }}</label>
-												<span>{{ item.recipient_phone.substr(0, 3) + '****' + item.recipient_phone.substr(7) }}</span>
+												<label class="elli-1">{{ item.consignee }}</label>
+												<span>{{ item.phone.substr(0, 3) + '****' + item.phone.substr(7) }}</span>
 											</div>
 										</div>
 									</div>
