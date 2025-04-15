@@ -100,35 +100,18 @@ onMounted(() => {
 		padding: 0 0.2rem;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 0.1rem;
+		gap: 0.2rem;
 
 		.recommend-item {
 			border-radius: 0.2rem;
 			overflow: hidden;
 			background: #fff;
 			padding-bottom: 0.1rem;
-			margin-bottom: 0.1rem;
 
 			.re-img {
 				width: 100%;
 				height: 3.5rem;
 				border-radius: 5px 5px 0 0;
-			}
-
-			.goods_type {
-				width: 0.6rem;
-				height: 0.3rem;
-				line-height: 0.3rem;
-				background: rgba(247, 17, 17, 0.04);
-				border-radius: 0.04rem;
-				color: var(--red-color);
-				font-size: 0.2rem;
-				text-align: center;
-				display: inline-block;
-			}
-
-			&:nth-child(2n+1) {
-				margin-right: 0.1rem;
 			}
 
 			.recommend-item-img {
