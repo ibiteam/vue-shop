@@ -9,23 +9,26 @@
     <meta property="og:title" content="" />
     <meta name="description" property="og:description" content="" />
     <meta name="keywords" property="og:keywords" content="" />
-	<link rel="icon" href="<%- logo %>" id="favicon">
+	<link rel="icon" href="" id="favicon">
 	<title><%- title %></title>
 </head>
 <body>
 <script>
-	var body = document.getElementsByTagName('body')
-	var html = document.documentElement
-	var psdW = 750  //psd设计图宽度
-	var W = window.innerWidth;
-	if (W >= 750) {
-		html.style.maxWidth = "750px"
-		html.style.margin = "auto"
-		html.style.fontSize = "625%"
-	} else {
-		var fs = W / psdW;
-		html.style.fontSize = (fs * 625) + "%"
+	const initRem = () => {
+		let html = document.documentElement
+		let psdW = 750  // psd设计图宽度
+		let W = window.innerWidth;
+		if (W >= 750) {
+			html.style.maxWidth = "750px"
+			html.style.margin = "auto"
+			html.style.fontSize = "625%"
+		} else {
+			let fs = W / psdW;
+			html.style.fontSize = (fs * 625) + "%"
+		}
 	}
+	initRem()
+	window.addEventListener('resize', initRem)
 </script>
 <div id="app" style="height: 100%;"></div>
 <script type="module" src="/src/main.js"></script>
