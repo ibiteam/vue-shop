@@ -10,7 +10,6 @@
                     height: (item.height / 100) + 'rem',
                     top: (item.y / 100) + 'rem',
                     left: (item.x / 100) + 'rem',
-                    backgroundColor: '#999'
                 }"
                 @click="handleOpenLink(item.url)"
             >

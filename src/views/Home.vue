@@ -25,10 +25,12 @@ import AdvertisingBanner from '@/views/home/AdvertisingBanner'
 import HotZone from '@/views/home/HotZone'
 import GoodsRecommend from '@/views/home/GoodsRecommend'
 import Recommend from '@/views/home/Recommend'
-import { getHomeData } from '@/api/home'
+import { getHomeData, getHomePreviewData } from '@/api/home'
 import {isSuccessCode} from "@/utils/constant.js";
+import { useRoute } from 'vue-router'
 
 const cns = getCurrentInstance().appContext.config.globalProperties
+const route = useRoute()
 const decoration = reactive({
     content: [],
     not_for_data: [],
@@ -42,25 +44,35 @@ const findNotForData = (component_name) => {
     return decoration.not_for_data.find(item => item.component_name === component_name)
 }
 
+const init = (res) => {
+    if (isSuccessCode(res)) {
+        decoration.data = res.data
+        const { home_nav, danping_advertisement, suspended_advertisement, content } = res.data
+        decoration.content = content
+        decoration.not_for_data = [
+            home_nav,
+            danping_advertisement,
+            suspended_advertisement
+        ]
+        let title = document.querySelector('meta[property="og:title"]')
+        title.content = res.data.title || ''
+        let meta_description = document.querySelector('meta[property="og:description"]')
+        meta_description.content = res.data.description || ''
+        let meta_keywords = document.querySelector('meta[property="og:keywords"]')
+        meta_keywords.content = res.data.keywords || ''
+    }
+}
+
 onMounted(() => {
-    getHomeData().then(res => {
-        if (isSuccessCode(res)) {
-            decoration.data = res.data
-            const { home_nav, danping_advertisement, suspended_advertisement, content } = res.data
-            decoration.content = content
-            decoration.not_for_data = [
-                home_nav,
-                danping_advertisement,
-                suspended_advertisement
-            ]
-            let title = document.querySelector('meta[property="og:title"]')
-            title.content = res.data.title || ''
-            let meta_description = document.querySelector('meta[property="og:description"]')
-            meta_description.content = res.data.description || ''
-            let meta_keywords = document.querySelector('meta[property="og:keywords"]')
-            meta_keywords.content = res.data.keywords || ''
-        }
-    })
+    if (route.params.id) {
+        getHomePreviewData({id: route.params.id}).then(res => {
+            init(res)
+        })
+    } else {
+        getHomeData().then(res => {
+            init(res)
+        })
+    }
     nextTick(() => {
         nextTick(() => {
             cns.$bus.on('homeOpenLink', (res) => {

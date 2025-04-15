@@ -21,6 +21,11 @@ const router = createRouter({
                     component: () => import('@/views/Home.vue'),
                 },
                 {
+                    path: 'home/:id',
+                    name: 'home_preview',
+                    component: () => import('@/views/Home.vue'),
+                },
+                {
                     path: 'ucenter',
                     name: 'ucenter',
                     component: () => import('@/views/ucenter/Ucenter.vue'),
