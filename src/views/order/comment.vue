@@ -19,22 +19,15 @@
                     <textarea v-model="item.comment" maxlength="500" placeholder="请发表您的评价..."></textarea>
                 </div>
                 <div class="item-upload">
-                    <div class="upload-img" v-for="(image, imageIdx) in item.images" :key="imageIdx" :style="{
-							'margin-right': (imageIdx + 1) % 3 == 0 ? '0' : '0.2rem',
-						}" @click="imgView(item.images, imageIdx)">
+                    <div class="upload-img" v-for="(image, imageIdx) in item.images" :key="imageIdx" :style="{'margin-right': (imageIdx + 1) % 3 == 0 ? '0' : '0.2rem',}" @click="imgView(item.images, imageIdx)">
                         <img :src="image" />
                         <img class="upload-img-delete" src="@/assets/images/order/comment_close.png"
                              @click.stop="deleteImage(index, imageIdx)" />
                     </div>
-                    <van-uploader :before-read="beforeRead" :after-read="afterRead(index)"
-                                  v-if="item.images.length < 6">
+                    <van-uploader :before-read="beforeRead" :after-read="afterRead(index)" v-if="item.images.length < 6">
                         <div class="upload-btn">
                             <img src="@/assets/images/order/comment_camera.png" alt="" />
-                            <p>
-                                {{
-                                    item.images.length == 0 ? "添加图片" : item.images.length + "/6"
-                                }}
-                            </p>
+                            <p>{{item.images.length == 0 ? "添加图片" : item.images.length + "/6" }}</p>
                         </div>
                     </van-uploader>
                 </div>
@@ -48,28 +41,28 @@
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">产品服务</span>
-                    <van-rate v-model="commentInfo.productRank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.productRank==1?'非常不满意':commentInfo.productRank==2?'不满意':commentInfo.productRank==3?'一般':commentInfo.productRank==4?'满意':commentInfo.productRank==5?'非常满意':''}}</span>
+                    <van-rate v-model="commentInfo.goods_rank" color="#F71111" void-icon="star" void-color="#eee" />
+                    <span>{{ commentInfo.goods_rank==1?'非常不满意':commentInfo.goods_rank==2?'不满意':commentInfo.goods_rank==3?'一般':commentInfo.goods_rank==4?'满意':commentInfo.goods_rank==5?'非常满意':''}}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">价格合理度</span>
-                    <van-rate v-model="commentInfo.priceRank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.priceRank==1?'非常不满意':commentInfo.priceRank==2?'不满意':commentInfo.priceRank==3?'一般':commentInfo.priceRank==4?'满意':commentInfo.priceRank==5?'非常满意':''}}</span>
+                    <van-rate v-model="commentInfo.price_rank" color="#F71111" void-icon="star" void-color="#eee" />
+                    <span>{{ commentInfo.price_rank==1?'非常不满意':commentInfo.price_rank==2?'不满意':commentInfo.price_rank==3?'一般':commentInfo.price_rank==4?'满意':commentInfo.price_rank==5?'非常满意':''}}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">商家服务</span>
-                    <van-rate v-model="commentInfo.busRank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.busRank==1?'非常不满意':commentInfo.busRank==2?'不满意':commentInfo.busRank==3?'一般':commentInfo.busRank==4?'满意':commentInfo.busRank==5?'非常满意':''}}</span>
+                    <van-rate v-model="commentInfo.bus_rank" color="#F71111" void-icon="star" void-color="#eee" />
+                    <span>{{ commentInfo.bus_rank==1?'非常不满意':commentInfo.bus_rank==2?'不满意':commentInfo.bus_rank==3?'一般':commentInfo.bus_rank==4?'满意':commentInfo.bus_rank==5?'非常满意':''}}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">交货速度</span>
-                    <van-rate v-model="commentInfo.deliveryRank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.deliveryRank==1?'非常不满意':commentInfo.deliveryRank==2?'不满意':commentInfo.deliveryRank==3?'一般':commentInfo.deliveryRank==4?'满意':commentInfo.deliveryRank==5?'非常满意':''}}</span>
+                    <van-rate v-model="commentInfo.delivery_rank" color="#F71111" void-icon="star" void-color="#eee" />
+                    <span>{{ commentInfo.delivery_rank==1?'非常不满意':commentInfo.delivery_rank==2?'不满意':commentInfo.delivery_rank==3?'一般':commentInfo.delivery_rank==4?'满意':commentInfo.delivery_rank==5?'非常满意':''}}</span>
                 </div>
                 <div class="rate" v-if="is_show_other">
                     <span class="title">售后服务</span>
-                    <van-rate v-model="commentInfo.salesRank" color="#F71111" void-icon="star" void-color="#eee" />
-                    <span>{{ commentInfo.salesRank==1?'非常不满意':commentInfo.salesRank==2?'不满意':commentInfo.salesRank==3?'一般':commentInfo.salesRank==4?'满意':commentInfo.salesRank==5?'非常满意':''}}</span>
+                    <van-rate v-model="commentInfo.service_rank" color="#F71111" void-icon="star" void-color="#eee" />
+                    <span>{{ commentInfo.service_rank==1?'非常不满意':commentInfo.service_rank==2?'不满意':commentInfo.service_rank==3?'一般':commentInfo.service_rank==4?'满意':commentInfo.service_rank==5?'非常满意':''}}</span>
                 </div>
             </div>
         </div>
@@ -89,11 +82,12 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { showImagePreview } from 'vant';
-import { useRoute } from 'vue-router'
+import { useRoute,useRouter } from 'vue-router'
 import {initEvaluate,storeEvaluate} from "@/api/order.js";
 import {uploadFileAxios} from "@/api/common.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
+const router = useRouter();
 
 const loading = ref(false)
 const is_show_other = ref(false)
@@ -146,92 +140,71 @@ const save = () =>{
     if (saveFlag.value) return;
     let flag = false;
     let items = [];
-    for (let k in result.items.value) {
-        let obj = {
-            rank: result.items.value[k].rank,
-            productRank: result.items.value[k].productRank,
-            priceRank: result.items.value[k].priceRank,
-            busRank: result.items.value[k].busRank,
-            deliveryRank: result.items.value[k].deliveryRank,
-            salesRank: result.items.value[k].salesRank,
-            content: result.items.value[k].content,
-            images: result.items.value[k].images,
-            goods_id: result.items.value[k].goods_id,
-        };
-        items.push(obj);
-        if (result.items.value[k].content == '') {
+    result.value.items.forEach(ite => {
+        items.push({
+            comment:ite.comment,
+            images:ite.images
+        })
+        if (ite.comment == ''){
             flag = true;
             cns.$toast("请填写您对该商品的评价内容~");
             return false;
         }
-        if (result.items.value[k].content.length<10) {
+        if (ite.comment.length<10) {
             flag = true;
             cns.$toast("最少输入10个字哦~");
             return false;
         }
-        if (result.items.value[k].content.length>500) {
+        if (ite.comment.length>500) {
             flag = true;
             cns.$toast("最多输入500个字哦~");
             return false;
         }
-        if (result.items.value[k].rank == 0 && k==0) {
-            flag = true;
-            cns.$toast("您还没给商品评分哦~");
-            return false;
-        }
-        if (result.items.value[k].productRank == 0 && k==0) {
-            flag = true;
-            cns.$toast("您还没给商品评分哦~");
-            return false;
-        }
-        if (result.items.value[k].priceRank == 0 && k==0) {
-            flag = true;
-            cns.$toast("您还没给商品评分哦~");
-            return false;
-        }
-        if (result.items.value[k].busRank == 0 && k==0) {
-            flag = true;
-            cns.$toast("您还没给商品评分哦~");
-            return false;
-        }
-        if (result.items.value[k].deliveryRank == 0 && k==0) {
-            flag = true;
-            cns.$toast("您还没给商品评分哦~");
-            return false;
-        }
-        if (result.items.value[k].salesRank == 0 && k==0) {
-            flag = true;
-            cns.$toast("您还没给商品评分哦~");
-            return false;
-        }
-
-
+    })
+    if (commentInfo.value.rank == 0) {
+        flag = true;
+        cns.$toast("您还没给商品评分哦~");
+        return false;
+    }
+    if (commentInfo.value.goods_rank == 0) {
+        flag = true;
+        cns.$toast("您还没给商品评分哦~");
+        return false;
+    }
+    if (commentInfo.value.price_rank == 0) {
+        flag = true;
+        cns.$toast("您还没给商品评分哦~");
+        return false;
+    }
+    if (commentInfo.value.bus_rank == 0) {
+        flag = true;
+        cns.$toast("您还没给商品评分哦~");
+        return false;
+    }
+    if (commentInfo.value.delivery_rank == 0) {
+        flag = true;
+        cns.$toast("您还没给商品评分哦~");
+        return false;
+    }
+    if (commentInfo.value.service_rank == 0) {
+        flag = true;
+        cns.$toast("您还没给商品评分哦~");
+        return false;
     }
     if (flag) return;
+    commentInfo.value.items = items
     saveFlag.value = true;
-    // let info = {
-    //     no: route.query.no,
-    //     items,
-    //     is_anonymous: is_anonymous.value,
-    // };
-    // storeEvaluate(commentInfo.value).then((res) => {
-    //     if (res.code == 200) {
-    //         Dialog.confirm({
-    //             message: "发表评价成功！",
-    //             confirmButtonText: "查看评价",
-    //             cancelButtonText: "继续评价",
-    //         })
-    //                 .then(() => {
-    //                     this.appRoute("myEvaluate", {}, { active: 1 }, 'replace');
-    //                 })
-    //                 .catch(() => {
-    //                     this.appRoute("myEvaluate", {}, { active: 0 }, 'replace');
-    //                 });
-    //     } else {
-    //         this.saveFlag = false;
-    //         cns.$toast(res.message);
-    //     }
-    // });
+    storeEvaluate(commentInfo.value).then((res) => {
+        saveFlag.value = false
+        if (cns.$constant.isSuccessCode(res)) {
+            cns.$toast(res.message)
+            router.back(-1)
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            cns.appRoute('login')
+        }else {
+            cns.$toast(res.message)
+        }
+    });
 }
 
 const deleteImage = (index, imageIdx) =>{

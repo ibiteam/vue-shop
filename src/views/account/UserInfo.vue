@@ -5,10 +5,12 @@
             <van-cell-group>
                 <van-cell title="头像" is-link clickable class="logo-cell">
                     <div class="s-flex jc-fe">
-                        <div class="logo-img">
-                            <img :src="portrait" onerror="return onerror=null,src='@/assets/images/ucenter/portait.jpeg'" v-if="portrait" @click="openFileChoosePop"/>
-                            <img src="@/assets/images/ucenter/header_photo_1.png" v-else @click="openFileChoosePop"/>
-                        </div>
+                        <van-uploader :before-read="beforeRead" :after-read="afterRead">
+                            <div class="logo-img">
+                                <img :src="portrait" onerror="return onerror=null,src='@/assets/images/ucenter/portait.jpeg'" v-if="portrait"/>
+                                <img src="@/assets/images/ucenter/header_photo_1.png" v-else/>
+                            </div>
+                        </van-uploader>
                     </div>
                 </van-cell>
                 <van-cell title="用户名" :value="user_name" is-link @click="showUpdateUser"/>
@@ -39,16 +41,10 @@
                 <div class="btn-com btn-right" @click="updateNickname">确认</div>
             </div>
         </van-dialog>
-        <!-- 图片裁剪 -->
-        <img-cropper-pop :visible="show_img_cropper" :file="file_choose_data.file" :choose_data="file_choose_data" @close="show_img_cropper = false" @getbase64Data="getCropperFile"></img-cropper-pop>
-        <!-- 文件上传选择弹窗 -->
-        <file-choose-pop :visible="show_file_choose" :choose_data="file_choose_data" @save="getFileChooseData" @close="show_file_choose = false"></file-choose-pop>
     </div>
 </template>
 
 <script setup>
-import FileChoosePop from './../../components/imgCropper/fileChoosePop'
-import ImgCropperPop from './../../components/imgCropper/imgCropperPop'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
 import {
@@ -65,12 +61,6 @@ const showNickname = ref(false)
 const showUsername = ref(false)
 const editUsername = ref('')
 const editNickname = ref('')
-const show_img_cropper = ref(false)
-const show_file_choose = ref(false)
-const file_choose_data = ref({
-    img: '',
-    file: null
-})
 
 onMounted(() => {
     getUserInfo()
@@ -95,25 +85,22 @@ const getUserInfo = () => {
         console.log(err)
     })
 }
-const openFileChoosePop = () => {
-    show_file_choose.value = true
-    file_choose_data.value = {
-        img: portrait.value,
-        file: ''
+
+const beforeRead = (file) => {
+    if (
+            file.type !== "image/jpeg" &&
+            file.type !== "image/png" &&
+            file.type !== "image/png"
+    ) {
+        cns.$toast("请上传 jpg/jpeg/png 格式图片");
+        return false;
     }
+    return true;
 }
-const getCropperFile = (file) => {
-    afterRead({content: file})
-}
-const getFileChooseData = (file) => {
-    file_choose_data.value.file = file
-    show_file_choose.value = false
-    show_img_cropper.value = true
-}
+
 const afterRead = (file) => {
     let info = {
         file: file.content,
-        auth: 0
     };
     uploadFileAxios(info).then(res => {
         if (cns.$constant.isSuccessCode(res)) {
