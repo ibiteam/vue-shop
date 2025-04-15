@@ -354,7 +354,7 @@ const btnOperate = (item,index,btnChild,btnIndex) => {
     }else if(btnChild.action == 'pay'){//去支付
         cns.appRoute('payIndex', {no: item.no})
     }else if(btnChild.action == 'refund'){//申请售后
-        cns.appRoute('orderRefund', {no: item.no})
+        cns.appRoute('refundForm', {no: item.no})
     }else if(btnChild.action == 'logistics'){//查看物流
         cns.appRoute('orderWuliu', {no: item.no})
     }else if(btnChild.action == 'receive'){//确认收货
