@@ -103,7 +103,7 @@ const getPageData = () => {
                 info.page = 2;
             });
         } else if (cns.$constant.isUnLoginCode(res)) {
-            cns.appRoute('login', {}, {}, 'replace')
+            cns.appRoute('login', {}, 'replace')
         } else {
             cns.$toast(res.message);
         }
@@ -132,7 +132,7 @@ const loadMore = () =>{
                 }
                 info.page++;
             } else if (cns.$constant.isUnLoginCode(res)) {
-                cns.appRoute('login', {}, {}, 'replace')
+                cns.appRoute('login', {}, 'replace')
             } else {
                 loading.value = false;
                 finished.value = false;
@@ -145,7 +145,7 @@ const loadMore = () =>{
 }
 
 const toOrder = (order_id) => {
-    cns.appRoute('orderDetail', {}, {orderId: order_id})
+    cns.appRoute('orderDetail', {orderId: order_id})
 }
 </script>
 

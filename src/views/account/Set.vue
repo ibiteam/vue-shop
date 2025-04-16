@@ -80,7 +80,7 @@ const logOut = () => {
             cns.$cookies.remove('app_token')
             localStorage.removeItem('wxUserInfo')
             localStorage.setItem('wxlogout','true')
-            cns.appRoute('ucenter',{},{},'replace')
+            cns.appRoute('ucenter',{},'replace')
         }else {
             cns.$toast(res.message)
         }

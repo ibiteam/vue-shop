@@ -231,7 +231,7 @@ const toGoods = (goods_id) => {
     checkGoodsChange()
   } else {
     if (good_list.value[index].is_on_sale == 1) {
-      cns.appRoute('good',{},{goods_id: goods_id})
+      cns.appRoute('good',{goods_id: goods_id})
     }
   }
 }
