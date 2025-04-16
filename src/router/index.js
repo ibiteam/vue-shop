@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LayoutComponent from '@/components/layout/Layout'
 import { getShopConfig } from '@/utils/public.js'
+import page from "./page";
 import user from "./user";
 import account from "./account";
 import good from "./good";
@@ -41,21 +42,10 @@ const router = createRouter({
                   name: 'category',
                   component: () => import('@/views/category/Category.vue'),
                   meta:{keepAlive:false}
-                },
-                {
-                  path: 'search',
-                  name: 'search',
-                  component: () => import('@/views/search/Index.vue'),
-                  meta:{keepAlive:false}
-                },
-                {
-                  path: 'search/history',
-                  name: 'search_history',
-                  component: () => import('@/views/search/History.vue'),
-                  meta:{keepAlive:true}
                 }
             ],
         },
+        ...page,
         ...user,
         ...account,
         ...good,
