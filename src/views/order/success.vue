@@ -29,8 +29,8 @@ const loading = ref(true)
 const title = ref('订单提交成功')
 
 const getData = () => {
-	const no = route.query.no
-	getOrderSuccess(no).then((res) => {
+	const order_sn = route.query.order_sn
+	getOrderSuccess(order_sn).then((res) => {
 		loading.value = false
 		if (isSuccessCode(res)) {
 		} else if (isUnLoginCode(res)) {

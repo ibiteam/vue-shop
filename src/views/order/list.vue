@@ -212,6 +212,7 @@ import {
     updateOrderAddressAxios
 } from "@/api/order.js";
 import {getAddress} from "@/api/address.js";
+import {refundVerifyAxios} from "@/api/refund.js";
 const route = useRoute()
 const router = useRouter()
 const cns = getCurrentInstance().appContext.config.globalProperties
@@ -342,7 +343,7 @@ const btnOperate = (item,index,btnChild,btnIndex) => {
     }else if(btnChild.action == 'pay'){//去支付
         cns.appRoute('payIndex', {order_sn: item.order_sn})
     }else if(btnChild.action == 'refund'){//申请售后
-        cns.appRoute('refundForm', {order_sn: item.order_sn})
+        afterSale(item)
     }else if(btnChild.action == 'logistics'){//查看物流
         cns.appRoute('orderWuliu', {order_sn: item.order_sn})
     }else if(btnChild.action == 'receive'){//确认收货
@@ -486,6 +487,19 @@ const toSearch =()=>{
     })
 }
 
+const afterSale = (item) =>{
+    refundVerifyAxios({ order_sn:item.order_sn, order_detail_id:item.items[0].id }).then(res => {
+        if (cns.$constant.isSuccessCode(res)) {
+            cns.appRoute('refundEntrance', {order_sn:item.order_sn, order_detail_id:item.items[0].id})
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            cns.appRoute('login')
+        } else if(res.code === 4006) {
+            cns.appRoute('refundDetail', { order_sn:item.order_sn, order_detail_id:item.items[0].id })
+        } else {
+            cns.$toast(res.message)
+        }
+    })
+}
 </script>
 
 <style scoped lang="scss">

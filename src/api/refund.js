@@ -17,5 +17,13 @@ export function refundDetailAxios(params){
 }
 
 export function refundRevokeAxios(params){
-    return $http.doGet('v1/order/apply_refund/revoke',params || {})
+    return $http.doPost('v1/order/apply_refund/revoke',params || {})
+}
+
+export function refundVerifyAxios(params){
+    return $http.doGet('v1/order/apply_refund/verify',params || {})
+}
+
+export function refundShowAxios(params){
+    return $http.doGet('v1/order/apply_refund/show',params || {})
 }

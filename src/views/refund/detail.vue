@@ -180,7 +180,6 @@ const route = useRoute()
 const info = ref({})
 const refund_data = ref()
 const is_loading =ref(true)
-const after_sales = ref(null)
 const status = ref(null) //状态 0：退款待处理；1：已拒绝退款；2：退货审核成功；3：买家已发货；4：卖家已收货；5：退款成功；6退款关闭
 const time =ref(null)
 const stepIndex =ref(null)
@@ -193,30 +192,12 @@ onMounted( () => {
 })
 
 const getPageData = () =>{
-    after_sales.value = route.query.after_sales
-    if (after_sales.value != 1 && route.query.apply_refund_id) {
-        info.value.apply_refund_id = route.query.apply_refund_id
-    }
-    info.value.order_no = route.query.order_no
+    info.value.apply_refund_id = route.query.apply_refund_id
+    info.value.order_sn = route.query.order_sn
     info.value.order_detail_id = route.query.order_detail_id
-    if (after_sales.value == 1){
-        refundInitAxios(info.value).then(res => {
-            initPageData(res)
-        })
-    }else{
-        refundDetailAxios(info.value).then(res => {
-            initPageData(res)
-        })
-    }
-}
-
-const initPageData = (res) => {
-    if (cns.$constant.isSuccessCode(res)) {
-        refund_data.value = res.data
-        if (after_sales.value == 1) {
-            status.value = -1
-            stepIndex.value = 1
-        } else {
+    refundDetailAxios(info.value).then(res => {
+        if (cns.$constant.isSuccessCode(res)) {
+            refund_data.value = res.data
             status.value = refund_data.value.refund_info.status
             switch (status.value) {
                 case 0:
@@ -249,13 +230,13 @@ const initPageData = (res) => {
                 refund_data.value.order_detail.refund_max_amount = refund_data.value.from_init.refund_max_amount
                 refund_data.value.order_detail.refund_max_number = refund_data.value.from_init.refund_max_number
             }
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            cns.appRoute('login')
+        }else {
+            cns.$toast(res.message)
         }
-    } else if (cns.$constant.isUnLoginCode(res)) {
-        cns.appRoute('login')
-    }else {
-        cns.$toast(res.message)
-    }
-    is_loading.value = false
+        is_loading.value = false
+    })
 }
 
 const revoke =()=>{
@@ -274,7 +255,7 @@ const revoke =()=>{
 }
 
 const edit = () =>{
-    this.appRoute('refundForm', { order_no:route.query.order_no, order_detail_id:route.query.order_detail_id, apply_refund_id: refund_data.value.refund_info.id, type:'edit' }, 'replace')
+    cns.appRoute('refundForm', { order_sn:route.query.order_sn, order_detail_id:route.query.order_detail_id, apply_refund_id: refund_data.value.refund_info.id, type:'edit' }, 'replace')
 }
 </script>
 
