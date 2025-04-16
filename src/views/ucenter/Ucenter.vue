@@ -124,7 +124,7 @@
                             <div>待评价</div>
                             <div class="order-model-num">99+</div>
                         </div>
-                        <div class="order-model" @click="toPage('orderRefund')">
+                        <div class="order-model" @click="toPage('refundList')">
                             <img src="@/assets/images/ucenter/order_5.png" alt="">
                             <div>退款/售后</div>
                         </div>

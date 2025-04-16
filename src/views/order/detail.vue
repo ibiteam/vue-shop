@@ -237,7 +237,7 @@ const copyOrders =() =>{
 
 const afterSale = (item) =>{
     if (item.refund_action == 1) {
-        cns.appRoute('orderRefund', {no: orderDetailData.value.order.no})
+        cns.appRoute('refundForm', {no: orderDetailData.value.order.no})
     }
 }
 

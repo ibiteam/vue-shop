@@ -29,12 +29,6 @@ const order = [
         name: 'orderWuliu',
         component: () => import('@/views/order/wuliu.vue'),
     },
-    /*售后*/
-    {
-        path: '/order/refund',
-        name: 'orderRefund',
-        component: () => import('@/views/order/refund.vue'),
-    },
     {
         path: '/pay/index',
         name: 'payIndex',
