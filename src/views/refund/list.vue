@@ -1,13 +1,15 @@
 <template>
     <div class="myorder">
         <common-header :title="title"></common-header>
-        <div class="integral-search">
-            <van-search v-model="info.keywords" @search="searchkeywords" @cancel="onCancel" @focus="search_old = info.keywords" placeholder="搜索商品名称/退款编号">
-                <template #left-icon>
-                    <van-icon name="search" size="18"/>
-                </template>
-            </van-search>
-        </div>
+        <van-sticky :offset-top="46">
+            <div class="integral-search">
+                <van-search v-model="info.keywords" @search="searchkeywords" @cancel="onCancel" @focus="search_old = info.keywords" placeholder="搜索商品名称/退款编号">
+                    <template #left-icon>
+                        <van-icon name="search" size="18"/>
+                    </template>
+                </van-search>
+            </div>
+        </van-sticky>
         <div class="order-list">
             <van-list
                     v-model:loading="loading"

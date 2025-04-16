@@ -95,7 +95,7 @@ const result = ref({})
 const saveFlag = ref(false)
 const is_anonymous = ref(true)
 const commentInfo = ref({
-    no:'',
+    order_sn:'',
     items:[],
     is_anonymous:1,
     rank:0,
@@ -107,13 +107,13 @@ const commentInfo = ref({
 })
 
 onMounted( () => {
-    commentInfo.value.no = route.query.no
+    commentInfo.value.order_sn = route.query.order_sn
     getPageData()
 })
 
 const getPageData = () => {
     let info = {
-        no: route.query.no,
+        order_sn: route.query.order_sn,
     };
     initEvaluate(info).then((res) => {
         if (cns.$constant.isSuccessCode(res)) {

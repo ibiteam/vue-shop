@@ -186,6 +186,7 @@ import RecommendColumn from '../../components/recommendColumn/RecommendColumn'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 import {getChatUrl} from "@/api/common.js";
 import {isSuccessCode} from "@/utils/constant.js";
+import {getShopConfig} from "@/utils/public.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const head_opacity = ref(0)
 const user_load = ref(true)
@@ -229,7 +230,12 @@ const userInfo =ref({
 })
 
 onMounted(() => {
-    integral_name.value = JSON.parse(sessionStorage.getItem('shop-config')).integral_name
+    if (JSON.parse(sessionStorage.getItem('shop-config')) && JSON.parse(sessionStorage.getItem('shop-config')).integral_name){
+        integral_name.value = JSON.parse(sessionStorage.getItem('shop-config')).integral_name
+    }else{
+        let shopConfig = await getShopConfig()
+        integral_name.value = shopConfig.integral_name
+    }
     setTimeout(() => {
         user_load.value = false
         setTimeout(() => {
