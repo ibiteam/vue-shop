@@ -80,7 +80,7 @@ const route = useRoute()
 
 const title = ref('收银台')
 const isLoading = ref(true)
-const orderSn = ref(route.query.no)
+const orderSn = ref(route.query.order_sn)
 const info = ref({})
 const payments = ref([])
 const payInfo = ref({
