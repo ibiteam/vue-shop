@@ -474,8 +474,13 @@
 							}
 						})
 					}
+				} else {
+					if(buyNumberValue.value > res.data.total){
+						buyNumberValue.value = res.data.total
+						goodStore.setBuyNumber(res.data.total)
+					}
+					cns.$toast(res.message)
 				}
-
             } else if (isUnLoginCode(res)) {
                 cns.appRoute('login')
             } else {
