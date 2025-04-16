@@ -7,3 +7,15 @@ export function refundListAxios(params){
 export function refundHistoryAxios(params){
     return $http.doGet('v1/order/apply_refund/log',params || {})
 }
+
+export function refundInitAxios(params){
+    return $http.doGet('v1/order/apply_refund/init',params || {})
+}
+
+export function refundDetailAxios(params){
+    return $http.doGet('v1/order/apply_refund/detail',params || {})
+}
+
+export function refundRevokeAxios(params){
+    return $http.doGet('v1/order/apply_refund/revoke',params || {})
+}

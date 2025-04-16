@@ -229,7 +229,7 @@ const userInfo =ref({
     }
 })
 
-onMounted(() => {
+onMounted(async () => {
     if (JSON.parse(sessionStorage.getItem('shop-config')) && JSON.parse(sessionStorage.getItem('shop-config')).integral_name){
         integral_name.value = JSON.parse(sessionStorage.getItem('shop-config')).integral_name
     }else{
