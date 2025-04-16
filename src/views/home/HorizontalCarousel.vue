@@ -28,7 +28,7 @@
             <!-- 平铺 -->
             <swiper v-if="content.style == 1" v-bind="{
                 slidesPerView: 1,
-                spaceBetween: 1,
+                spaceBetween: 0,
                 autoplay: {
                     'delay': (content.interval || 3) * 1000,
                 },
@@ -38,9 +38,9 @@
                 },
                 modules: swiperModules
             }" class="scroll-wrapper">
-                <swiper-slide class="scroll-item" v-for="(item, index) in content.items" :key="index" :style="{width: (content.width / 100) + 'rem', height: (content.height / 100) + 'rem'}">
+                <swiper-slide class="scroll-item" v-for="(item, index) in content.items" :key="index" style="width: 100%;">
                     <common-image
-                        v-bind="{src: item.image, width: (content.width / 100) + 'rem', height: (content.height / 100) + 'rem', radius: '0.2rem'}"
+                        v-bind="{src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0.2rem'}"
                         @click.stop="handleOpenLink(item.url)"
                     />
                 </swiper-slide>
@@ -89,6 +89,7 @@ const handleOpenLink = (res) => {
     }
     .ad-swiper {
         width: 100%;
+        overflow-x: hidden;
     }
     .cards-swiper {
         width: 100%;

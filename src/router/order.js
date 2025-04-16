@@ -5,6 +5,18 @@ const order = [
         name: 'orderList',
         component: () => import('@/views/order/list.vue'),
     },
+    /*订单列表-搜索历史*/
+    {
+        path: '/order/searchHistory',
+        name: 'orderSearchHistory',
+        component: () => import('@/views/order/searchHistory.vue'),
+    },
+    /*订单列表-搜索*/
+    {
+        path: '/order/search',
+        name: 'orderSearch',
+        component: () => import('@/views/order/search.vue'),
+    },
     /*订单详情*/
     {
         path: '/order/detail',

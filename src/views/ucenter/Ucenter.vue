@@ -146,7 +146,7 @@
                         </div>
                         <div class="assert-model" @click="toPage('integral')">
                             <img src="@/assets/images/ucenter/integral.png" alt="">
-                            <div>积分</div>
+                            <div>{{ integral_name }}</div>
                         </div>
                         <div class="assert-model" @click="toPage('balance')">
                             <img src="@/assets/images/ucenter/balance.png" alt="">
@@ -169,7 +169,7 @@
                             <img src="@/assets/images/ucenter/history.png" alt="">
                             <div>浏览记录</div>
                         </div>
-                        <div class="menu-model">
+                        <div class="menu-model" @click="goChat">
                             <img src="@/assets/images/ucenter/chat.png" alt="">
                             <div>联系客服</div>
                         </div>
@@ -184,11 +184,14 @@
 <script setup>
 import RecommendColumn from '../../components/recommendColumn/RecommendColumn'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
+import {getChatUrl} from "@/api/common.js";
+import {isSuccessCode} from "@/utils/constant.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const head_opacity = ref(0)
 const user_load = ref(true)
 const unLogin = ref(true)
 const component_load = ref(true)
+const integral_name = ref('')
 const userInfo =ref({
     "user_id": 68378,
     "pay_points": 0,
@@ -226,6 +229,7 @@ const userInfo =ref({
 })
 
 onMounted(() => {
+    integral_name.value = JSON.parse(sessionStorage.getItem('shop-config')).integral_name
     setTimeout(() => {
         user_load.value = false
         setTimeout(() => {
@@ -245,6 +249,15 @@ const toPage = (name,type) => {
             cns.appRoute(name)
         }
     }
+}
+const goChat = () =>{
+    getChatUrl({source_url: window.location.href}).then(res=>{
+        if (isSuccessCode(res)&&res.data.url){
+            window.location.href = res.data.url
+        }else {
+            cns.$toast(res.message)
+        }
+    })
 }
 </script>
 
