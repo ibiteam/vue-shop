@@ -671,21 +671,23 @@ const getData = () => {
 			skuParamList.value = res.data.center.sku_params ? res.data.center.sku_params.spec_values : []
 			if (skuParamList.value.length) {
 				paramNum.value = 1
+				specName.value = []
+				specId.value = []
 				skuId.value = res.data.center.sku_params.sku_item.id
 				skuShopPrice.value.price = res.data.center.sku_params.sku_item.price || ''
 				skuShopPrice.value.integral = res.data.center.sku_params.sku_item.integral || ''
-			}
-			skuParamList.value.length && skuParamList.value.forEach((d, i) => {
-				d.values.forEach(s => {
-					if (s.selected) {
-						specName.value.push(s.name)
-						specId.value.push(s.id)
+				skuParamList.value.forEach((d, i) => {
+					d.values.forEach(s => {
+						if (s.selected) {
+							specName.value.push(s.name)
+							specId.value.push(s.id)
+						}
+					})
+					if (d.values.length && i == 0) {
+						paramNum.value = d.values.length
 					}
 				})
-				if (d.values.length && i == 0) {
-					paramNum.value = d.values.length
-				}
-			})
+			}
 
 			if (res.data.banner.video.url) {
 				goodTab.value = 0
