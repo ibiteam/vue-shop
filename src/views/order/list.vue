@@ -490,7 +490,7 @@ const toSearch =()=>{
 const afterSale = (item) =>{
     refundVerifyAxios({ order_sn:item.order_sn, order_detail_id:item.items[0].id }).then(res => {
         if (cns.$constant.isSuccessCode(res)) {
-            cns.appRoute('refundForm', {order_sn:item.order_sn, order_detail_id:item.items[0].id})
+            cns.appRoute('refundEntrance', {order_sn:item.order_sn, order_detail_id:item.items[0].id})
         } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login')
         } else if(res.code === 4006) {

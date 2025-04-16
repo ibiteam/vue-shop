@@ -11,6 +11,12 @@ const refund = [
         name: 'refundDetail',
         component: () => import('@/views/refund/detail.vue'),
     },
+    /*选择售后类型*/
+    {
+        path: '/refund/entrance',
+        name: 'refundEntrance',
+        component: () => import('@/views/refund/entrance.vue'),
+    },
     /*申请退款*/
     {
         path: '/refund/form',

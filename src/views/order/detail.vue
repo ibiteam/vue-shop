@@ -246,17 +246,17 @@ const afterSale = (item) =>{
     if (item.refund_action == 1) {
         refundVerifyAxios({ order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id }).then(res => {
             if (cns.$constant.isSuccessCode(res)) {
-                cns.appRoute('refundForm', {order_sn: orderDetailData.value.order.order_sn, order_detail_id:item.id})
+                cns.appRoute('refundEntrance', {order_sn: orderDetailData.value.order.order_sn, order_detail_id:item.id})
             } else if (cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login')
             } else if(res.code === 4006) {
-                cns.appRoute('refundDetail', { order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id, after_sales: item.refund_action })
+                cns.appRoute('refundDetail', { order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id })
             } else {
                 cns.$toast(res.message)
             }
         })
     }else {
-        cns.appRoute('refundDetail', { order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id, after_sales: item.refund_action })
+        cns.appRoute('refundDetail', { order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id })
     }
 }
 
