@@ -40,7 +40,7 @@
         </section>
         <div class="order-main" v-else>
 <!--            物流-->
-            <div class="orderDetail-module order-wuliu" v-if="orderDetailData.logistics" @click="appRoute('orderWuliu',{no:orderDetailData.order.no})">
+            <div class="orderDetail-module order-wuliu" v-if="orderDetailData.logistics" @click="appRoute('orderWuliu',{order_sn:orderDetailData.order.order_sn})">
                 <div class="order-wuliu-head s-flex ai-ct jc-bt">
                     <div class="s-flex ai-ct">
                         <img src="@/assets/images/order/m-car.png">
@@ -93,7 +93,7 @@
                     <div class="order-info-model s-flex ai-ct jc-bt">
                         <div class="co-999 fs28">订单号：</div>
                         <div class="s-flex ai-ct">
-                            <div class="co-333 fs28">{{orderDetailData.order.no}}</div>
+                            <div class="co-333 fs28">{{orderDetailData.order.order_sn}}</div>
                             <div class="copy-order s-flex ai-ct jc-ct" :data-clipboard-text="copyOrder" @click="copyOrders" style="margin-left: 0.2rem;">复制</div>
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                         <div class="order-info-model s-flex ai-ct">
                             <div class="co-999 fs28 wd15">订单号：</div>
                             <div class="s-flex ai-ct">
-                                <div class="co-333 fs28">{{orderDetailData.order.no}}</div>
+                                <div class="co-333 fs28">{{orderDetailData.order.order_sn}}</div>
                                 <div class="copy-order s-flex ai-ct jc-ct" :data-clipboard-text="copyOrder" @click="copyOrders" style="margin-left: 0.2rem;">复制</div>
                             </div>
                         </div>
@@ -171,6 +171,7 @@ import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed}
 import {getOrderDetail,} from "@/api/order.js";
 import { useRoute } from 'vue-router'
 import Clipboard from "clipboard"
+import {getShopConfig} from "@/utils/public.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const title = ref('订单详情')
@@ -181,17 +182,22 @@ const page_title = ref('请求出错了')
 const copyOrder = ref('')
 const integral_name = ref('')
 
-onMounted( () => {
-    integral_name.value = JSON.parse(sessionStorage.getItem('shop-config')).integral_name
+onMounted( async () => {
+    if (JSON.parse(sessionStorage.getItem('shop-config')) && JSON.parse(sessionStorage.getItem('shop-config')).integral_name){
+        integral_name.value = JSON.parse(sessionStorage.getItem('shop-config')).integral_name
+    }else{
+        let shopConfig = await getShopConfig()
+        integral_name.value = shopConfig.integral_name
+    }
     getData()
 })
 
 const getData = () => {
-    getOrderDetail({no:route.query.no}).then(res => {
+    getOrderDetail({order_sn:route.query.order_sn}).then(res => {
         if (cns.$constant.isSuccessCode(res)) {
             page_load.value = false
             orderDetailData.value = res.data
-            copyOrder.value = res.data.order.no
+            copyOrder.value = res.data.order.order_sn
             title.value = orderStatus(res.data.order.status)
         } else if (cns.$constant.isUnLoginCode(res)) {
             // 去登录
@@ -237,7 +243,7 @@ const copyOrders =() =>{
 
 const afterSale = (item) =>{
     if (item.refund_action == 1) {
-        cns.appRoute('refundForm', {no: orderDetailData.value.order.no})
+        cns.appRoute('refundForm', {order_sn: orderDetailData.value.order.order_sn})
     }
 }
 

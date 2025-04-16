@@ -1,73 +1,72 @@
 <template>
     <div class="myorder">
         <common-header :title="title"></common-header>
-        <div class="integral-search">
-            <van-search v-model="info.keywords" @search="searchkeywords"   @cancel="onCancel" @focus="search_old = info.keywords" placeholder="搜索商品名称/退款编号">
-                <template #left-icon>
-                    <em class="iconfont cursor-p" style="color: #cccccc;">&#xe610;</em>
-                </template>
-            </van-search>
-        </div>
+        <van-sticky :offset-top="46">
+            <div class="integral-search">
+                <van-search v-model="info.keywords" @search="searchkeywords" @cancel="onCancel" @focus="search_old = info.keywords" placeholder="搜索商品名称/退款编号">
+                    <template #left-icon>
+                        <van-icon name="search" size="18"/>
+                    </template>
+                </van-search>
+            </div>
+        </van-sticky>
         <div class="order-list">
-            <template>
-                <van-list
-                        v-model="loading"
-                        :finished="finished"
-                        :finished-text="orderListData.length<=10?'':'没有更多订单了~'"
-                        @load="getOrderData()"
-                >
-                    <div class="order-item" v-for="(item,index) in orderListData" :key="index">
-                        <div class="order-info s-flex jc-bt act-border">
-                            <div class="fs22 co-333">退款编号：{{item.flow_sn}}</div>
-                            <div class="fs22 co-333">{{item.created_at}}</div>
-                        </div>
-                        <!--商品-->
-                        <div class="goods-wrap">
-                            <template>
-                                <div class="goods-box" @click="appRoute('refundDetail', {}, { apply_refund_id: item.id })">
-                                    <div class="img_box"><img :src="item.goods_thumb" alt=""></div>
-                                    <div class="left s-flex flex-dir jc-bt">
-                                        <div>
-                                            <div class="top">{{item.goods_name}}</div>
-                                            <div class="">
-                                                <span style="font-size: 0.22rem;color: #ccc;">{{ item.goods_attr }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="refund-price fs22"><span class="refund">退款：</span><span class="price">￥{{ item.money }}</span></div>
+            <van-list
+                    v-model:loading="loading"
+                    :finished="finished"
+                    :finished-text="orderListData.length<=10?'':'没有更多订单了~'"
+                    @load="getData"
+                    offset="0"
+            >
+                <div class="order-item" v-for="(item,index) in orderListData" :key="index">
+                    <div class="order-info s-flex jc-bt act-border">
+                        <div class="fs22 co-333">退款编号：{{item.flow_sn}}</div>
+                        <div class="fs22 co-333">{{item.created_at}}</div>
+                    </div>
+                    <!--商品-->
+                    <div class="goods-wrap">
+                        <div class="goods-box MT20" @click="appRoute('refundDetail', { apply_refund_id: item.id })">
+                            <div class="img_box"><img :src="item.goods_image" alt=""></div>
+                            <div class="left s-flex flex-dir jc-bt">
+                                <div>
+                                    <div class="top">{{item.goods_name}}</div>
+                                    <div class="MT20">
+                                        <span style="font-size: 0.22rem;color: #ccc;margin-right: 0.2rem" v-for="ite in item.goods_sku_value">{{ ite.key }}：{{ ite.value }}</span>
                                     </div>
                                 </div>
-                            </template>
-                        </div>
-                        <!-- 订单状态 -->
-                        <div class="status_refund">
-                            <div style="display: flex;justify-content: center;" v-if="item.status==0">
-                                <div style="color:#F71111;font-weight: 600;">待卖家处理</div>
-                                <template v-if="item.status==0&&item.seller_deal_end_time-item.now_time>0">
-                                    <div >&nbsp;&nbsp;&nbsp;卖家将在&nbsp;&nbsp;</div>
-                                    <div style="color:#F71111;display: flex;align-items: center;font-weight: 600;"><van-count-down  :time="(item.seller_deal_end_time-item.now_time)*1000" format="DD天HH时mm分ss秒" @finish="getData()"/></div>
-                                    <div>&nbsp;&nbsp;内处理</div>
-                                </template>
-                            </div>
-                            <span style="color: #F71111;font-weight: 600;" v-if="item.status==1">卖家已拒绝退款</span>
-                            <span style="color: #333333;font-weight: 600;" v-if="item.status==2">待买家发货</span>
-                            <span style="color: #333333;font-weight: 600;" v-if="item.status==3">待卖家收货</span>
-                            <span style="color: #333333;font-weight: 600;" v-if="item.status==4">退款中</span>
-                            <div v-if="item.status==5">
-                                <span style="color: #F71111;font-weight: 600;">退款成功&nbsp;&nbsp;&nbsp;</span><span>退款金额：</span><span style="color: #F71111;font-weight: 600;">￥{{ item.money }}</span>
-                            </div>
-                            <span style="color: #333333;font-weight: 600;" v-if="item.status==6">退款已关闭</span>
-                        </div>
-                        <!--订单操作-->
-                        <div class="total_box">
-                            <div class="operate">
-                                <div @click="appRoute('refundDetail', {}, { apply_refund_id: item.id })">查看详情</div>
+                                <div class="refund-price fs22"><span class="refund">退款：</span><span class="price">￥{{ item.money }}</span></div>
                             </div>
                         </div>
                     </div>
-                </van-list>
-            </template>
+                    <!-- 订单状态 -->
+                    <div class="status_refund">
+                        <div style="display: flex;justify-content: center;" v-if="item.status==0">
+                            <div style="color:#F71111;font-weight: 600;">待卖家处理</div>
+                            <template v-if="item.status==0&&item.seller_deal_end_time-item.now_time>0">
+                                <div >&nbsp;&nbsp;&nbsp;卖家将在&nbsp;&nbsp;</div>
+                                <div style="color:#F71111;display: flex;align-items: center;font-weight: 600;"><van-count-down  :time="(item.seller_deal_end_time-item.now_time)*1000" format="DD天HH时mm分ss秒" @finish="getData()"/></div>
+                                <div>&nbsp;&nbsp;内处理</div>
+                            </template>
+                        </div>
+                        <span style="color: #F71111;font-weight: 600;" v-if="item.status==1">卖家已拒绝退款</span>
+                        <span style="color: #333333;font-weight: 600;" v-if="item.status==2">待买家发货</span>
+                        <span style="color: #333333;font-weight: 600;" v-if="item.status==3">待卖家收货</span>
+                        <span style="color: #333333;font-weight: 600;" v-if="item.status==4">退款中</span>
+                        <div v-if="item.status==5">
+                            <span style="color: #F71111;font-weight: 600;">退款成功&nbsp;&nbsp;&nbsp;</span><span>退款金额：</span><span style="color: #F71111;font-weight: 600;">￥{{ item.money }}</span>
+                        </div>
+                        <span style="color: #333333;font-weight: 600;" v-if="item.status==6">退款已关闭</span>
+                    </div>
+                    <!--订单操作-->
+                    <div class="total_box">
+                        <div class="operate">
+                            <div @click="appRoute('refundDetail', { apply_refund_id: item.id })">查看详情</div>
+                        </div>
+                    </div>
+                </div>
+            </van-list>
             <!--没有数据-->
-            <div class="noData" v-if="notData">
+            <div class="noData" v-if="noData">
                 <img class="noImg" src="@/assets/images/nodata.png"/>
                 <div class="noTex">暂无数据！</div>
             </div>
@@ -86,9 +85,10 @@ const title = ref('退款/售后')
 const info = ref({
     page: 1,
     keywords: '',
+    number:10
 })
 const orderListData =ref([])
-const notData = ref(false)
+const noData = ref(false)
 const loading = ref(false)
 const finished = ref(false)
 
@@ -98,21 +98,27 @@ onMounted( () => {
 })
 
 const getData = () =>{
-    refundListAxios().then((res) => {
+    refundListAxios(info.value).then((res) => {
         if (cns.$constant.isSuccessCode(res)) {
             if (info.value.page == 1){
                 orderListData.value = res.data.list
             }else{
                 orderListData.value.push(...res.data.list)
             }
-            if(res.data.meta.last_page <= info.value.page){
+            orderListData.value.forEach(item => {
+                item.show_more_goods = false
+                item.showPopover = false
+            })
+            if (res.data.meta.total == 0){
+                noData.value = true
+            }else{
+                noData.value = false
+            }
+            if (res.data.meta.current_page * res.data.meta.per_page > res.data.meta.total){
+                loading.value = false
                 finished.value = true
             }else{
-                finished.value = false
                 info.value.page++
-            }
-            if(res.data.meta.total <= 0){
-                notData.value = true
             }
         } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login')
@@ -136,7 +142,6 @@ const onCancel = () =>{
     orderListData.value=[]
     getData()
 }
-
 </script>
 
 <style scoped lang="scss">
@@ -162,19 +167,19 @@ body {
 
 
 }
-::v-deep .van-search__content {
+:deep(.van-search__content) {
     background: #ffffff;
     border-radius: 0.5rem;
 }
-::v-deep .van-cell {
+:deep(.van-cell) {
     height: 35px;
     align-items: center;
 }
 
-::v-deep .van-field__left-icon {
+:deep(.van-field__left-icon) {
     margin-right: 8px;
 }
-::v-deep .van-search__action{
+:deep(.van-search__action){
     color: #666666;
     padding: 0 0.3rem 0 0.1rem;
 }
@@ -261,10 +266,6 @@ body {
     font-size:0.26rem;
     color:#999;
 }
-.goods-box >>> .van-swipe-item {
-    display: flex;
-    white-space: nowrap;
-}
 .goods-box .img_box:last-child {
     margin-right: 0;
 }
@@ -279,7 +280,6 @@ body {
 }
 
 .order-list .total_box{
-    /*height:1.70rem;*/
     width:100%;
     box-sizing:border-box;
     padding: 0.3rem 0 0rem 0;
@@ -294,16 +294,8 @@ body {
     margin: 0 .2rem;
     border-bottom: 1px solid #F2F2F2;
 }
-/* 提示内容 */
-::v-deep .van-notice-bar{
-    padding: 0;
-    margin: 0.2rem 0.2rem 0;
-}
-::v-deep .van-notice-bar__wrap{
-    justify-content: center;
-}
 /* 倒计时 */
-::v-deep  .van-count-down{
+:deep(.van-count-down){
     font-weight: 600;
     color: #F71111;
     font-size: 0.26rem;
@@ -337,10 +329,6 @@ body {
     font-size:0.24rem;
     color:#333;
 }
-/* .order-list .total_box .operate div:last-child{
-    color:#F93B62;
-    border-color: #F93B62;
-} */
 .order-list .total_box .statistics .total_num{
     color:#999;
     margin-left: 0.17rem;
@@ -353,64 +341,11 @@ body {
     color:#f61d4a;
 }
 
-
-.group_time{
-    height: 0.76rem;
-    align-items: center;
-    justify-content: center;
-    background: #FFF9EE;
-}
-.model-title{
-    font-size: 0.24rem;
-}
-.model-time{
-    font-size: 0.24rem;
-    color: #F71111;
-}
-.model-time>div{
-    background: #F71111;
-    color: #ffffff;
-    height: 0.36rem;
-    line-height: 0.36rem;
-    min-width: 0.36rem;
-    text-align: center;
-    border-radius: 0.08rem;
-    margin: 0 0.1rem;
-}
-.model-time>.day{
-    /*width: 0.62rem;*/
-}
-.equity-share .share-img img {
-    width: 5.1rem;
-    height: 5.4rem;
-    margin: 1rem 1.9rem 0 1.9rem;
-}
-.equity-share .share-txt{
-    width: 100%;
-    text-align: center;
-    margin-top: -0.2rem;
-}
-.equity-share .share-txt p {
-    font-size: 0.4rem;
-    color: #fff;
-    text-align: center;
-    line-height: 0.58rem;
-    letter-spacing: 3px;
-}
-.equity-share ::v-deep .van-overlay {
-    z-index: 9900 !important;
-}
-
 .noData {
     margin-top: 2.3rem;
 }
 
->>> .van-list {
+:deep(.van-list) {
     border: 1px solid transparent;
-}
-.gift-icon{
-    font-size: 0.26rem;
-    font-weight: 600;
-    color: #F71111;
 }
 </style>

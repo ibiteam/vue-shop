@@ -7,9 +7,8 @@
 		</div>
 		<van-list v-model:loading="loading" :finished="finished" @load="loadRecommend" finished-text="没有更多了"
 		          :immediate-check="false" :offset="50">
-			<div class="recommend-box" style="padding: 0;">
-				<div class="recommend-item" v-for="(item, index) in recommend" :key="index"
-				     style="border-radius: 0.2rem;overflow: hidden;" @click="toDetail(item)">
+			<div class="recommend-box">
+				<div class="recommend-item" v-for="(item, index) in recommend" :key="index" @click="toDetail(item)">
 					<div class="recommend-item-img">
 						<van-image :src="item.image" class="re-img">
 							<template v-slot:loading>
@@ -97,26 +96,25 @@ onMounted(() => {
 
 	/*推荐*/
 	.recommend-box {
-		padding: 0 0.2rem;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: 0.2rem;
 
 		.recommend-item {
-			border-radius: 0.2rem;
+			border-radius: 0.1rem;
 			overflow: hidden;
 			background: #fff;
 			padding-bottom: 0.1rem;
 
 			.re-img {
 				width: 100%;
-				height: 3.5rem;
+				height: 3.45rem;
 				border-radius: 5px 5px 0 0;
 			}
 
 			.recommend-item-img {
 				width: 100%;
-				height: 3.5rem;
+				height: 3.45rem;
 			}
 
 			.item-name {

@@ -1,19 +1,9 @@
 <template>
   <div class="order-wrap">
-    <common-header :title="title"></common-header>
+    <common-header :title="title" @clickSearch="toSearch" :showSearch="true"></common-header>
     <template v-if="!page_load">
       <div class="order-content">
         <van-sticky :offset-top="46">
-            <van-search
-                    v-model="orderInfo.keywords"
-                    show-action
-                    placeholder="搜索商品名称/货号/订单编号"
-                    @search="onSearch"
-            >
-                <template #action>
-                    <div @click="onSearch">搜索</div>
-                </template>
-            </van-search>
           <div class="s-flex ai-ct order-tab-box">
             <van-tabs v-model:active="orderInfo.type" class="flex-1" @click="clickTabItem">
               <van-tab title="全部" name="all"></van-tab>
@@ -33,10 +23,10 @@
               offset="0"
           >
             <div class="order-list" v-if="!order_load">
-              <div class="order-item" v-for="(item,index) in orderListData" :key="index" @click="appRoute('orderDetail',{no:item.no})">
+              <div class="order-item" v-for="(item,index) in orderListData" :key="index" @click="appRoute('orderDetail',{order_sn:item.order_sn})">
                 <!--订单头部-->
                 <div class="order-info s-flex jc-bt">
-                  <div class="fs24 co-666">订单号：{{ item.no }}</div>
+                  <div class="fs24 co-666">订单号：{{ item.order_sn }}</div>
                   <div class="order-type" :class="item.status == 2 || item.status == 6?'order-type-grey':''">{{ orderStatus(item.status) }}</div>
                 </div>
                 <div class="order-main">
@@ -70,7 +60,7 @@
                     </div>
                   </div>
                   <!--物流模块-->
-                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click.stop="appRoute('orderWuliu',{no:item.no})">
+                  <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click.stop="appRoute('orderWuliu',{order_sn:item.order_sn})">
                     <div class="s-flex ai-ct flex-1">
                       <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
                       <div class="wuliu-type">{{ item.logistics.ship_info.status }}</div>
@@ -213,7 +203,7 @@
 
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute,useRouter } from 'vue-router'
 import {
     cancelOrderAxios,
     confirmOrderAxios,
@@ -223,6 +213,7 @@ import {
 } from "@/api/order.js";
 import {getAddress} from "@/api/address.js";
 const route = useRoute()
+const router = useRouter()
 const cns = getCurrentInstance().appContext.config.globalProperties
 const title = ref('我的订单')
 const orderListData = ref([])
@@ -252,14 +243,12 @@ const orderAddressBtn = ref(null)
 
 watch(route, (value) => {
     orderInfo.value.type = value.query.type ? value.query.type : 'all'
-    orderInfo.value.keywords = value.query.keywords ? value.query.keywords : ''
     getOrderData()
 })
 
 onMounted(() => {
       orderInfo.value.type = route.query.type ? route.query.type : 'all'
-      orderInfo.value.keywords = route.query.keywords ? route.query.keywords : ''
-          getOrderData()
+      getOrderData()
 })
 
 const getOrderData = () => {
@@ -307,11 +296,6 @@ const resetParams = () => {
     noData.value = false
 }
 
-const onSearch = () => {
-    resetParams()
-    getOrderData()
-}
-
 const clickTabItem = () =>{
     cns.appRoute('orderList', {type: orderInfo.value.type}, 'replace')
 }
@@ -342,7 +326,7 @@ const showMoreGoods =(index)=>{
 
 const changeRate = (item) =>{
     setTimeout(() => {//1秒刷新倒计时
-        cns.appRoute('orderComment',{no:item.no,rank:item.evaluate.default_value})
+        cns.appRoute('orderComment',{order_sn:item.order_sn,rank:item.evaluate.default_value})
     }, 500)
 }
 
@@ -356,15 +340,15 @@ const btnOperate = (item,index,btnChild,btnIndex) => {
     }else if(btnChild.action == 'edit_address'){//修改地址
         handleClickEditAddress(item, index)
     }else if(btnChild.action == 'pay'){//去支付
-        cns.appRoute('payIndex', {no: item.no})
+        cns.appRoute('payIndex', {order_sn: item.order_sn})
     }else if(btnChild.action == 'refund'){//申请售后
-        cns.appRoute('refundForm', {no: item.no})
+        cns.appRoute('refundForm', {order_sn: item.order_sn})
     }else if(btnChild.action == 'logistics'){//查看物流
-        cns.appRoute('orderWuliu', {no: item.no})
+        cns.appRoute('orderWuliu', {order_sn: item.order_sn})
     }else if(btnChild.action == 'receive'){//确认收货
         confirmOrder(item)
     }else if(btnChild.action == 'evaluate'){//去评价
-        cns.appRoute('orderComment', {no: item.no})
+        cns.appRoute('orderComment', {order_sn: item.order_sn})
     }
 }
 
@@ -373,7 +357,7 @@ const cancelOrder = (item) =>{//取消订单
         message: '确定要取消订单吗?',
         confirmButtonText: '确认取消',
     }).then(() => {
-        cancelOrderAxios({no:item.no}).then(res => {
+        cancelOrderAxios({order_sn:item.order_sn}).then(res => {
             if (cns.$constant.isSuccessCode(res)) {
                 cns.$toast(res.message)
                 resetParams()
@@ -394,7 +378,7 @@ const deleteOrder = (item) =>{//删除订单
         message: '确定要删除订单吗?',
         confirmButtonText: '确认删除',
     }).then(() => {
-        deleteOrderAxios({no:item.no}).then(res => {
+        deleteOrderAxios({order_sn:item.order_sn}).then(res => {
             if (cns.$constant.isSuccessCode(res)) {
                 cns.$toast(res.message)
                 resetParams()
@@ -415,7 +399,7 @@ const confirmOrder = (item) =>{//确认收货
         message: '确认收到货了吗?',
         confirmButtonText: '确认收货',
     }).then(() => {
-        confirmOrderAxios({no:item.no}).then(res => {
+        confirmOrderAxios({order_sn:item.order_sn}).then(res => {
             if (cns.$constant.isSuccessCode(res)) {
                 cns.$toast(res.message)
                 resetParams()
@@ -437,7 +421,7 @@ const handleClickEditAddress = (data, index) => {
         if (cns.$constant.isSuccessCode(ret)) {
             addressList.value = ret.data
             addressNoData.value = addressList.value.length > 0
-            editOrderAddressAxios({no:data.no}).then(res => {
+            editOrderAddressAxios({order_sn:data.order_sn}).then(res => {
                 if (cns.$constant.isSuccessCode(res)) {
                     originalAddress.value = res.data
                     orderAddressShow.value = true
@@ -469,7 +453,7 @@ const handleClickAddressClose = async(type) =>{
     if (type && type == 'sure') {
         if (addressIndex.value == null) { cns.$toast('请选择收货地址'); return false }
         const info = addressList.value[addressIndex.value]
-        updateOrderAddressAxios({ no: orderCheck.value.no, user_address_id: info.id }).then(res => {
+        updateOrderAddressAxios({ order_sn: orderCheck.value.order_sn, user_address_id: info.id }).then(res => {
             if (cns.$constant.isSuccessCode(res)) {
                 cns.$toast(res.message)
                 resetParams()
@@ -490,18 +474,24 @@ const handleClickAddressClose = async(type) =>{
     }
 }
 
+const toSearch =()=>{
+    router.replace({
+        name: 'orderList',
+        query: {
+            type:route.query.type,
+        }
+    })
+    nextTick(() => {
+        cns.appRoute('orderSearchHistory')
+    })
+}
+
 </script>
 
 <style scoped lang="scss">
 .order-wrap {
   background-color: #F8F8F8;
   min-height: 100vh;
-    :deep(.van-search__content){
-        border-radius: 0.3rem;
-    }
-    :deep(.van-search__action){
-        color: #9C9C9C;
-    }
   /*tab栏*/
   :deep(.order-tab-box){
       border-radius: 0px 0px 0.3rem 0.3rem;

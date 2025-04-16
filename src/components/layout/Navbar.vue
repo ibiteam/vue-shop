@@ -6,8 +6,9 @@
         @click-left="handleClickLeft"
         @click-right="handleClickRight"
     >
-        <template #right v-if="showRight">
-            <van-icon name="ellipsis" size="18" />
+        <template #right>
+            <van-icon name="search" size="18" v-if="showSearch" @click="toSearch"/>
+            <van-icon name="ellipsis" size="18" v-if="showRight"/>
         </template>
     </van-nav-bar>
 </template>
@@ -17,12 +18,12 @@ import { defineProps, getCurrentInstance, defineEmits } from 'vue'
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 const props = defineProps({
-    // 标题	
+    // 标题
     title: {
         type: String,
         default: ''
     },
-    // 左侧文案	
+    // 左侧文案
     leftText: {
         type: String,
         default: '',
@@ -32,7 +33,12 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    // 右侧文案	
+    // 是否显示右侧搜索图标
+    showSearch: {
+        type: Boolean,
+        default: false
+    },
+    // 右侧文案
     rightText: {
         type: String,
         default: '',
@@ -47,14 +53,14 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    // 是否显示左侧箭头	
+    // 是否显示左侧箭头
     leftArrow: {
         type: Boolean,
         default: true,
     },
 })
 
-const emit = defineEmits(['click-left', 'click-right'])
+const emit = defineEmits(['click-left', 'click-right','click-search'])
 
 const handleClickLeft = () => {
     cns.$router.go(-1)
@@ -63,6 +69,9 @@ const handleClickLeft = () => {
 
 const handleClickRight = () => {
     emit('click-right')
+}
+const toSearch = () =>{
+    emit('click-search')
 }
 </script>
 
