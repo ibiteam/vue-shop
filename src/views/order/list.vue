@@ -1,19 +1,9 @@
 <template>
   <div class="order-wrap">
-    <common-header :title="title"></common-header>
+    <common-header :title="title" @clickSearch="toSearch" :showSearch="true"></common-header>
     <template v-if="!page_load">
       <div class="order-content">
         <van-sticky :offset-top="46">
-            <van-search
-                    v-model="orderInfo.keywords"
-                    show-action
-                    placeholder="搜索商品名称/货号/订单编号"
-                    @search="onSearch"
-            >
-                <template #action>
-                    <div @click="onSearch">搜索</div>
-                </template>
-            </van-search>
           <div class="s-flex ai-ct order-tab-box">
             <van-tabs v-model:active="orderInfo.type" class="flex-1" @click="clickTabItem">
               <van-tab title="全部" name="all"></van-tab>
@@ -213,7 +203,7 @@
 
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute,useRouter } from 'vue-router'
 import {
     cancelOrderAxios,
     confirmOrderAxios,
@@ -223,6 +213,7 @@ import {
 } from "@/api/order.js";
 import {getAddress} from "@/api/address.js";
 const route = useRoute()
+const router = useRouter()
 const cns = getCurrentInstance().appContext.config.globalProperties
 const title = ref('我的订单')
 const orderListData = ref([])
@@ -252,14 +243,12 @@ const orderAddressBtn = ref(null)
 
 watch(route, (value) => {
     orderInfo.value.type = value.query.type ? value.query.type : 'all'
-    orderInfo.value.keywords = value.query.keywords ? value.query.keywords : ''
     getOrderData()
 })
 
 onMounted(() => {
       orderInfo.value.type = route.query.type ? route.query.type : 'all'
-      orderInfo.value.keywords = route.query.keywords ? route.query.keywords : ''
-          getOrderData()
+      getOrderData()
 })
 
 const getOrderData = () => {
@@ -305,11 +294,6 @@ const resetParams = () => {
     loading.value = false
     finished.value = false
     noData.value = false
-}
-
-const onSearch = () => {
-    resetParams()
-    getOrderData()
 }
 
 const clickTabItem = () =>{
@@ -490,18 +474,24 @@ const handleClickAddressClose = async(type) =>{
     }
 }
 
+const toSearch =()=>{
+    router.replace({
+        name: 'orderList',
+        query: {
+            type:route.query.type,
+        }
+    })
+    nextTick(() => {
+        cns.appRoute('orderSearchHistory')
+    })
+}
+
 </script>
 
 <style scoped lang="scss">
 .order-wrap {
   background-color: #F8F8F8;
   min-height: 100vh;
-    :deep(.van-search__content){
-        border-radius: 0.3rem;
-    }
-    :deep(.van-search__action){
-        color: #9C9C9C;
-    }
   /*tab栏*/
   :deep(.order-tab-box){
       border-radius: 0px 0px 0.3rem 0.3rem;
