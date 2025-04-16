@@ -128,7 +128,7 @@ const getListData = () => {
             }
             couponsCount.value = res.data.couponsCount
         } else if (cns.$constant.isUnLoginCode(res)) {
-            cns.appRoute('login', {}, {}, 'replace')
+            cns.appRoute('login', {}, 'replace')
         } else {
             cns.$toast(res.message)
         }

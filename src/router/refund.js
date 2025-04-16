@@ -23,5 +23,11 @@ const refund = [
         name: 'refundHistory',
         component: () => import('@/views/refund/history.vue'),
     },
+    /*填写单号*/
+    {
+        path: '/refund/ship',
+        name: 'refundShip',
+        component: () => import('@/views/refund/ship.vue'),
+    },
 ]
 export default refund

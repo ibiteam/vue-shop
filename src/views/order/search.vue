@@ -23,8 +23,8 @@
                 <!--搜索历史列表-->
                 <div class="search-history-keywords" v-if="search_keywords_list && search_keywords_list.length">
                     <div class="title s-flex" ref="keywordTitle">
-                        <label class="flex_1">搜索历史</label>
-                        <em class="iconfont" @click="handleClickClearKeywords">&#xe666;</em>
+                        <label class="flex-1">搜索历史</label>
+                        <em class="iconfont icon-shanchu" @click="handleClickClearKeywords"></em>
                     </div>
                     <div class="keywords-list s-flex" ref="keywordBox">
                         <div class="keywords-item van-ellipsis"
@@ -40,7 +40,7 @@
                              :class="{ 'history-more-noright': !is_open_list }"
                              @click="handleClickShowMoreKeywords"
                         >
-                            <em class="iconfont" style="font-size: 0.40rem;">{{ is_open_list ? '&#xe6b2;' : '&#xe604;' }}</em>
+                            <em class="iconfont" :class="is_open_list ? 'icon-xiala' : 'icon-to_down'" style="font-size: 0.40rem;"></em>
                         </div>
                     </div>
                 </div>

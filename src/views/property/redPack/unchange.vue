@@ -128,7 +128,7 @@ const getListData = () => {
             }
             bonusCount.value = res.data.bonusCount
         } else if (cns.$constant.isUnLoginCode(res)) {
-            cns.appRoute('login', {}, {}, 'replace')
+            cns.appRoute('login', {}, 'replace')
         } else {
             cns.$toast(res.message)
         }
@@ -194,7 +194,7 @@ const loadMore = () =>{
             } else if (res.code == 404 && res.message === "no data !") {
                 finished.value = true
             } else if (cns.$constant.isUnLoginCode(res)) {
-                cns.appRoute('login', {}, {}, 'replace')
+                cns.appRoute('login', {}, 'replace')
             } else {
                 cns.$toast(res.message)
             }
