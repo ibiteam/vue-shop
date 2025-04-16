@@ -373,7 +373,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, onBeforeUnmount, nextTick, getCurrentInstance, inject} from 'vue'
+import {ref, watch, onMounted, onBeforeUnmount, nextTick, getCurrentInstance, inject} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 
 import {useGoodStore} from "@/stores";
@@ -744,7 +744,13 @@ onMounted(() => {
 	// 绑定滚动事件
 	window.addEventListener('scroll', handleScroll)
 })
-
+watch(
+	() => route.query.goods_no,
+	() => {
+		window.location.reload()
+	},
+	{ immediate: false }
+);
 onBeforeUnmount(() => {
 	goodStore.setBuyNumber(1)
 })
