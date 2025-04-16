@@ -23,20 +23,18 @@
                     </div>
                     <!--商品-->
                     <div class="goods-wrap">
-                        <template>
-                            <div class="goods-box" @click="appRoute('refundDetail', { apply_refund_id: item.id })">
-                                <div class="img_box"><img :src="item.goods_thumb" alt=""></div>
-                                <div class="left s-flex flex-dir jc-bt">
-                                    <div>
-                                        <div class="top">{{item.goods_name}}</div>
-                                        <div class="">
-                                            <span style="font-size: 0.22rem;color: #ccc;">{{ item.goods_attr }}</span>
-                                        </div>
+                        <div class="goods-box MT20" @click="appRoute('refundDetail', { apply_refund_id: item.id })">
+                            <div class="img_box"><img :src="item.goods_image" alt=""></div>
+                            <div class="left s-flex flex-dir jc-bt">
+                                <div>
+                                    <div class="top">{{item.goods_name}}</div>
+                                    <div class="MT20">
+                                        <span style="font-size: 0.22rem;color: #ccc;margin-right: 0.2rem" v-for="ite in item.goods_sku_value">{{ ite.key }}：{{ ite.value }}</span>
                                     </div>
-                                    <div class="refund-price fs22"><span class="refund">退款：</span><span class="price">￥{{ item.money }}</span></div>
                                 </div>
+                                <div class="refund-price fs22"><span class="refund">退款：</span><span class="price">￥{{ item.money }}</span></div>
                             </div>
-                        </template>
+                        </div>
                     </div>
                     <!-- 订单状态 -->
                     <div class="status_refund">
