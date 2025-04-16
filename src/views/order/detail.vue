@@ -172,6 +172,7 @@ import {getOrderDetail,} from "@/api/order.js";
 import { useRoute } from 'vue-router'
 import Clipboard from "clipboard"
 import {getShopConfig} from "@/utils/public.js";
+import {refundVerifyAxios} from "@/api/refund.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const title = ref('订单详情')
@@ -243,7 +244,19 @@ const copyOrders =() =>{
 
 const afterSale = (item) =>{
     if (item.refund_action == 1) {
-        cns.appRoute('refundForm', {order_sn: orderDetailData.value.order.order_sn})
+        refundVerifyAxios({ order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id }).then(res => {
+            if (cns.$constant.isSuccessCode(res)) {
+                cns.appRoute('refundForm', {order_sn: orderDetailData.value.order.order_sn, order_detail_id:item.id})
+            } else if (cns.$constant.isUnLoginCode(res)) {
+                cns.appRoute('login')
+            } else if(res.code === 4006) {
+                cns.appRoute('refundDetail', { order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id, after_sales: item.refund_action })
+            } else {
+                cns.$toast(res.message)
+            }
+        })
+    }else {
+        cns.appRoute('refundDetail', { order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id, after_sales: item.refund_action })
     }
 }
 

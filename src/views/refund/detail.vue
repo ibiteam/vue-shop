@@ -197,7 +197,7 @@ const getPageData = () =>{
     if (after_sales.value != 1 && route.query.apply_refund_id) {
         info.value.apply_refund_id = route.query.apply_refund_id
     }
-    info.value.order_no = route.query.order_no
+    info.value.order_sn = route.query.order_sn
     info.value.order_detail_id = route.query.order_detail_id
     if (after_sales.value == 1){
         refundInitAxios(info.value).then(res => {
@@ -274,7 +274,7 @@ const revoke =()=>{
 }
 
 const edit = () =>{
-    this.appRoute('refundForm', { order_no:route.query.order_no, order_detail_id:route.query.order_detail_id, apply_refund_id: refund_data.value.refund_info.id, type:'edit' }, 'replace')
+    this.appRoute('refundForm', { order_sn:route.query.order_sn, order_detail_id:route.query.order_detail_id, apply_refund_id: refund_data.value.refund_info.id, type:'edit' }, 'replace')
 }
 </script>
 
