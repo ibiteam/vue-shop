@@ -6,7 +6,7 @@
 			<div class="order-box MB20">
 				<div class="ord-item">
 					<span class="co-333 fs28">订单号：</span>
-					<span class="co-333 fs28">{{ info.no }}</span>
+					<span class="co-333 fs28">{{ info.order_sn }}</span>
 				</div>
 				<div class="ord-item">
 					<span class="co-333 fs28">下单时间：</span>
@@ -80,17 +80,17 @@ const route = useRoute()
 
 const title = ref('收银台')
 const isLoading = ref(true)
-const no = ref(route.query.no)
+const orderSn = ref(route.query.no)
 const info = ref({})
 const payments = ref([])
 const payInfo = ref({
-	no: '',
+	order_sn: '',
 	pay_amount: '',
 	pay_alias: ''
 })
 
 const getData = () => {
-	payInit(no.value).then((res) => {
+	payInit(orderSn.value).then((res) => {
 		if (isSuccessCode(res)) {
 			isLoading.value = false
 			info.value = res.data.order
@@ -121,7 +121,7 @@ const selectPay = (item) => {
 // 微信支付
 const wechatPay = () => {
 	let info = {
-		no: no.value,
+		order_sn: orderSn.value,
 	}
 	const ua = navigator.userAgent.toLowerCase()
 	const isWeixin = ua.indexOf('micromessenger') != -1

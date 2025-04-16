@@ -7,8 +7,6 @@
 				<div class="flex-1">
 					<p class="MB20 s-flex ai-ct">
 						<span class="default-addr" v-if="address.is_default==1">默认</span>
-						<!--<span class="default-addr"-->
-						<!--      :class="{ home: address.address_type == '家', company: address.address_type == '公司', repos: address.address_type == '仓库' }">{{ address.address_type }}</span>-->
 						<span
 							class="fs24 co-333">{{ address.province }}{{ address.city }}{{ address.district }}</span>
 					</p>
@@ -241,9 +239,9 @@ const done = () => {
 			cns.$toast('下单成功')
 			setTimeout(() => {
 				if (res.data.can_pay) {
-					appRoute('payIndex', {no: res.data.no}, 'replace')
+					appRoute('payIndex', {no: res.data.order_sn}, 'replace')
 				} else {
-					appRoute('orderSuccess', {no: res.data.no}, 'replace')
+					appRoute('orderSuccess', {no: res.data.order_sn}, 'replace')
 				}
 			}, 150)
 		} else {
