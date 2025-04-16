@@ -84,7 +84,7 @@
 					<div style="position: relative;top: -0.4rem;border-radius: 0.34rem 0.34rem 0 0;overflow: hidden;margin-bottom: -0.4rem;">
 						<!--        已删除/已下架        -->
 						<div class="price-on-sale-no bg-fff" style="padding: 0.35rem 0.2rem 0.15rem;" v-if="goodsInfo.status==0">暂无报价</div>
-						<!--普通商品多规格-非拼团-->
+						<!--普通商品多规格-->
 						<div class="bg-fff" style="padding-bottom: 0.1rem;padding-top: 0.3rem;" v-else="">
 							<template v-if="goodsInfo.sku_params&&goodsInfo.sku_params.spec_values.length">
 								<skuSelect :list="skuParamList" :mainImg="banner.images[0]" :httpIng="isSkuIng" @select="selectSkuFirst"></skuSelect>
@@ -116,7 +116,7 @@
 					</div>
 				</div>
 				<div style="padding: 0 0.2rem;" class="border-wrap">
-					<!--已选/地址/物流/服务-->
+					<!--已选/地址-->
 					<section class="MT20 bg-fff goods-other">
 						<div class="s-flex ai-ct jc-bt" @click="openSpecCard" v-if="skuParamList.length">
 							<template v-if="specName.length">

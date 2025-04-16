@@ -636,7 +636,9 @@ onMounted(() => {
                     font-size: 0.26rem;
                     margin: 0.3rem 0 0.8rem;
                     .btn-icon {
-                        padding: 0.1rem 0.4rem;
+                        padding: 0 0.4rem;
+	                    line-height: 0.56rem;
+	                    height: 0.56rem;
                         color: #ffffff;
                         margin-left: 0.2rem;
                         border-radius: 0.28rem;
