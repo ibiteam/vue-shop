@@ -3,6 +3,9 @@
         <template v-slot:loading>
             <van-loading type="spinner" size="20" />
         </template>
+        <template v-slot:error>
+            <img style="width: 100%; height: 100%; max-width: 100%; max-height:100%;" src="@/assets/images/common/no-pic.png" />
+        </template>
     </van-image>
 </template>
 

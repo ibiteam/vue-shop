@@ -28,7 +28,7 @@
             <!-- 平铺 -->
             <swiper v-if="content.style == 1" v-bind="{
                 slidesPerView: 1,
-                spaceBetween: 0,
+                spaceBetween: 10,
                 autoplay: {
                     'delay': (content.interval || 3) * 1000,
                 },

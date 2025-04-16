@@ -7,7 +7,7 @@
             <van-list v-model:loading="pageInfo.loading" :finished="pageInfo.finished" @load="loadRecommend" :finished-text="paging ? '没有更多了' : ''" :immediate-check="false" :offset="50">
                 <div class="goods-wrapper2 s-flex ai-ct jc-bt flex-wrap" v-if="recommend.length">
                     <div class="goods-item" v-for="item in recommend" :key="item.no" @click.stop="appRoute('good', {goods_no: item.no})">
-                        <common-image v-bind="{ src: item.image, width: '100%', height: '100%', radius: '0.2rem 0.2rem 0 0' }"/>
+                        <common-image v-bind="{ src: item.image, width: '100%', height: wrapper2OffsetWidth + 'px', radius: '0.2rem 0.2rem 0 0' }"/>
                         <div class="goods-info s-flex jc-bt flex-dir">
                             <div class="goods-name elli-2 s-flex ai-ct fs26">
                                 <van-tag color="linear-gradient(90deg, #5436D5 4%, #735CFF 99%)" v-if="item.label">{{item.label}}</van-tag>
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, watch } from 'vue'
+import { ref, reactive, getCurrentInstance, watch, onMounted, nextTick } from 'vue'
 import {getRecommend} from '@/api/common.js'
 import {appRoute} from "@/router/appRoute.js";
 import {isSuccessCode} from "@/utils/constant.js";
@@ -44,7 +44,7 @@ const props = defineProps({
         default: false,
     }
 })
-
+const wrapper2OffsetWidth = ref(0)
 const recommend = ref([])
 const pageInfo = reactive({
     loading: false,
@@ -98,6 +98,15 @@ watch(() => props.paging, (val) => {
 	}
 }, {
     immediate: true
+})
+
+onMounted(() => {
+    nextTick(() => {
+        let element2 = document.querySelector('.goods-recommend-you-wrapper .goods-wrapper2 .goods-item')
+        if (element2) {
+            wrapper2OffsetWidth.value = element2.offsetWidth
+        }
+    })
 })
 
 </script>
