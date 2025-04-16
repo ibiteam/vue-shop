@@ -11,12 +11,12 @@ export function checkoutDone(params) {
     return $http.doPost(URL, params || {})
 }
 
-export function getOrderSuccess(no){
-  return $http.doGet('v1/order/done/success',{no})
+export function getOrderSuccess(order_sn){
+  return $http.doGet('v1/order/done/success',{order_sn})
 }
 
-export function payInit(no){
-  return $http.doGet('v1/order/cash',{no})
+export function payInit(order_sn){
+  return $http.doGet('v1/order/cash',{order_sn})
 }
 
 export function wxPay(params){
