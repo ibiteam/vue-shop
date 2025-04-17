@@ -128,7 +128,7 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { useRoute } from 'vue-router'
-import {refundDetailAxios, refundShowAxios} from "@/api/refund.js";
+import {refundDetailAxios, refundShowAxios} from "@/api/order.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 

@@ -59,10 +59,40 @@ export function storeEvaluate(params){
     return $http.doPost('v1/order/my/evaluate/store',params || {})
 }
 
+// 物流
 export function wuliuListAxios(params){
     return $http.doGet('v1/order/delivery/list',params || {})
 }
 
 export function wuliuDetailAxios(params){
     return $http.doGet('v1/order/delivery/logistics',params || {})
+}
+
+// 售后
+export function refundListAxios(params){
+    return $http.doGet('v1/order/apply_refund/list',params || {})
+}
+
+export function refundHistoryAxios(params){
+    return $http.doGet('v1/order/apply_refund/log',params || {})
+}
+
+export function refundInitAxios(params){
+    return $http.doGet('v1/order/apply_refund/init',params || {})
+}
+
+export function refundDetailAxios(params){
+    return $http.doGet('v1/order/apply_refund/detail',params || {})
+}
+
+export function refundRevokeAxios(params){
+    return $http.doPost('v1/order/apply_refund/revoke',params || {})
+}
+
+export function refundVerifyAxios(params){
+    return $http.doGet('v1/order/apply_refund/verify',params || {})
+}
+
+export function refundShowAxios(params){
+    return $http.doGet('v1/order/apply_refund/show',params || {})
 }

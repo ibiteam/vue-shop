@@ -212,7 +212,7 @@ import {
     updateOrderAddressAxios
 } from "@/api/order.js";
 import {getAddress} from "@/api/address.js";
-import {refundVerifyAxios} from "@/api/refund.js";
+import {refundVerifyAxios} from "@/api/order.js";
 const route = useRoute()
 const router = useRouter()
 const cns = getCurrentInstance().appContext.config.globalProperties

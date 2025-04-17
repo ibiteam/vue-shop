@@ -172,7 +172,7 @@ import {getOrderDetail,} from "@/api/order.js";
 import { useRoute } from 'vue-router'
 import Clipboard from "clipboard"
 import {getShopConfig} from "@/utils/public.js";
-import {refundVerifyAxios} from "@/api/refund.js";
+import {refundVerifyAxios} from "@/api/order.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const title = ref('订单详情')
