@@ -93,7 +93,6 @@ import {collectGoodsAxios, eidtCollectGoodsAxios} from "@/api/mine.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 
 const pageOffsetTop = ref(0)
-const goodsType = ref(0)
 const checkFlag = ref(false)
 const checkGoodsAllFlag =ref(false)
 const checkGoodsResult = ref([])
@@ -118,7 +117,6 @@ const loadData = () => {
   noData.value = false;
   let info = {
     page: pagination.current_page,
-    type:0
   };
   collectGoodsAxios(info).then((res) => {
     if (cns.$constant.isSuccessCode(res)) {
@@ -143,7 +141,6 @@ const loadData = () => {
 const loadMore = () =>{
   let info = {
     page: pagination.current_page,
-    type:0
   }
   if (good_list.value.length >= 10) {
     loading.value = true;
