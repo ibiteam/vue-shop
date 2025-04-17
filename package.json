@@ -25,7 +25,8 @@
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "vue3-cookies": "^1.0.6",
-    "weixin-js-sdk": "^1.6.5"
+    "weixin-js-sdk": "^1.6.5",
+    "xss": "^1.0.15"
   },
   "devDependencies": {
     "@vitejs/plugin-basic-ssl": "^1.1.0",

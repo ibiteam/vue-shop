@@ -13,5 +13,5 @@ export function viewsHistoryAxios(info) {
 }
 
 export function editHistoryAxios(info) {
-    return $http.doGet('v1/my/batch/unfollow',info)
+    return $http.doPost('v1/my/views/batch/distory',info)
 }

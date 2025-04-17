@@ -33,7 +33,7 @@
               :key="index"
           >
             <van-checkbox
-                :name="item.goods_no"
+                :name="item.id"
                 checked-color="#F71111"
                 v-if="checkFlag"
                 @click="checkGoodsChange"
@@ -41,7 +41,7 @@
             <div
                 class="goods-container"
                 :style="{ left: checkFlag ? '.88rem' : '.28rem' }"
-                @click.stop="toGoods(item.goods_no,index)"
+                @click.stop="toGoods(item)"
             >
               <div class="goods-img">
                 <van-image
@@ -89,7 +89,7 @@
 
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
-import {collectGoodsAxios, editHistoryAxios, eidtCollectGoodsAxios, viewsHistoryAxios} from "@/api/mine.js";
+import { editHistoryAxios, viewsHistoryAxios} from "@/api/mine.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 
 const pageOffsetTop = ref(0)
@@ -144,7 +144,7 @@ const loadMore = () =>{
   }
   if (good_list.value.length >= 10) {
     loading.value = true;
-    collectGoodsAxios(info).then((res) => {
+    viewsHistoryAxios(info).then((res) => {
       if (cns.$constant.isSuccessCode(res)) {
         bottomline.value = res.data.meta.total < 10 ? true : false;
         pagination.value = res.data.meta;
@@ -169,14 +169,15 @@ const loadMore = () =>{
 
 const deleteViews = () => {
   let info = {
-    nos:checkGoodsResult.value
+    ids:checkGoodsResult.value
   }
-  if(!info.nos){
+  if(!info.ids){
     cns.$toast('请先选择需要删除的浏览记录');
     return
   }
   editHistoryAxios(info).then((res) => {
     if (cns.$constant.isSuccessCode(res)) {
+      cns.$toast(res.message);
       checkFlag.value = false;
       checkGoodsAllFlag.value = false
       checkGoodsResult.value = [];
@@ -197,16 +198,16 @@ const checkGoodsAllChange = (checked) => {
   );
 }
 
-const toGoods = (goods_no,index) => {
+const toGoods = (item) => {
   if (checkFlag.value) {
-    if (checkGoodsResult.value.indexOf(goods_no) == -1) {
-      checkGoodsResult.value.push(goods_no)
+    if (checkGoodsResult.value.indexOf(item.id) == -1) {
+      checkGoodsResult.value.push(item.id)
     } else {
-      checkGoodsResult.value.splice(checkGoodsResult.value.indexOf(goods_no), 1)
+      checkGoodsResult.value.splice(checkGoodsResult.value.indexOf(item.id), 1)
     }
     checkGoodsChange()
   } else {
-    cns.appRoute('good',{goods_no: goods_no})
+    cns.appRoute('good',{goods_no: item.goods_no})
   }
 }
 
