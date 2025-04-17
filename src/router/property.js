@@ -11,12 +11,6 @@ const property = [
         name: 'couponExplain',
         component: () => import('@/views/property/coupon/explain.vue'),
     },
-    /*优惠券-不可使用*/
-    {
-        path: '/property/coupon/unchange',
-        name: 'couponUnchange',
-        component: () => import('@/views/property/coupon/unchange.vue'),
-    },
     /*红包*/
     {
         path: '/property/redPack',
