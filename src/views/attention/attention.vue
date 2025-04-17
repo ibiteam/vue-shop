@@ -41,7 +41,7 @@
             <div
                 class="goods-container"
                 :style="{ left: checkFlag ? '.88rem' : '.28rem' }"
-                @click.stop="toGoods(item.goods_no,index)"
+                @click.stop="toGoods(item.goods_no)"
             >
               <div class="goods-img">
                 <van-image
@@ -177,6 +177,7 @@ const unFollow = () => {
   }
   eidtCollectGoodsAxios(info).then((res) => {
     if (cns.$constant.isSuccessCode(res)) {
+      cns.$toast(res.message);
       checkFlag.value = false;
       checkGoodsAllFlag.value = false
       checkGoodsResult.value = [];
@@ -197,7 +198,7 @@ const checkGoodsAllChange = (checked) => {
   );
 }
 
-const toGoods = (goods_no,index) => {
+const toGoods = (goods_no) => {
   if (checkFlag.value) {
     if (checkGoodsResult.value.indexOf(goods_no) == -1) {
       checkGoodsResult.value.push(goods_no)
