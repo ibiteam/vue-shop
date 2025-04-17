@@ -36,8 +36,8 @@
 									            weight="bold"></form-price>
 									<template v-if="good.integral">
 										<p class="co-333 fs28" style="margin: 0 0.08rem;"> + </p>
-										<span class="co-red fs28 fw-b">{{ good.integral }}</span>
-										<span class="co-333 co-red"
+										<span class="co-red fs28">{{ good.integral }}</span>
+										<span class="co-333 co-red fs22"
 										      style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
 									</template>
 								</div>
@@ -86,10 +86,10 @@
 			<div class="footer-box MT20 breathe">
 				<div class="s-flex ai-ct bg-fff jc-fe">
 					<section class="s-flex fs28 flex-1 ML30 breathe ai-ct">
-						<form-price :price="total.total_amount" sign_size="28" INT_size="48" DF_size="28"></form-price>
+						<form-price :price="total.total_amount" sign_size="28" INT_size="36" DF_size="28"></form-price>
 						<template v-if="total.goods_integral">
 							<p class="co-333 fs28" style="margin: 0 0.08rem;"> + </p>
-							<span class="co-red fs48">{{ total.goods_integral }}</span>
+							<span class="co-red fs36">{{ total.goods_integral }}</span>
 							<span class="co-333 co-red" style="margin-left: 0.05rem;">{{shopConfig.integral_name || '积分' }}</span>
 						</template>
 					</section>
