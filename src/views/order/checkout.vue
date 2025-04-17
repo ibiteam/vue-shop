@@ -31,14 +31,16 @@
 							<p class="elli-2 fs22 goods-name">{{ good.name }}</p>
 							<p class="elli-2 fs20 goods-attr" v-if="good.sku_data">{{ good.sku_data }}</p>
 							<div class="fs24 s-flex jc-bt MB10">
-								<form-price :price="good.price" :unit="good.unit" unit_color="#333"
-								            weight="bold"></form-price>
-								<template v-if="good.integral">
-									<p class="co-333 fs40" style="margin: 0 0.08rem;"> + </p>
-									<span class="co-red fs50 fw-b">{{ goodsInfo.integral }}</span>
-									<span class="co-333 co-red"
-									      style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
-								</template>
+								<div class="s-flex ai-ct">
+									<form-price :price="good.price" :unit="good.unit" unit_color="#333"
+									            weight="bold"></form-price>
+									<template v-if="good.integral">
+										<p class="co-333 fs28" style="margin: 0 0.08rem;"> + </p>
+										<span class="co-red fs28">{{ good.integral }}</span>
+										<span class="co-333 co-red fs22"
+										      style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
+									</template>
+								</div>
 								<div class="number-box s-flex">x {{ good.buy_number }}</div>
 							</div>
 						</div>
@@ -62,7 +64,7 @@
 					</div>
 					<div class="fs24 s-flex jc-bt discount" v-if="total.goods_integral">
 						<span>商品积分</span>
-						<span class="fw-b">{{ total.goodsIntegral }}</span>
+						<span class="fw-b">{{ total.goods_integral }}</span>
 					</div>
 					<div class="fs24 s-flex jc-bt discount">
 						<span>运费</span>
@@ -83,11 +85,11 @@
 			<!--底部-->
 			<div class="footer-box MT20 breathe">
 				<div class="s-flex ai-ct bg-fff jc-fe">
-					<section class="s-flex fs28 flex-1 ML30 breathe">
-						<form-price :price="total.total_amount" sign_size="28" INT_size="48" DF_size="28"></form-price>
+					<section class="s-flex fs28 flex-1 ML30 breathe ai-ct">
+						<form-price :price="total.total_amount" sign_size="28" INT_size="36" DF_size="28"></form-price>
 						<template v-if="total.goods_integral">
-							<p class="co-333 fs40" style="margin: 0 0.08rem;"> + </p>
-							<span class="co-red fs50 fw-b">{{ total.goods_integral }}</span>
+							<p class="co-333 fs28" style="margin: 0 0.08rem;"> + </p>
+							<span class="co-red fs36">{{ total.goods_integral }}</span>
 							<span class="co-333 co-red" style="margin-left: 0.05rem;">{{shopConfig.integral_name || '积分' }}</span>
 						</template>
 					</section>

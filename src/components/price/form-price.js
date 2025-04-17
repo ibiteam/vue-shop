@@ -32,7 +32,7 @@ const FormPrice = {
                         }
                         return temp.toString().split('.')[1] ? '.' + (temp.toString().split('.')[1]) : ''
                     } else {
-                        return 0
+                        return '.00'
                     }
                 })
 

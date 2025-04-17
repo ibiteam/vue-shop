@@ -3,7 +3,7 @@
         <div class="ad-swiper">
             <swiper v-if="content.style == 2" v-bind="{
                 slidesPerView: 3,
-                spaceBetween: 0,
+                spaceBetween: 1,
                 centeredSlides: true,
                 autoplay: {
                     'delay': (content.interval || 3) * 1000,
@@ -17,7 +17,7 @@
                 modules: swiperModules
             }" class="cards-swiper">
                 <template v-if="content.items.length <= 3">
-                    <swiper-slide class="scroll-item" v-slot="{ isActive }" v-for="(item, index) in [...content.items, ...content.items, ...content.items, ...content.items]" :key="index">
+                    <swiper-slide class="scroll-item" v-slot="{ isActive }" v-for="(item, index) in [...content.items, ...content.items]" :key="index">
                         <common-image v-bind="{fit: isActive ? 'fill' : 'cover', src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0'}" />
                     </swiper-slide>
                 </template>
@@ -40,7 +40,7 @@
             }" class="scroll-wrapper">
                 <swiper-slide class="scroll-item" v-for="(item, index) in content.items" :key="index" style="width: 100%;">
                     <common-image
-                        v-bind="{src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0.2rem'}"
+                        v-bind="{src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0.2rem', fit: 'cover'}"
                         @click.stop="handleOpenLink(item.url)"
                     />
                 </swiper-slide>
