@@ -41,11 +41,5 @@ const property = [
         name: 'integral',
         component: () => import('@/views/property/integral/integral.vue'),
     },
-    /*余额*/
-    {
-        path: '/property/balance',
-        name: 'balance',
-        component: () => import('@/views/property/balance/balance.vue'),
-    },
 ]
 export default property

@@ -19,7 +19,3 @@ export function getRedPackListAxios(info) {
 export function getIntegralListAxios(info) {
     return $http.doGet('v3/integration/detail',info)
 }
-
-export function getBalanceAxios(info) {
-    return $http.doGet('v3/balance',info)
-}
