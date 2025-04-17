@@ -40,7 +40,7 @@
         </section>
         <div class="order-main" v-else>
 <!--            物流-->
-            <div class="orderDetail-module order-wuliu" v-if="orderDetailData.logistics" @click="appRoute('orderWuliu',{order_sn:orderDetailData.order.order_sn})">
+            <div class="orderDetail-module order-wuliu" v-if="orderDetailData.logistics" @click="toWuliu">
                 <div class="order-wuliu-head s-flex ai-ct jc-bt">
                     <div class="s-flex ai-ct">
                         <img src="@/assets/images/order/m-car.png">
@@ -257,6 +257,14 @@ const afterSale = (item) =>{
         })
     }else {
         cns.appRoute('refundDetail', { order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id })
+    }
+}
+
+const toWuliu = () =>{
+    if(orderDetailData.logistics_number>1){
+      cns.appRoute('wuliuList', {order_sn: orderDetailData.order.order_sn})
+    }else{
+      cns.appRoute('wuliuDetail', {delivery_no: orderDetailData.logistics.delivery_no})
     }
 }
 

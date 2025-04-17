@@ -37,9 +37,14 @@ const order = [
     },
     /*物流*/
     {
-        path: '/order/wuliu',
-        name: 'orderWuliu',
-        component: () => import('@/views/order/wuliu.vue'),
+        path: '/wuliu/list',
+        name: 'wuliuList',
+        component: () => import('@/views/wuliu/list.vue'),
+    },
+    {
+        path: '/wuliu/detail',
+        name: 'wuliuDetail',
+        component: () => import('@/views/wuliu/detail.vue'),
     },
     {
         path: '/pay/index',
@@ -56,6 +61,42 @@ const order = [
         path: '/order/comment',
         name: 'orderComment',
         component: () => import('@/views/order/comment.vue'),
-    }
+    },
+    /*退款列表*/
+    {
+        path: '/refund/list',
+        name: 'refundList',
+        component: () => import('@/views/refund/list.vue'),
+    },
+    /*退款详情*/
+    {
+        path: '/refund/detail',
+        name: 'refundDetail',
+        component: () => import('@/views/refund/detail.vue'),
+    },
+    /*选择售后类型*/
+    {
+        path: '/refund/entrance',
+        name: 'refundEntrance',
+        component: () => import('@/views/refund/entrance.vue'),
+    },
+    /*申请退款*/
+    {
+        path: '/refund/form',
+        name: 'refundForm',
+        component: () => import('@/views/refund/form.vue'),
+    },
+    /*协商历史*/
+    {
+        path: '/refund/history',
+        name: 'refundHistory',
+        component: () => import('@/views/refund/history.vue'),
+    },
+    /*填写单号*/
+    {
+        path: '/refund/ship',
+        name: 'refundShip',
+        component: () => import('@/views/refund/ship.vue'),
+    },
 ]
 export default order

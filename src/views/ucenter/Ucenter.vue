@@ -115,9 +115,9 @@
                   <div class="order-model-num" v-if="userInfo.wait_pay_count && userInfo.wait_pay_count < 100">{{userInfo.wait_pay_count}}</div>
                   <div class="order-model-num" v-if="userInfo.wait_pay_count && userInfo.wait_pay_count >= 100">99+</div>
                 </div>
-                <div class="order-model" @click="toPage('orderList','wait_receive')">
+                <div class="order-model" @click="toPage('orderList','wait_ship')">
                   <img src="@/assets/images/ucenter/order_3.png" alt="">
-                  <div>待收货</div>
+                  <div>待发货</div>
                   <div class="order-model-num" v-if="userInfo.wait_ship_count && userInfo.wait_ship_count < 100">{{userInfo.wait_ship_count}}</div>
                   <div class="order-model-num" v-if="userInfo.wait_ship_count && userInfo.wait_ship_count >= 100">99+</div>
                 </div>

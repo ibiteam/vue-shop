@@ -58,3 +58,7 @@ export function initEvaluate(params){
 export function storeEvaluate(params){
     return $http.doPost('v1/order/my/evaluate/store',params || {})
 }
+
+export function wuliuListAxios(params){
+    return $http.doGet('v1/order/delivery/list',params || {})
+}
