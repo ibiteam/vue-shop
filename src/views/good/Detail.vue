@@ -8,7 +8,7 @@
 			</div>
 			<!--推荐-->
 			<div ref="recommendRef">
-				<Recommend></Recommend>
+				<Recommend :no="goodsNo"></Recommend>
 			</div>
 		</template>
 		<template v-else>
@@ -214,7 +214,9 @@
 						<div class="good-attr bg-fff" style="padding-bottom: 0.26rem;" v-if="goodsAttr && goodsAttr.length>0">
 							<h4 class="fs32 co-333 fw-b" style="padding: 0.3rem 0 0.2rem;">产品参数</h4>
 							<div style="padding-bottom: 0.1rem;">
-								<p v-for="item in goodsAttr"><span>{{ item.name }}</span>{{ item.value }}</p>
+								<template v-for="(item,i) in goodsAttr">
+									<p v-if="i < 8"><span>{{ item.name }}</span>{{ item.value }}</p>
+								</template>
 							</div>
 							<div class="more-attr s-flex jc-ct" v-if="goodsAttr.length>8">
 								<div class="fs28 co-333" @click="openPopup('propPopup')">更多详细参数<em class="iconfont co-999" style="font-size: 0.26rem;">&#xe773;</em></div>
@@ -232,7 +234,7 @@
 				</div>
 				<!--推荐-->
 				<div ref="recommendRef">
-					<Recommend ></Recommend>
+					<Recommend :no="goodsNo"></Recommend>
 				</div>
 				<!--底部菜单-->
 				<footer class="breathe">
@@ -671,21 +673,23 @@ const getData = () => {
 			skuParamList.value = res.data.center.sku_params ? res.data.center.sku_params.spec_values : []
 			if (skuParamList.value.length) {
 				paramNum.value = 1
+				specName.value = []
+				specId.value = []
 				skuId.value = res.data.center.sku_params.sku_item.id
 				skuShopPrice.value.price = res.data.center.sku_params.sku_item.price || ''
 				skuShopPrice.value.integral = res.data.center.sku_params.sku_item.integral || ''
-			}
-			skuParamList.value.length && skuParamList.value.forEach((d, i) => {
-				d.values.forEach(s => {
-					if (s.selected) {
-						specName.value.push(s.name)
-						specId.value.push(s.id)
+				skuParamList.value.forEach((d, i) => {
+					d.values.forEach(s => {
+						if (s.selected) {
+							specName.value.push(s.name)
+							specId.value.push(s.id)
+						}
+					})
+					if (d.values.length && i == 0) {
+						paramNum.value = d.values.length
 					}
 				})
-				if (d.values.length && i == 0) {
-					paramNum.value = d.values.length
-				}
-			})
+			}
 
 			if (res.data.banner.video.url) {
 				goodTab.value = 0

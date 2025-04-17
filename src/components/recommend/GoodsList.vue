@@ -16,8 +16,13 @@
 				<div class="item-name fs26 co-333 elli-2">
 					{{ item.name }}
 				</div>
-				<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct jc-bt">
+				<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct">
 					<form-price :price="item.price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
+					<template v-if="item.integral">
+						<p class="co-333 fs28" style="margin: 0 0.08rem;"> + </p>
+						<span class="co-red fs28 fw-b">{{ item.integral }}</span>
+						<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
+					</template>
 				</div>
 			</div>
 		</div>
@@ -26,7 +31,8 @@
 
 <script setup>
 import {appRoute} from "@/router/appRoute.js";
-
+import {inject} from "vue";
+const shopConfig = inject('shopConfig')
 defineProps({
 	list: {
 		type: Array,

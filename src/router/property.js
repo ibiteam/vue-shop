@@ -11,12 +11,6 @@ const property = [
         name: 'couponExplain',
         component: () => import('@/views/property/coupon/explain.vue'),
     },
-    /*优惠券-不可使用*/
-    {
-        path: '/property/coupon/unchange',
-        name: 'couponUnchange',
-        component: () => import('@/views/property/coupon/unchange.vue'),
-    },
     /*红包*/
     {
         path: '/property/redPack',
@@ -29,23 +23,11 @@ const property = [
         name: 'redPackExplain',
         component: () => import('@/views/property/redPack/explain.vue'),
     },
-    /*红包-不可使用*/
-    {
-        path: '/property/redPack/unchange',
-        name: 'redPackUnchange',
-        component: () => import('@/views/property/redPack/unchange.vue'),
-    },
     /*积分*/
     {
         path: '/property/integral',
         name: 'integral',
         component: () => import('@/views/property/integral/integral.vue'),
-    },
-    /*余额*/
-    {
-        path: '/property/balance',
-        name: 'balance',
-        component: () => import('@/views/property/balance/balance.vue'),
     },
 ]
 export default property

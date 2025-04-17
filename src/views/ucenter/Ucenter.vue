@@ -1,233 +1,198 @@
 <template>
     <main class="ucenter-main-container">
-        <div class="ucenter-head-fix" v-if="head_opacity > 0" :style="{opacity: head_opacity}">我的</div>
         <div class="ucenter-head">
-            <div class="ucenter-head-main" v-if="user_load">
-                <div class="head-icon-box s-flex jc-fe ai-ct"></div>
-                <div class="head-info-box s-flex">
-                    <div class="head-tx">
-                        <img src="@/assets/images/ucenter/portait.jpeg" alt="">
-                    </div>
+          <template v-if="user_load">
+            <div class="ucenter-head-main">
+              <div class="head-icon-box s-flex jc-fe ai-ct"></div>
+              <div class="head-info-box s-flex">
+                <div class="head-tx">
+                  <img src="@/assets/images/ucenter/portait.jpeg" alt="">
                 </div>
+              </div>
             </div>
-            <div class="ucenter-head-main" v-else>
-                <div class="head-icon-box s-flex jc-fe ai-ct">
-                    <div @click="toPage('set')" class="s-flex ai-ct">
-                        <img src="@/assets/images/ucenter/set.png" alt="">
-                        <div>设置</div>
-                    </div>
+            <div>
+              <div class="bg-fff" style="border-radius: 0.2rem;margin: 0.35rem 0.2rem 0;padding: 0.4rem 0.2rem">
+                <div class="s-flex jc-ad">
+                  <div style="width: 1.5rem;height: 0.5rem;background: #f8f8f8"></div>
+                  <div style="width: 1.5rem;height: 0.5rem;background: #f8f8f8"></div>
                 </div>
-                <!--            用户信息-未登录-->
-                <div class="head-info-box s-flex" v-if="unLogin">
-                    <div class="head-tx">
-                        <img src="@/assets/images/ucenter/portait.jpeg" alt="">
-                    </div>
-                    <div class="user-info flex-1">
-                        <div class="s-flex jc-bt">
-                            <div class="info-name" style="margin-top: 0.38rem">
-                                <span @click="toPage('login')">登录/</span><span @click="toPage('register')">注册</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="s-flex jc-bt MT40">
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
                 </div>
-                <!--            用户信息-已登录-->
-                <div class="head-info-box s-flex" v-else>
-                    <div class="head-tx" @click="toPage('userInfo')">
-                        <van-image :src="userInfo.portrait" class="portrait">
-                            <template v-slot:loading>
-                                <img src="@/assets/images/ucenter/portait.jpeg" alt="">
-                            </template>
-                            <template v-slot:error>
-                                <img src="@/assets/images/ucenter/portait.jpeg" alt="">
-                            </template>
-                        </van-image>
-                    </div>
-                    <div class="user-info flex-1">
-                        <div class="s-flex jc-bt">
-                            <div @click="toPage('userInfo')">
-                                <div class="info-name" v-if="userInfo.nickname">{{userInfo.nickname}}</div>
-                                <div class="info-name" v-else>未设置昵称</div>
-                                <div class="user_name">用户名：{{userInfo.user_name}}</div>
-                            </div>
-                            <div class="info-improve" @click="toPage('userInfo')">完善信息<i class="iconfont" style="vertical-align: bottom">&#xe60b;</i></div>
-                        </div>
-                    </div>
+              </div>
+              <div class="bg-fff" style="border-radius: 0.2rem;margin: 0.1rem 0.2rem 0;padding: 0.4rem 0.2rem">
+                <div class="s-flex jc-bt">
+                  <div style="width: 1.6rem;height: 0.5rem;background: #f8f8f8"></div>
+                  <div style="width: 1.2rem;height: 0.5rem;background: #f8f8f8"></div>
                 </div>
+                <div class="s-flex jc-bt MT40">
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                </div>
+              </div>
+              <div class="bg-fff" style="border-radius: 0.2rem;margin: 0.1rem 0.2rem 0;padding: 0.4rem 0.2rem">
+                <div class="s-flex jc-bt">
+                  <div style="width: 1.8rem;height: 0.5rem;background: #f8f8f8"></div>
+                </div>
+                <div class="s-flex jc-bt MT40">
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                </div>
+                <div class="s-flex jc-bt MT20">
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                  <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
+                </div>
+              </div>
             </div>
-            <div v-if="component_load">
-                <div class="bg-fff" style="border-radius: 0.2rem;margin: 0.35rem 0.2rem 0;padding: 0.4rem 0.2rem">
-                    <div class="s-flex jc-ad">
-                        <div style="width: 1.5rem;height: 0.5rem;background: #f8f8f8"></div>
-                        <div style="width: 1.5rem;height: 0.5rem;background: #f8f8f8"></div>
-                    </div>
-                    <div class="s-flex jc-bt MT40">
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                    </div>
+          </template>
+          <template v-else>
+            <div class="ucenter-head-main">
+              <div class="head-icon-box s-flex jc-fe ai-ct">
+                <div @click="toPage('set')" class="s-flex ai-ct">
+                  <img src="@/assets/images/ucenter/set.png" alt="">
+                  <div>设置</div>
                 </div>
-                <div class="bg-fff" style="border-radius: 0.2rem;margin: 0.1rem 0.2rem 0;padding: 0.4rem 0.2rem">
-                    <div class="s-flex jc-bt">
-                        <div style="width: 1.6rem;height: 0.5rem;background: #f8f8f8"></div>
-                        <div style="width: 1.2rem;height: 0.5rem;background: #f8f8f8"></div>
-                    </div>
-                    <div class="s-flex jc-bt MT40">
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                    </div>
+              </div>
+              <!--            用户信息-未登录-->
+              <div class="head-info-box s-flex" v-if="unLogin">
+                <div class="head-tx">
+                  <img src="@/assets/images/ucenter/portait.jpeg" alt="">
                 </div>
-                <div class="bg-fff" style="border-radius: 0.2rem;margin: 0.1rem 0.2rem 0;padding: 0.4rem 0.2rem">
-                    <div class="s-flex jc-bt">
-                        <div style="width: 1.8rem;height: 0.5rem;background: #f8f8f8"></div>
+                <div class="user-info flex-1">
+                  <div class="s-flex jc-bt">
+                    <div class="info-name" style="margin-top: 0.38rem">
+                      <span @click="toPage('login')">登录/</span><span @click="toPage('register')">注册</span>
                     </div>
-                    <div class="s-flex jc-bt MT40">
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                    </div>
-                    <div class="s-flex jc-bt MT20">
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                        <div style="width: 1rem;height: 1rem;background: #f8f8f8"></div>
-                    </div>
+                  </div>
                 </div>
+              </div>
+              <!--            用户信息-已登录-->
+              <div class="head-info-box s-flex" v-else>
+                <div class="head-tx" @click="toPage('userInfo')">
+                  <van-image :src="userInfo.avatar" class="portrait">
+                    <template v-slot:loading>
+                      <img src="@/assets/images/ucenter/portait.jpeg" alt="">
+                    </template>
+                    <template v-slot:error>
+                      <img src="@/assets/images/ucenter/portait.jpeg" alt="">
+                    </template>
+                  </van-image>
+                </div>
+                <div class="user-info flex-1">
+                  <div class="s-flex jc-bt">
+                    <div @click="toPage('userInfo')">
+                      <div class="info-name elli-1" v-if="userInfo.nickname">{{userInfo.nickname}}</div>
+                      <div class="info-name" v-else>未设置昵称</div>
+                      <div class="user-name elli-1">用户名：{{userInfo.user_name}}</div>
+                    </div>
+                    <div class="info-improve" @click="toPage('userInfo')">完善信息<i class="iconfont" style="vertical-align: bottom">&#xe60b;</i></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <template v-else>
-                <!--            订单模块-->
-                <div class="order-box">
-                    <div class="order-join s-flex ai-ct jc-bt">
-                        <strong>订单</strong>
-                        <p class="s-flex ai-ct" @click="toPage('orderList','all')">全部 <em class="iconfont">&#xe60b;</em></p>
-                    </div>
-                    <div class="order-main s-flex">
-                        <div class="order-model" @click="toPage('orderList','not_pay')">
-                            <img src="@/assets/images/ucenter/order_2.png" alt="">
-                            <div>待付款</div>
-                            <div class="order-model-num">99+</div>
-                        </div>
-                        <div class="order-model" @click="toPage('orderList','wait_receive')">
-                            <img src="@/assets/images/ucenter/order_3.png" alt="">
-                            <div>待收货</div>
-                            <div class="order-model-num">99+</div>
-                        </div>
+            <!--            订单模块-->
+            <div class="order-box">
+              <div class="order-join s-flex ai-ct jc-bt">
+                <strong>订单</strong>
+                <p class="s-flex ai-ct" @click="toPage('orderList','all')">全部 <em class="iconfont">&#xe60b;</em></p>
+              </div>
+              <div class="order-main s-flex">
+                <div class="order-model" @click="toPage('orderList','not_pay')">
+                  <img src="@/assets/images/ucenter/order_2.png" alt="">
+                  <div>待付款</div>
+                  <div class="order-model-num" v-if="userInfo.wait_pay_count && userInfo.wait_pay_count < 100">{{userInfo.wait_pay_count}}</div>
+                  <div class="order-model-num" v-if="userInfo.wait_pay_count && userInfo.wait_pay_count >= 100">99+</div>
+                </div>
+                <div class="order-model" @click="toPage('orderList','wait_receive')">
+                  <img src="@/assets/images/ucenter/order_3.png" alt="">
+                  <div>待收货</div>
+                  <div class="order-model-num" v-if="userInfo.wait_ship_count && userInfo.wait_ship_count < 100">{{userInfo.wait_ship_count}}</div>
+                  <div class="order-model-num" v-if="userInfo.wait_ship_count && userInfo.wait_ship_count >= 100">99+</div>
+                </div>
 
-                        <div class="order-model" @click="toPage('orderList','wait_evaluate')">
-                            <img src="@/assets/images/ucenter/order_4.png" alt="">
-                            <div>待评价</div>
-                            <div class="order-model-num">99+</div>
-                        </div>
-                        <div class="order-model" @click="toPage('refundList')">
-                            <img src="@/assets/images/ucenter/order_5.png" alt="">
-                            <div>退款/售后</div>
-                        </div>
-                    </div>
+                <div class="order-model" @click="toPage('orderList','wait_evaluate')">
+                  <img src="@/assets/images/ucenter/order_4.png" alt="">
+                  <div>待评价</div>
+                  <div class="order-model-num" v-if="userInfo.wait_evaluate_count && userInfo.wait_evaluate_count < 100">{{userInfo.wait_evaluate_count}}</div>
+                  <div class="order-model-num" v-if="userInfo.wait_evaluate_count && userInfo.wait_evaluate_count >= 100">99+</div>
                 </div>
-                <!--            我的资产模块-->
-                <div class="assert-box">
-                    <div class="assert-join s-flex ai-ct jc-bt">
-                        <strong>资产</strong>
-                    </div>
-                    <div class="assert-main s-flex jc-bt">
-                        <div class="assert-model" @click="toPage('coupon')">
-                            <img src="@/assets/images/ucenter/coupon.png" alt="">
-                            <div>优惠券</div>
-                        </div>
-                        <div class="assert-model" @click="toPage('redPack')">
-                            <img src="@/assets/images/ucenter/redPack.png" alt="">
-                            <div>红包</div>
-                        </div>
-                        <div class="assert-model" @click="toPage('integral')">
-                            <img src="@/assets/images/ucenter/integral.png" alt="">
-                            <div>{{ integral_name }}</div>
-                        </div>
-                        <div class="assert-model" @click="toPage('balance')">
-                            <img src="@/assets/images/ucenter/balance.png" alt="">
-                            <div>余额</div>
-                        </div>
-                    </div>
+                <div class="order-model" @click="toPage('refundList')">
+                  <img src="@/assets/images/ucenter/order_5.png" alt="">
+                  <div>退款/售后</div>
                 </div>
-<!--                菜单模块-->
-                <div class="menu-box">
-                    <div class="menu-main s-flex flex-wrap">
-                        <div class="menu-model" @click="toPage('address')">
-                            <img src="@/assets/images/ucenter/address.png" alt="">
-                            <div>收货地址</div>
-                        </div>
-                        <div class="menu-model" @click="toPage('attention')">
-                            <img src="@/assets/images/ucenter/attention.png" alt="">
-                            <div>商品收藏</div>
-                        </div>
-                        <div class="menu-model" @click="toPage('record')">
-                            <img src="@/assets/images/ucenter/history.png" alt="">
-                            <div>浏览记录</div>
-                        </div>
-                        <div class="menu-model" @click="goChat">
-                            <img src="@/assets/images/ucenter/chat.png" alt="">
-                            <div>联系客服</div>
-                        </div>
-                    </div>
+              </div>
+            </div>
+            <!--            我的资产模块-->
+            <div class="assert-box">
+              <div class="assert-join s-flex ai-ct jc-bt">
+                <strong>资产</strong>
+              </div>
+              <div class="assert-main s-flex jc-bt">
+                <div class="assert-model" @click="toPage('coupon')">
+                  <img src="@/assets/images/ucenter/coupon.png" alt="">
+                  <div>优惠券</div>
                 </div>
-                <recommend-column></recommend-column>
-            </template>
+                <div class="assert-model" @click="toPage('redPack')">
+                  <img src="@/assets/images/ucenter/redPack.png" alt="">
+                  <div>红包</div>
+                </div>
+                <div class="assert-model" @click="toPage('integral')">
+                  <img src="@/assets/images/ucenter/integral.png" alt="">
+                  <div>{{ integral_name }}</div>
+                </div>
+              </div>
+            </div>
+            <!--                菜单模块-->
+            <div class="menu-box">
+              <div class="menu-main s-flex flex-wrap">
+                <div class="menu-model" @click="toPage('address')">
+                  <img src="@/assets/images/ucenter/address.png" alt="">
+                  <div>收货地址</div>
+                </div>
+                <div class="menu-model" @click="toPage('attention')">
+                  <img src="@/assets/images/ucenter/attention.png" alt="">
+                  <div>商品收藏</div>
+                </div>
+                <div class="menu-model" @click="toPage('record')">
+                  <img src="@/assets/images/ucenter/history.png" alt="">
+                  <div>浏览记录</div>
+                </div>
+                <div class="menu-model" @click="goChat">
+                  <img src="@/assets/images/ucenter/chat.png" alt="">
+                  <div>联系客服</div>
+                </div>
+              </div>
+            </div>
+            <Recommend></Recommend>
+          </template>
         </div>
     </main>
 </template>
 
 <script setup>
-import RecommendColumn from '../../components/recommendColumn/RecommendColumn'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 import {getChatUrl} from "@/api/common.js";
 import {isSuccessCode} from "@/utils/constant.js";
 import {getShopConfig} from "@/utils/public.js";
+import {getUserInfoAxios} from "@/api/account.js";
+import Recommend from "@/components/recommend/Recommend.vue";
 const cns = getCurrentInstance().appContext.config.globalProperties
-const head_opacity = ref(0)
 const user_load = ref(true)
 const unLogin = ref(true)
-const component_load = ref(true)
 const integral_name = ref('')
-const userInfo =ref({
-    "user_id": 68378,
-    "pay_points": 0,
-    "bonus": 0,
-    "coupon": 0,
-    "user_money": "0.00",
-    "user_name": "\u94b1\u70ef\u8c6a",
-    "seller_id": 0,
-    "user_type": 1,
-    "mobile_phone": "15052129209",
-    "portrait": "https:\/\/cdn.toodudu.com\/2024\/07\/31\/5ghssxz6iQxgUo5RHgqkApyk0hgiygR0SKZWXvY5.png",
-    "nickname": "\u94b1\u70ef\u8c6a",
-    "cert_status": 3,
-    "company": "3****************6",
-    "is_attestation": 1,
-    "trader_user": "",
-    "trader_id": "",
-    "trader_phone": "",
-    "cart_number": 1,
-    "wait_comment_count": 0,
-    "all_integral": 839040,
-    "wait_confirm": 0,
-    "wait_pay": 0,
-    "wait_receive": 0,
-    "my_assert_url": "https:\/\/test-tooduduh5.ptdplat.com\/#\/myAsset",
-    "wait_comment_link": "https:\/\/test-tooduduh5.ptdplat.com\/#\/myEvaluate",
-    "my_coupon_link": "https:\/\/test-tooduduh5.ptdplat.com\/#\/coupon",
-    "my_bonus_link": "https:\/\/test-tooduduh5.ptdplat.com\/#\/redPacket",
-    "my_goods_link": "https:\/\/test-tooduduh5.ptdplat.com\/#\/attention?type=good",
-    "my_shop_link": "https:\/\/test-tooduduh5.ptdplat.com\/#\/attention?type=shop",
-    "collect": {
-        "shop_num": "0",
-        "goods_num": "0"
-    }
-})
+const userInfo =ref({})
 
 onMounted(async () => {
     if (JSON.parse(sessionStorage.getItem('shop-config')) && JSON.parse(sessionStorage.getItem('shop-config')).integral_name){
@@ -236,14 +201,24 @@ onMounted(async () => {
         let shopConfig = await getShopConfig()
         integral_name.value = shopConfig.integral_name
     }
-    setTimeout(() => {
-        user_load.value = false
-        setTimeout(() => {
-            unLogin.value = false
-            component_load.value = false
-        }, 1000)
-    }, 1000)
+    getData()
 })
+
+const getData = () => {
+   getUserInfoAxios().then(res => {
+     user_load.value = false
+     if (cns.$constant.isSuccessCode(res)) {
+       userInfo.value = res.data
+       unLogin.value = false
+     } else if (cns.$constant.isUnLoginCode(res)) {
+       unLogin.value = true
+     }else {
+       cns.$toast(res.message)
+     }
+   }).catch(err => {
+     console.log(err)
+   })
+}
 
 const toPage = (name,type) => {
     if (unLogin.value && name != 'set' && name != 'register'){
@@ -318,7 +293,11 @@ const goChat = () =>{
                 box-sizing: border-box;
                 margin-top: 0.08rem;
                 margin-left:0.3rem;
-                ::v-deep img{
+                :deep(.van-image){
+                  width: 1rem;
+                  height: 1rem;
+                }
+                :deep(img){
                     width: 1rem;
                     height: 1rem;
                 }
@@ -330,6 +309,7 @@ const goChat = () =>{
                     font-weight: 600;
                     font-size: 0.36rem;
                     margin-top: 0.1rem;
+                    max-width:4rem;
                     span{
                         color: #333333;
                         font-weight: 600;
@@ -363,10 +343,11 @@ const goChat = () =>{
                     overflow: hidden;
                     margin-top: 0.1rem;
                 }
-                .user_name{
+                .user-name{
                     font-size: 0.22rem;
                     color: #666666;
                     margin-top: 0.1rem;
+                    max-width:4rem;
                 }
             }
         }
@@ -408,7 +389,7 @@ const goChat = () =>{
                         background: #FF3406;
                         border-radius: 0.2rem 0.2rem 0.2rem 0;
                         top: -0.14rem;
-                        right: 0.28rem;
+                        right: 0.36rem;
                         margin-top: 0;
                     }
                 }
@@ -429,7 +410,7 @@ const goChat = () =>{
             .assert-main{
                 padding: 0.4rem 0 0.2rem;
                 .assert-model{
-                    width: 25%;
+                    width: 33.3%;
                     text-align: center;
                     >img{
                         width: 0.6rem;

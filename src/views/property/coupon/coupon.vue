@@ -1,18 +1,6 @@
 <template>
     <div class="coupon-container" v-cloak>
         <common-header title="我的优惠券" :app_can_share="false" back_color="#f2f2f2"></common-header>
-        <div style="width:7.5rem;height:1.2rem;">
-            <div style="position:fixed;z-index:100;width:7.5rem;height:1.2rem;" class="s-flex jc-ct flex-dir bg-f2">
-                <div style="width:7.5rem;height:0.1rem;"></div>
-                <div class="exchange-top s-flex flex-align-center">
-                    <div class="exchange-inp flex-1" style="">
-                        <van-field v-model="coupon_sn" clearable placeholder="请输入10位数字的优惠券兑换码"/>
-                    </div>
-                    <div class="exchange-btn" :class="{ disabled: !is_can_exchange }" @click="handleClickExchange">兑换</div>
-                </div>
-                <div style="width:7.5rem;height:0.1rem;"></div>
-            </div>
-        </div>
         <div class="coupon-index">
             <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
                 <van-list
@@ -24,8 +12,8 @@
                 >
                     <div class="coupon-list">
                         <div v-for="(item, index) of couponList" :key="index">
-                            <div class="coupon-list-item" v-if="item.is_used == 0 || item.is_time == 0 || item.order == 3">
-                                <div class="coupon-list-info s-flex" :style="{'border-radius': item.limit.length>0 ? '0.1rem 0.1rem 0 0' : '0.1rem'}">
+                            <div class="coupon-list-item">
+                                <div class="coupon-list-info s-flex">
                                     <div class="coupon-item-le flex-align-center s-flex">
                                         <div class="fs32 co-redF7 integer fw-b">{{item.money && item.money.toString().split('.')[0]}}
                                             <p class="fs14 co-redF7 price fw-b">￥</p>
@@ -34,25 +22,19 @@
                                     </div>
                                     <div class="coupon-item-cen">
                                         <h1 class="s-flex"><label class="elli-2">{{item.name}}</label></h1>
-                                        <h2>{{item.shop_name}}</h2>
-                                        <h2>{{item.desc}}</h2>
                                         <p>{{item.start_time}}~{{item.end_time}} </p>
                                     </div>
                                     <div class="coupon-item-rg">
-                                        <p v-if="item.order == 3">即将过期</p>
                                         <div class="coupon-btn" :style="{margin: item.order != 3?'0.34rem 0':'0'}">去使用</div>
                                     </div>
                                 </div>
-                                <div class="coupon-desc flex-1" v-if="item.limit_shop_info != '' || item.limit_info != '' || (item.style_type == 3 && item.desc_show != '')" @click="handleClickDesc(item)">
+                                <div class="coupon-desc flex-1" @click="handleClickDesc(item)" v-if="item.limit_name">
                                     <div :class="{ ellipsis: !item.isShowDesc, viewLine: item.isShowDesc }" class="desc-p">
-                                        <span v-if="item.style_type == 3 && item.desc_show != ''">{{item.desc_show}}<br></span>
-                                        <span v-if="item.limit_shop_info != ''">{{item.limit_shop_title}}{{item.limit_shop_info}}<br></span>
-                                        <span v-if="item.limit_info != ''">{{item.limit_title}}{{item.limit_info}}</span>
+                                      <span>{{item.limit_name}}</span>
                                     </div>
                                     <em class="iconfont icon-em" v-if="!item.isShowDesc">&#xe604;</em>
                                     <em class="iconfont icon-em" v-else>&#xe6b2;</em>
                                 </div>
-                                <div class="new-guest" v-if="item.is_new_guest == '1'" :class="{ disabled: item.is_used == 1 || item.is_time == 1 }">新客专享</div>
                             </div>
                         </div>
                     </div>
@@ -61,10 +43,9 @@
                         <span>暂无可用优惠券</span>
                     </div>
                 </van-list>
-                <div class="coupon-add s-flex breathe" :class="{ 'fixed': couponList.length == 0 }">
+                <div class="coupon-add s-flex breathe" :class="{ 'fixed': couponList.length <=4 }">
                     <div style="display: table; margin: 0 auto;">
                         <a @click="appRoute('couponExplain')">优惠券使用说明</a>
-                        <a @click="appRoute('couponUnchange')">查看不可用优惠券</a>
                     </div>
                 </div>
             </van-pull-refresh>
@@ -75,19 +56,17 @@
 <script setup>
 import $ from 'jquery'
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
-import {couponExchangeAxios, getCouponListAxios} from "@/api/property.js";
+import {getCouponListAxios} from "@/api/property.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
-const coupon_sn = ref('')
 const couponList = ref([])
 const noDataShow = ref(true)
 const loading = ref(false)
 const finished =ref(false)
 const page = ref(1)
 const isLoading = ref(false)
-const is_can_exchange = ref(true)
 
 onMounted(() => {
-    // getListData()
+    getListData()
 })
 
 const getListData = () => {
@@ -95,15 +74,13 @@ const getListData = () => {
         loading.value = false
         finished.value = false
         if (cns.$constant.isSuccessCode(res)) {
-            is_can_exchange.value = res.data.is_can_exchange == '0' ? true : false
-            if (res.data.data.length >0) {
-                Array.from(res.data.data, (item) => {
+            if (res.data.list.length >0) {
+                Array.from(res.data.list, (item) => {
                     item.isShowDesc = false
                 })
-                couponList.value = res.data.data
+                couponList.value = res.data.list
                 page.value++
                 noDataShow.value = false
-
                 nextTick(() => {
                     let pDom = Array.from($('.desc-p'))
                     if (pDom.length == 0) {
@@ -133,48 +110,6 @@ const getListData = () => {
     })
 }
 
-const handleClickExchange = () => {
-    if (!is_can_exchange.value) return false
-    if (coupon_sn.value === "") {
-        cns.$toast("优惠券兑换码不能为空")
-        return
-    }
-    if ((coupon_sn.value.toString()).indexOf(".") != -1 || isNaN(coupon_sn.value * 1)) {
-        cns.$toast("优惠券兑换码只能为数字")
-        return
-    }
-    if (coupon_sn.value.length > 10) {
-        cns.$toast("请输入10位数的兑换码")
-        return
-    }
-    couponExchange()
-}
-
-const couponExchange = () => {
-    couponExchangeAxios({coupon_sn: coupon_sn.value}).then((res) => {
-        if (cns.$constant.isSuccessCode(res)){
-            cns.$toast("优惠券兑换成功")
-            setTimeout(() => {
-                page.value = 1
-                coupon_sn.value = ''
-                noDataShow.value = false
-                loading.value = false
-                finished.value = false
-                couponList.value = []
-                // getListData()
-                document.body.scrollTop=document.documentElement.scrollTop=0
-            }, 3000)
-        } else if (cns.$constant.isUnLoginCode(res)) {
-            cns.appRoute('login', {}, {}, 'replace')
-        } else if (res.code == 1008) {
-            cns.$toast(res.message)
-            is_can_exchange.value = false
-        } else {
-            cns.$toast(res.message)
-        }
-    })
-}
-
 const handleClickDesc = (item) => {
     item.isShowDesc = !item.isShowDesc
 }
@@ -183,7 +118,7 @@ const onRefresh = () => {
     setTimeout(() => {
         page.value = 1
         couponList.value = []
-        // getListData()
+        getListData()
         isLoading.value = false
     }, 1000)
 }
@@ -193,8 +128,8 @@ const loadMore = () => {
         getCouponListAxios({page:page.value}).then((res) => {
             loading.value= false
             if (cns.$constant.isSuccessCode(res)) {
-                if (res.data.data.length > 0) {
-                    Array.from(res.data.data, (item) => {
+                if (res.data.list.length > 0) {
+                    Array.from(res.data.list, (item) => {
                         item.isShowDesc = false
                         couponList.value = couponList.value.concat(item)
                     })
@@ -414,7 +349,7 @@ const loadMore = () => {
         border-radius: 0.04rem;
     }
     .coupon-list .coupon-desc {
-        width: 6.3rem;
+        width: 100%;
         line-height: 0.3rem;
         padding: 0.14rem 0.56rem 0.14rem 0.22rem;
         margin: 0.04rem auto 0;
