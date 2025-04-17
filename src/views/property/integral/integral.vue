@@ -1,15 +1,11 @@
 <template>
     <div class="integral-detail">
         <common-header :title="title"></common-header>
-        <!--头部提示-->
-        <div class="integral-prompt s-flex" v-if="expire_integral">
-            <img src="https://cdn.toodudu.com/uploads/2020/10/29/integral_tips.png" alt=""/>
-            <p>温馨提示 ：{{ expire_time }}，您将有{{ expire_integral }}积分将会到期</p>
-        </div>
+
         <!--剩余积分-->
         <div class="integral-exchange s-flex">
-            <p>{{ all }}<span>积分</span></p>
-            <a class="exchange-btn">立即兑换</a>
+            <p>{{ total }}<span>积分</span></p>
+<!--            <a class="exchange-btn">立即兑换</a>-->
         </div>
         <!--tab部分-->
         <van-sticky offset-top="46px">
@@ -34,22 +30,17 @@
             <van-list
                 v-model="loading"
                 :finished="finished"
-                :finished-text="total < 6 ? '' : '没有更多了'"
+                :finished-text="integralMeta.total < 10 ? '' : '没有更多了'"
                 offset="1"
                 @load="loadMore"
             >
                 <div class="list-item s-flex" v-for="(item, index) in integralList" :key="index" :class="{ add: item.integral_type != 2 }">
                     <div class="list-info">
                         <p>{{ item.created_at }}</p>
-                        <h1>{{ item.integral_desc }}
-                            <span class="ai-ct" style="display:inline-flex" @click="toOrder(item.order_id)" v-if="item.order_id != 0 ">
-                                <label>订单详情</label>
-                                <van-icon name="arrow" />
-                            </span>
-                        </h1>
+                        <h1>{{ item.desc }}</h1>
                     </div>
                     <div class="list-num">
-                        {{ item.integral_type == 1 ? "+" : "-" }}{{ item.integral_num }}
+                        {{ item.type == 1 ? "+" : "-" }}{{ item.number }}
                     </div>
                 </div>
             </van-list>
@@ -57,7 +48,7 @@
         <!--暂无数据-->
         <div v-if="noData" class="no-Data">
             <img src="@/assets/images/nodata.png" alt="" class="no-Img">
-            <span>暂无可用优惠券</span>
+            <span>暂无数据</span>
         </div>
     </div>
 </template>
@@ -76,30 +67,26 @@ const loading = ref(false)
 const finished =ref(false)
 const integralList = ref([])
 const noData = ref(true)
-const all = ref('')
-const expire_integral =ref('')
-const expire_time =ref('')
-const total = ref(null)
+const total = ref('')
+const integralMeta = ref({})
 
 onMounted(() => {
-    // getPageData()
+    getPageData()
 })
 
 const getPageData = () => {
     getIntegralListAxios(info.value).then((res) => {
         if (cns.$constant.isSuccessCode(res)) {
             nextTick(function () {
-                total.value = res.data.data.total
-                if (res.data.data.data.length > 0) {
-                    integralList.value = res.data.data.data;
+                total.value = res.data.all_integral
+                if (res.data.list.length > 0) {
+                    integralList.value = res.data.list
                     noData.value = false;
                 } else {
                     integralList.value = [];
                     noData.value = true;
                 }
-                expire_integral.value = res.data.expire_integral;
-                expire_time.value = res.data.expire_time;
-                all.value = res.data.all;
+                integralMeta.value = res.data.meta
                 info.page = 2;
             });
         } else if (cns.$constant.isUnLoginCode(res)) {
@@ -115,21 +102,21 @@ const handleChangeTabs = () => {
     finished.value = false
     info.flag = tabIndex.value;
     info.page = 1;
-    total.value = null;
     integralList.value = []
-    // getPageData()
+    getPageData()
 }
 
 const loadMore = () =>{
-    if (integralList.value.length < total.value) {
+    if (integralList.value.length < integralMeta.value.total) {
         getIntegralListAxios(info.value).then((res) => {
             loading.value = false;
             if (cns.$constant.isSuccessCode(res)) {
-                if (res.data.data.data.length > 0) {
-                    integralList.value = integralList.value.concat(res.data.data.data);
+                if (res.data.list.length > 0) {
+                    integralList.value = integralList.value.concat(res.data.list);
                 } else {
                     finished.value = true;
                 }
+              integralMeta.value = res.data.meta
                 info.page++;
             } else if (cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login', {}, 'replace')
@@ -142,10 +129,6 @@ const loadMore = () =>{
         loading.value = false;
         finished.value = true;
     }
-}
-
-const toOrder = (order_id) => {
-    cns.appRoute('orderDetail', {orderId: order_id})
 }
 </script>
 

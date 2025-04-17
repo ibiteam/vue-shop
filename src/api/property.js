@@ -9,5 +9,5 @@ export function getRedPackListAxios(info) {
 }
 
 export function getIntegralListAxios(info) {
-    return $http.doGet('v3/integration/detail',info)
+    return $http.doGet('v1/my/integrals',info)
 }
