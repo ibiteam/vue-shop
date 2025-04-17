@@ -22,7 +22,7 @@
                         </div>
                         <div class="co-999 fs28">{{item.comment_at}}</div>
                     </div>
-                    <div class="star s-flex flex-wrap">
+                    <div class="star s-flex flex-wrap star-all">
                         <div class="s-flex ai-ct" v-if="item.goods_rank">
                             <span>产品服务：</span>
                             <ShopRate :rank="item.product_rank"></ShopRate>
@@ -142,6 +142,9 @@
 </script>
 
 <style scoped lang="scss">
+	.eval-box{
+		padding-top: 0.2rem;
+	}
     .give-good {
         padding: 0.1rem;
         background: var(--page-bg-color);
@@ -188,6 +191,11 @@
 	    }
 	    .star {
 		    margin: 0.2rem 0 0.24rem;
+	    }
+	    .star-all{
+		    >div{
+			    width: 50%;
+		    }
 	    }
 	    .content {
 		    width: 100%;

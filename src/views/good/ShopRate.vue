@@ -1,13 +1,15 @@
 <template>
     <div class="shop-rate s-flex ai-ct">
         <span v-for="i in 5" @click="clickStar(i)">
-            <img :src="selectValue>=i?'/src/assets/images/good/star.png':'/src/assets/images/good/star-no.png'" alt="">
+            <img :src="selectValue>=i? starIcon : starNoIcon" alt="">
         </span>
     </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
+import starIcon from '@/assets/images/good/star.png'
+import starNoIcon from '@/assets/images/good/star-no.png'
 
 const props = defineProps({
     rank: {
