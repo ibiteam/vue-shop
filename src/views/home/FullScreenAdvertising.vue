@@ -45,13 +45,14 @@ const handleClose = () => {
     overflow: hidden;
     em.icon-guanbi{
         position: absolute;
-        right: .8rem;
-        top: 1rem;
+        right: 0;
+        left: 0;
+        bottom: 1rem;
+        margin: 0 auto;
         color: #fff;
         font-size: .5rem;
         height: .44rem;
         width: .44rem;
-        color: #fff;
     }
 }
 </style>
