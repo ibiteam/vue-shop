@@ -7,3 +7,7 @@ export function getHomeData() {
 export function getHomePreviewData(data) {
     return $http.doGet('v1/preview', data)
 }
+
+export function getSpecialData(id) {
+    return $http.doGet('v1/special', {id})
+}

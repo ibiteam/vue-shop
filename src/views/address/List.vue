@@ -1,23 +1,25 @@
 <template>
-    <div class="address-list-container">
+    <div class="address-list-container s-flex ai-ct flex-dir">
         <common-header v-bind="{title: '收货地址'}"></common-header>
-        <van-list class="address-list-wrapper" :loading="address.loading" :finished="address.finished" finished-text="没有更多了">
+        <van-list class="address-list-wrapper flex-1" :loading="address.loading" :finished="address.finished" finished-text="没有更多了">
             <div class="address-item" v-for="item in address.list" :key="item.address_id">
                 <van-text-ellipsis :content="item.province + item.city + item.district" />
-                <van-text-ellipsis :content="item.address" />
+                <van-text-ellipsis :content="item.address_detail" />
                 <p>
                     <span>{{ item.consignee }}&emsp;</span>
-                    <span class="co-999">{{ item.mobile }}&emsp;</span>
-                    <!-- <van-tag class="address-type" :color="addressTypeColor(item.address_type)">{{ item.address_type }}</van-tag> -->
+                    <span class="co-999">{{ item.phone }}&emsp;</span>
                 </p>
                 <van-divider style="border-color: #e5e5e6" />
                 <div class="address-tools s-flex ai-ct jc-bt">
-                    <van-checkbox v-model="item.used" icon-size="16" style="flex: 1;" checked-color="var(--main-color)">{{item.used ? '已' : ''}}设为默认</van-checkbox>
+                    <div class="address-default s-flex ai-ct flex-1" :class="{ active: item.is_default }"  @click="setDefault(item)">
+                        <em class="iconfont">&#xe6ea;</em>
+                        <label :style="{ color: item.is_default ? 'var(--main-color)' : '#999' }">{{item.is_default ? '已设为默认' : '设为默认' }}</label>
+                    </div>
                     <p @click="handleClickDelete(item)">删除</p>
-                    <p>修改</p>
+                    <router-link :to="{'name': 'addressForm', params: {id: item.id}}" >修改 </router-link>
                 </div>
             </div>
-            <van-empty class="address-empty" :image-size="['5.3rem', '3rem']" description="您还没有地址哦,快来添加吧～">
+            <van-empty class="address-empty" v-if="address.list.length == 0" :image-size="['5.3rem', '3rem']" description="您还没有地址哦,快来添加吧～">
                 <template #image>
                     <img src="@/assets/images/address/nodata.png" alt="empty" />
                 </template>
@@ -25,96 +27,28 @@
                 </router-link>
             </van-empty>
         </van-list>
-        <van-sticky :offset-bottom="0" position="bottom" >
+        <van-sticky :offset-bottom="0" position="bottom" v-if="address.list.length > 0">
             <div class="address-bottom-wrapper">
-                <van-button class="address-add-btn">新增收货地址</van-button>
+                <van-button class="address-add-btn" @click="router.push({name: 'addressForm', params: {id: 0}})">
+                    新增收货地址
+                </van-button>
             </div>
         </van-sticky>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance } from 'vue';
+import { ref, reactive, getCurrentInstance, onMounted } from 'vue';
+import { getAddress, setAddressDefault, deleteAddress } from "@/api/address.js";
+import { useRouter } from 'vue-router';
 
 const cns = getCurrentInstance().appContext.config.globalProperties
+const router = useRouter();
 
 const address = reactive({
     loading: false,
     finished: false,
-    list: [
-        {
-            "address_id": 4849,
-            "user_id": 68376,
-            "consignee": "\u9b4f\u68a6\u5353",
-            "zipcode": "000000",
-            "country": "\u4e2d\u56fd",
-            "province": "\u5317\u4eac",
-            "city": "\u5317\u4eac",
-            "address": "\u624b\u52a8\u6321",
-            "tel": "",
-            "mobile": "132****8119",
-            "used": 1,
-            "district": "\u4e1c\u57ce\u533a",
-            "address_type": "\u5bb6",
-            "area_code": "86",
-            "all_mobile_phone": "13222908119",
-            "is_selected": 0
-        },
-        {
-            "address_id": 4853,
-            "user_id": 68376,
-            "consignee": "\u9b4f\u68a6\u5353",
-            "zipcode": "000000",
-            "country": "\u4e2d\u56fd",
-            "province": "\u5e7f\u4e1c\u7701",
-            "city": "\u5e7f\u5dde\u5e02",
-            "address": "\u6c34\u7535\u8d39\u65b9\u6cd5",
-            "tel": "",
-            "mobile": "132****8119",
-            "used": 0,
-            "district": "\u5929\u6cb3\u533a",
-            "address_type": "\u5bb6",
-            "area_code": "86",
-            "all_mobile_phone": "13222908119",
-            "is_selected": 0
-        },
-        {
-            "address_id": 4852,
-            "user_id": 68376,
-            "consignee": "\u9b4f\u68a6\u5353",
-            "zipcode": "000000",
-            "country": "\u4e2d\u56fd",
-            "province": "\u7518\u8083\u7701",
-            "city": "\u5170\u5dde\u5e02",
-            "address": "\u8bd5\u8bd5\u6c34",
-            "tel": "",
-            "mobile": "132****8119",
-            "used": 0,
-            "district": "\u768b\u5170\u53bf",
-            "address_type": "\u5bb6",
-            "area_code": "86",
-            "all_mobile_phone": "13222908119",
-            "is_selected": 0
-        },
-        {
-            "address_id": 4850,
-            "user_id": 68376,
-            "consignee": "\u9b4f\u68a6\u5353",
-            "zipcode": "000000",
-            "country": "\u4e2d\u56fd",
-            "province": "\u5b89\u5fbd\u7701",
-            "city": "\u5b89\u5e86\u5e02",
-            "address": "\u704c\u704c\u704c\u704c",
-            "tel": "",
-            "mobile": "132****8119",
-            "used": 0,
-            "district": "\u8fce\u6c5f\u533a",
-            "address_type": "\u5bb6",
-            "area_code": "86",
-            "all_mobile_phone": "13222908119",
-            "is_selected": 0
-        }
-    ],
+    list: [],
 });
 
 // 删除单个地址
@@ -123,21 +57,55 @@ const handleClickDelete = (item)  => {
         message: '确定要删除地址吗？',
         confirmButtonText: '删除',
     }).then(() => {
-
+        deleteAddress({id: item.id}).then(res => {
+            if (cns.$constant.isSuccessCode(res)) {
+                const index = address.list.findIndex(addressItem => addressItem.id == item.id)
+                address.list.splice(index, 1)
+                cns.$toast('删除成功')
+            } else {
+                cns.$toast(res.message)
+            }
+        })
     })
 }
-const addressTypeColor = (type)  => {
-    switch (type) {
-        case '家':
-            return '#49CF94';
-        case '公司':
-            return '#2172F7';
-        case '仓库':
-            return '#FEB700';
-        default:
-            return '#49CF94';
-    }
+
+const setDefault = (item) => {
+    if (item.is_default) {
+		return
+	}
+    setAddressDefault(item.id).then(res => {
+        if (cns.$constant.isSuccessCode(res)) {
+            address.list.forEach(addressItem => {
+                addressItem.is_default = 0
+                if (item.id == addressItem.id) {
+                    addressItem.is_default = 1
+                }
+            })
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            // 去登录
+            cns.appRoute('login')
+        }else {
+            cns.$toast(res.message)
+        }
+    })
 }
+
+const getPageData = () => {
+    getAddress().then(res => {
+        if (cns.$constant.isSuccessCode(res)) {
+            address.list = res.data
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            // 去登录
+            cns.appRoute('login')
+        }else {
+            cns.$toast(res.message)
+        }
+    })
+}
+
+onMounted(() => {
+    getPageData()
+})
 </script>
 
 <style lang='scss' scoped>
@@ -149,6 +117,7 @@ const addressTypeColor = (type)  => {
         width: 100%;
         padding: .14rem .2rem 1.7rem .2rem;
         position: relative;
+        overflow-y: auto;
         .address-item{
             width: 100%;
             margin-top: .2rem;
@@ -161,9 +130,24 @@ const addressTypeColor = (type)  => {
                 justify-content: center;
             }
             .address-tools {
-                >p {
+                >p,a {
                     line-height: 0.4rem;
                     padding-left: .3rem;
+                    color: #333;
+                }
+                .address-default em {
+                    color: #DDD;
+                    margin-right: 0.1rem;
+                }
+
+                .address-default.active em {
+                    display: flex;
+                    width: 0.28rem;
+                    height: 0.28rem;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--main-color);
+                    border-radius: 999px;
                 }
             }
         }

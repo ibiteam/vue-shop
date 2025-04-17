@@ -5,7 +5,7 @@
       <div class="header-tools">
         <div>
           共<span>{{ pagination.total }}</span
-        >条记录
+        >件商品
         </div>
         <div @click="checkFlag = !checkFlag">
           {{ checkFlag ? "完成" : "编辑" }}
@@ -15,8 +15,7 @@
     <van-list
         v-model="loading"
         :finished="bottomline"
-        :finished-text="noData? '': '暂无浏览记录'
-      "
+        :finished-text="good_list.length > 10?'没有更多了~':''"
         :immediate-check="false"
         :offset="offsetLoad"
         @load="loadMore"
@@ -34,49 +33,31 @@
               :key="index"
           >
             <van-checkbox
-                :name="item.goods_id"
+                :name="item.id"
                 checked-color="#F71111"
                 v-if="checkFlag"
-                :ref="`checkbox${index}`"
                 @click="checkGoodsChange"
             ></van-checkbox>
             <div
                 class="goods-container"
                 :style="{ left: checkFlag ? '.88rem' : '.28rem' }"
-                @click="toGoods(item.goods_id,index)"
+                @click.stop="toGoods(item)"
             >
               <div class="goods-img">
                 <van-image
                     width="2.3rem"
                     height="2.3rem"
                     radius="0.2rem"
-                    :src="item.goods_thumb"
+                    :src="item.image"
                 />
               </div>
               <ul class="goods-content">
                 <li class="goods-name">
                   {{ item.goods_name }}
                 </li>
-                <li class="goods-sign">
-                  <div
-                      v-if="item.sign && item.is_ziying >= 0"
-                      :class="item.is_ziying == 0 ? 'noziying' : 'ziying'"
-                  >{{ item.sign }}</div
-                  >
-                  <div class="attribute" v-if="item.attribute_source">{{item.attribute_source==1?'现货':'期货'}}</div>
-                  <div v-if="item.act_type == 1">秒杀</div>
-                  <div v-if="item.act_type == 2">特卖</div>
-                  <div v-if="item.act_type == 6">满减</div>
-                  <div v-if="item.act_type == 11">VIP</div>
-                  <div v-if="item.is_group">拼团</div>
-                  <div v-show="item.has_coupon != ''">券</div>
-                </li>
-                <li class="goods-price" v-if="item.is_on_sale == 0">
-                  暂无报价
-                </li>
-                <li class="goods-price" v-else>
+                <li class="goods-price">
                   <form-price
-                      :price="item.shop_price"
+                      :price="item.price"
                       :unit="item.unit"
                       unit_color="#333"
                   ></form-price>
@@ -95,31 +76,29 @@
           >全选</van-checkbox
           >
         </div>
-        <van-button text="删除记录" @click="unFollow" />
+        <van-button text="删除记录" @click="deleteViews" />
       </div>
     </van-list>
     <!--没有数据-->
     <div v-if="noData" class="no-Data">
       <img src="@/assets/images/nodata.png" alt="" class="no-Img" />
-      <span>您还没有浏览记录噢~</span>
+      <span>您还没有浏览的记录噢~</span>
     </div>
   </div>
 </template>
 
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
-import {collectGoodsAxios, eidtCollectGoodsAxios} from "@/api/mine.js";
+import { editHistoryAxios, viewsHistoryAxios} from "@/api/mine.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 
 const pageOffsetTop = ref(0)
-const goodsType = ref(0)
 const checkFlag = ref(false)
 const checkGoodsAllFlag =ref(false)
 const checkGoodsResult = ref([])
 const good_list =ref([])
 const pagination = ref({
-  total: 0,
-  page:0
+  current_page:0
 })
 const loading = ref(false)
 const bottomline =ref(false)
@@ -129,26 +108,25 @@ const listFlag =ref(true)
 const checkboxGoodsGroup = ref(null)
 
 onMounted(() => {
-  // loadData()
+  loadData()
 })
 
 const loadData = () => {
   loading.value = false;
   noData.value = false;
   let info = {
-    page: pagination.page,
-    type:0
+    page: pagination.current_page,
   };
-  collectGoodsAxios(info).then((res) => {
+  viewsHistoryAxios(info).then((res) => {
     if (cns.$constant.isSuccessCode(res)) {
-      good_list.value = res.data
-      pagination.value = res.mate.pagination;
-      pagination.page++
-      if (res.data.length == 0 || !res.data) {
+      good_list.value = res.data.list
+      pagination.value = res.data.meta;
+      pagination.current_page++
+      if (res.data.meta.total == 0) {
         noData.value = true;
         bottomline.value = true;
       }
-      if (res.data.length < 10) {
+      if (res.data.meta.total < 10) {
         bottomline.value = true;
       }
     } else if (cns.$constant.isUnLoginCode(res)) {
@@ -161,24 +139,23 @@ const loadData = () => {
 
 const loadMore = () =>{
   let info = {
-    page: pagination.page,
+    page: pagination.current_page,
     type:0
   }
   if (good_list.value.length >= 10) {
     loading.value = true;
-    collectGoodsAxios(info).then((res) => {
+    viewsHistoryAxios(info).then((res) => {
       if (cns.$constant.isSuccessCode(res)) {
-        bottomline.value = res.data.length < 10 ? true : false;
-        pagination.value = res.mate.pagination;
-        if (pagination.page == 0) {
+        bottomline.value = res.data.meta.total < 10 ? true : false;
+        pagination.value = res.data.meta;
+        if (pagination.current_page == 1) {
           good_list.value = res.data
         } else {
           good_list.value =  [...good_list.value, ...res.data]
         }
         checkGoodsChange()
-        pagination.page++;
+        pagination.current_page++;
         loading.value = false;
-        //请求出错的情况
       } else {
         cns.$toast(res.message);
         good_list.value = [];
@@ -190,16 +167,17 @@ const loadMore = () =>{
   }
 }
 
-const unFollow = () => {
+const deleteViews = () => {
   let info = {
-    goods_arr:checkGoodsResult.valuetoString()
+    ids:checkGoodsResult.value
   }
-  if(!info.goods_arr){
-    cns.$toast('请先选择需要删除的记录');
+  if(!info.ids){
+    cns.$toast('请先选择需要删除的浏览记录');
     return
   }
-  eidtCollectGoodsAxios(info).then((res) => {
+  editHistoryAxios(info).then((res) => {
     if (cns.$constant.isSuccessCode(res)) {
+      cns.$toast(res.message);
       checkFlag.value = false;
       checkGoodsAllFlag.value = false
       checkGoodsResult.value = [];
@@ -220,19 +198,16 @@ const checkGoodsAllChange = (checked) => {
   );
 }
 
-const toGoods = (goods_id) => {
+const toGoods = (item) => {
   if (checkFlag.value) {
-    // this.$refs[`checkbox${index}`][0].toggle();
-    if (checkGoodsResult.value.indexOf(goods_id) == -1) {
-      checkGoodsResult.value.push(goods_id)
+    if (checkGoodsResult.value.indexOf(item.id) == -1) {
+      checkGoodsResult.value.push(item.id)
     } else {
-      checkGoodsResult.value.splice(checkGoodsResult.value.indexOf(goods_id), 1)
+      checkGoodsResult.value.splice(checkGoodsResult.value.indexOf(item.id), 1)
     }
     checkGoodsChange()
   } else {
-    if (good_list.value[index].is_on_sale == 1) {
-      cns.appRoute('good',{goods_id: goods_id})
-    }
+    cns.appRoute('good',{goods_no: item.goods_no})
   }
 }
 
@@ -382,8 +357,6 @@ const toGoods = (goods_id) => {
         .goods-price {
           width: inherit;
           margin-top: 0.29rem;
-          // display: flex;
-          // align-items: baseline;
           font-size: 0.22rem;
           font-weight: 500;
           color: #333333;

@@ -1,6 +1,7 @@
 import $http from './http'
 import { useConfigStore } from "@/stores/index.js"
 import { isSuccessCode, isUnLoginCode} from "@/utils/constant.js";
+import filterXSS from 'xss';
 
 /** 手机号校验 **/
 export function isTelPhone (value) {
@@ -198,6 +199,28 @@ export const throttle = (func,delay) => {
     }
   }
 }
+
+// 自定义白名单配置
+export const XssOptions = {
+    stripIgnoreTagBody: true, // 删除非白名单标签及其内容
+    whiteList: {
+        a: ['href', 'title', 'target'],
+        img: ['src', 'alt'],
+        p: [],
+        // 其他允许的标签及属性...
+    },
+    css: { // 控制 style 属性的允许值
+        whiteList: {
+            color: true,
+            'background-color': true,
+        }
+    }
+};
+
+export const CommonFilterXSS = (value) => {
+    return filterXSS(value, XssOptions)
+}
+
 export default {
     isTelPhone,
     formatCurrency,
@@ -212,5 +235,6 @@ export default {
     getPrivacyPhone,
     isLogin,
     debounce,
-    throttle
+    throttle,
+    CommonFilterXSS
 }

@@ -13,32 +13,29 @@
                     <div class="coupon-list">
                         <div v-for="(item, index) of redPackList" :key="index">
                             <div class="coupon-list-item">
-                                <div class="coupon-list-info s-flex" :style="{'border-radius': item.limit.length>0 ? '0.1rem 0.1rem 0 0' : '0.1rem'}">
+                                <div class="coupon-list-info s-flex">
                                     <div class="coupon-item-le flex-align-center s-flex">
-                                        <div class="fs32 co-redF7 integer fw-b">{{item.type_money && item.type_money.toString().split('.')[0]}}
+                                        <div class="fs32 co-redF7 integer fw-b">{{item.money && item.money.toString().split('.')[0]}}
                                             <p class="fs14 co-redF7 price fw-b">￥</p>
                                         </div>
-                                        <div class="fs14 co-redF7 MT10 fw-b" v-if="item.type_money && item.type_money.toString().split('.')[1]">.{{item.type_money && item.type_money.toString().split('.')[1]}}</div>
+                                        <div class="fs14 co-redF7 MT10 fw-b" v-if="item.money && item.money.toString().split('.')[1]">.{{item.money && item.money.toString().split('.')[1]}}</div>
                                     </div>
                                     <div class="coupon-item-cen">
-                                        <h1 class="s-flex"><label class="elli-2">{{item.type_name}}</label></h1>
-                                        <h2>满{{item.min_goods_amount}}元可用</h2>
-                                        <p>{{item.use_start_date_format}}~{{item.use_end_date_format}} </p>
+                                        <h1 class="s-flex"><label class="elli-2">{{item.name}}</label></h1>
+                                        <h2>满{{item.min_amount}}元可用</h2>
+                                        <p>{{item.use_start_time}}~{{item.use_end_time}} </p>
                                     </div>
                                     <div class="coupon-item-rg">
-                                        <p>{{item.info}}</p>
-                                        <div class="coupon-btn" :style="{margin: !item.info?'0.34rem 0':'0'}">去使用</div>
+                                        <div class="coupon-btn">去使用</div>
                                     </div>
                                 </div>
-                                <div class="coupon-desc flex-1" v-if="item.limit_shop_info != '' || item.limit_info != ''" @click="handleClickDesc(item)">
+                                <div class="coupon-desc flex-1" v-if="item.limit_name" @click="handleClickDesc(item)">
                                     <div :class="{ ellipsis: !item.isShowDesc, viewLine: item.isShowDesc }" class="desc-p">
-                                        <span v-if="item.limit_shop_info != ''">{{item.limit_shop_title}}{{item.limit_shop_info}}<br></span>
-                                        <span v-if="item.limit_info != ''">{{item.limit_title}}{{item.limit_info}}</span>
+                                        <span>{{item.limit_name}}<br></span>
                                     </div>
                                     <em class="iconfont icon-em" v-if="!item.isShowDesc">&#xe604;</em>
                                     <em class="iconfont icon-em" v-else>&#xe6b2;</em>
                                 </div>
-                                <div class="new-guest" v-if="item.is_new_guest == '1'">新客专享</div>
                             </div>
                         </div>
                     </div>
@@ -50,7 +47,6 @@
                 <div class="coupon-add s-flex breathe" :class="{ 'fixed': redPackList.length <= 4 }">
                     <div style="display: table; margin: 0 auto;">
                         <a @click="appRoute('redPackExplain')">红包使用说明</a>
-                        <a @click="appRoute('redPackUnchange')">查看不可用红包</a>
                     </div>
                 </div>
             </van-pull-refresh>
@@ -74,7 +70,7 @@ const info = ref({
 const isLoading = ref(false)
 
 onMounted(() => {
-    // getListData()
+    getListData()
 })
 
 const getListData = () => {
@@ -82,11 +78,11 @@ const getListData = () => {
         loading.value = false
         finished.value = false
         if (cns.$constant.isSuccessCode(res)) {
-            if (res.data.list.data.length >0) {
-                Array.from(res.data.list.data, (item) => {
+            if (res.data.list.length >0) {
+                Array.from(res.data.list, (item) => {
                     item.isShowDesc = false
                 })
-                redPackList.value = res.data.list.data
+                redPackList.value = res.data.list
                 info.page++
                 noDataShow.value = false
 
@@ -126,7 +122,7 @@ const onRefresh = () => {
     setTimeout(() => {
         page.value = 1
         redPackList.value = []
-        // getListData()
+        getListData()
         isLoading.value = false
     }, 1000)
 }
@@ -136,8 +132,8 @@ const loadMore = () => {
         getRedPackListAxios({page:page.value}).then((res) => {
             loading.value= false
             if (cns.$constant.isSuccessCode(res)) {
-                if (res.data.data.length > 0) {
-                    Array.from(res.data.data, (item) => {
+                if (res.data.list.length > 0) {
+                    Array.from(res.data.list, (item) => {
                         item.isShowDesc = false
                         redPackList.value = redPackList.value.concat(item)
                     })
@@ -320,7 +316,7 @@ const loadMore = () => {
         border-radius: 0.04rem;
     }
     .coupon-list .coupon-desc {
-        width: 6.3rem;
+        width: 100%;
         line-height: 0.3rem;
         padding: 0.14rem 0.56rem 0.14rem 0.22rem;
         margin: 0.04rem auto 0;

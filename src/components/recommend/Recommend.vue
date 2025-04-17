@@ -22,6 +22,12 @@ const recommend = ref([]);
 const loading = ref(false);
 const finished = ref(false);
 
+const props = defineProps({
+	no:{
+		type: String,
+		default: ''
+	}
+})
 const pageInfo = ref({
 	total: 0,
 	per_page: 6,
@@ -35,7 +41,7 @@ const countLastPage = () => {
 const loadRecommend = () => {
 	loading.value = true
 	let {current_page} = pageInfo.value
-	getRecommend({page: current_page}).then(res => {
+	getRecommend({page: current_page, no: props.no}).then(res => {
 		loading.value = false
 		if (isSuccessCode(res)) {
 			recommend.value = recommend.value.concat(res.data.list)
