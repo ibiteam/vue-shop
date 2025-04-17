@@ -48,8 +48,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, watch, nextTick } from 'vue';
+import { ref, reactive, getCurrentInstance, watch, nextTick, onMounted } from 'vue';
 import {addressGroup, addressAll} from './Address.js'
+import { getRegionGroup, getRegion } from '@/api/address.js'
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 const props = defineProps({
@@ -73,8 +74,8 @@ const form = reactive({
     tab: 0, // tab切换
     value: [],
     label: [],
-    all: addressAll, // 全部下拉
-    group: addressGroup,
+    all: [], // 全部下拉
+    group: [],
     city: [], // 城市下拉
     area: [], // 区域下拉
 })
@@ -199,6 +200,29 @@ watch(()=> props, (val) => {
         }
     }
 }, {immediate: true, deep: true})
+
+onMounted(() => {
+    getRegionGroup().then(res =>{
+        if (cns.$constant.isSuccessCode(res)) {
+            form.group = res.data
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            // 去登录
+            cns.appRoute('login')
+        }else {
+            cns.$toast(res.message)
+        }
+    })
+    getRegion().then(res =>{
+        if (cns.$constant.isSuccessCode(res)) {
+            form.all = res.data
+        } else if (cns.$constant.isUnLoginCode(res)) {
+            // 去登录
+            cns.appRoute('login')
+        }else {
+            cns.$toast(res.message)
+        }
+    })
+})
 
 
 </script>
