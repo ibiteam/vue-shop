@@ -8,7 +8,7 @@
 			</div>
 			<!--推荐-->
 			<div ref="recommendRef">
-				<Recommend></Recommend>
+				<Recommend :no="goodsNo"></Recommend>
 			</div>
 		</template>
 		<template v-else>
@@ -232,7 +232,7 @@
 				</div>
 				<!--推荐-->
 				<div ref="recommendRef">
-					<Recommend ></Recommend>
+					<Recommend :no="goodsNo"></Recommend>
 				</div>
 				<!--底部菜单-->
 				<footer class="breathe">
