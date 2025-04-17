@@ -43,7 +43,7 @@
                         <span>暂无可用优惠券</span>
                     </div>
                 </van-list>
-                <div class="coupon-add s-flex breathe" :class="{ 'fixed': couponList.length == 0 }">
+                <div class="coupon-add s-flex breathe" :class="{ 'fixed': couponList.length <=4 }">
                     <div style="display: table; margin: 0 auto;">
                         <a @click="appRoute('couponExplain')">优惠券使用说明</a>
                     </div>

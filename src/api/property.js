@@ -5,7 +5,7 @@ export function getCouponListAxios(info) {
 }
 
 export function getRedPackListAxios(info) {
-    return $http.doGet('v3/bonus',info)
+    return $http.doGet('v1/my/bonuses',info)
 }
 
 export function getIntegralListAxios(info) {
