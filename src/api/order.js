@@ -62,3 +62,7 @@ export function storeEvaluate(params){
 export function wuliuListAxios(params){
     return $http.doGet('v1/order/delivery/list',params || {})
 }
+
+export function wuliuDetailAxios(params){
+    return $http.doGet('v1/order/delivery/logistics',params || {})
+}

@@ -261,10 +261,10 @@ const afterSale = (item) =>{
 }
 
 const toWuliu = () =>{
-    if(orderDetailData.logistics_number>1){
-      cns.appRoute('wuliuList', {order_sn: orderDetailData.order.order_sn})
+    if(orderDetailData.value.logistics_number>1){
+      cns.appRoute('wuliuList', {order_sn: orderDetailData.value.order.order_sn})
     }else{
-      cns.appRoute('wuliuDetail', {delivery_no: orderDetailData.logistics.delivery_no})
+      cns.appRoute('wuliuDetail', {delivery_no: orderDetailData.value.logistics.delivery_no})
     }
 }
 
