@@ -58,10 +58,10 @@ const goWechatAuth = async (to, next) => {
     // 保存当前路由地址，授权后还会跳到此地址
     let urlData = {name: to.name, query: to.query}
     localStorage.setItem('wxRedirectUrl', JSON.stringify(urlData))
-    // let shopConfig = await getShopConfig()
+     let shopConfig = await getShopConfig()
     // 请求微信授权,并跳转到 /WxAuth 路由
 
-    let appId = 'wxe1de40da38f00080' // shopConfig.wechat_app_id
+    let appId = shopConfig.wechat_app_id
     if(appId){
         let redirectUrl = document.location.origin + '/auth'
         redirectUrl = encodeURIComponent(redirectUrl);
