@@ -33,12 +33,11 @@ onMounted(() => {
 		appRoute('home', {}, 'replace')
 	} else {
 		let code = route.query.code
-		//if(localStorage.getItem('wxCode') && localStorage.getItem('wxCode') == code){
-		//	authSuccess()
-		//	return;
-		//}
+		if(localStorage.getItem('wxCode') && localStorage.getItem('wxCode') == code){
+			authSuccess()
+			return;
+		}
 		wechatAuth(code).then(res => {
-			alert(res.code)
 			if (isSuccessCode(res)) {
 				localStorage.setItem('wxCode',code)
 				localStorage.setItem('wxUserInfo', JSON.stringify(res.data))
@@ -53,7 +52,6 @@ onMounted(() => {
 				appRoute('home', {}, 'replace')
 			}
 		}).catch(err => {
-			alert(err)
 			console.log(err)
 		})
 
