@@ -86,15 +86,6 @@
                     </van-steps>
                 </template>
             </div>
-            <div class="receiving" v-if="status === 2">
-                <div class="s-flex jc-bt">
-                    <div class="right">
-                        <div class="fill" @click="appRoute('refundShip', {id: refund_data.refund_info.id})">
-                            <span>填写单号</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="good">
                 <div class="title">退款信息</div>
                 <div class="details s-flex jc-bt">
@@ -148,6 +139,7 @@
             <div class="btns btnas s-flex jc-ct">
                 <van-button @click="revoke()" :class="refund_data.type===1?'fsc':''" v-if="[0,2].includes(status)">撤 销 申 请</van-button>
                 <van-button @click="edit()" v-if="status == 1">修 改 申 请</van-button>
+                <van-button @click="appRoute('refundShip', {id: refund_data.refund_info.id})" v-if="status == 2">填 写 单 号</van-button>
             </div>
         </div>
     </div>
