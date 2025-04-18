@@ -142,6 +142,7 @@ onMounted(() => {
                 padding: 0.2rem;
                 box-sizing: border-box;
                 .goods-name {
+                    height: .72rem;
                     margin-bottom: 0.16rem;
                 }
             }
@@ -158,6 +159,7 @@ onMounted(() => {
                 padding: 0.1rem 0;
                 box-sizing: border-box;
                 .goods-name {
+                    height: .72rem;
                     margin-bottom: 0.08rem;
                 }
             }
