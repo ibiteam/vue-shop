@@ -41,7 +41,7 @@
                         </div>
                         <div class="s-flex ai-ct" v-if="item.service_rank">
                             <span>售后服务：</span>
-                            <ShopRate :rank="item.sales_rank"></ShopRate>
+                            <ShopRate :rank="item.service_rank"></ShopRate>
                         </div>
                     </div>
                     <div class="content fs28 co-333" style="word-break: break-all;">{{item.content}}</div>
