@@ -33,7 +33,7 @@
                     <div class="alls s-flex jc-bt ai-ct">
                         <span class="alls-title">退款金额</span>
                         <div class="s-flex flex-v ai-fe">
-                            <span class="alls-money" @click.stop="refund_data.type === 1?moneyShow = true:''">¥{{ refundForm.money }}<em v-if="refund_data.type===1" style="font-size: 0.18rem;color: #333333;margin-left: 0.17rem;" class="iconfont">&#xe6eb;</em></span>
+                            <span class="alls-money" @click.stop="refund_data.type === 1?moneyShow = true:''">¥{{ refundForm.money }}<em v-if="refund_data.type===1" style="font-size: 0.18rem;color: #333333;margin-left: 0.17rem;" class="iconfont">&#xe79a;</em></span>
                         </div>
                         <van-number-keyboard
                                 v-if="refund_data.type === 1"
@@ -53,7 +53,7 @@
                     <div class="alls s-flex jc-bt ai-ct">
                         <span class="alls-title">退款数量</span>
                         <div class="s-flex flex-v ai-fe">
-                            <span class="alls-money" @click.stop="refund_data.type === 1?refund_number_keyboard = true:''">{{ refundForm.number }}<em v-if="refund_data.type===1" style="font-size: 0.18rem;color: #333333;margin-left: 0.17rem;" class="iconfont">&#xe6eb;</em></span>
+                            <span class="alls-money" @click.stop="refund_data.type === 1?refund_number_keyboard = true:''">{{ refundForm.number }}<em v-if="refund_data.type===1" style="font-size: 0.18rem;color: #333333;margin-left: 0.17rem;" class="iconfont">&#xe79a;</em></span>
                         </div>
                         <van-number-keyboard
                                 v-if="refund_data.type === 1"
@@ -82,7 +82,7 @@
                             <van-image v-for="(its,ids) in refundForm.certificate" :key="ids" :src="its" >
                                 <template #default>
                                     <div class="operation" @click="delPicture(ids)">
-                                        <em class="iconfont">&#xe68f;</em>
+                                        <em class="iconfont">&#xe68c;</em>
                                     </div>
                                 </template>
                             </van-image>
@@ -156,7 +156,7 @@ const popupShow =ref(false)
 const reason_id = ref('')
 const is_edit = ref(false)
 const moneyShow = ref(false)
-const refund_number_keyboard = ref('')
+const refund_number_keyboard = ref(false)
 
 onMounted(()=>{
     if(route.query.type){
@@ -236,7 +236,11 @@ const beforeRead = (file) =>{
     cns.$toast("最多上传三张图片");
     return false;
   }
-  return true;
+  var isLt5M = file.size / 1024 / 1024 < 5;
+  if (!isLt5M) {
+    cns.$toast("文件大小不得超过5M");
+  }
+  return isLt5M;
 }
 
 const afterRead = (index) =>{
@@ -487,6 +491,9 @@ const handleClickSubmitRefund = () =>{
                 width: 100%;
                 background: #FAFAFA;
                 border-radius: 0.1rem;
+                :deep(.van-field__value){
+                  padding: 0.2rem;
+                }
 
                 :deep(.van-field__control) {
                     height: 2.2rem !important;
@@ -521,12 +528,20 @@ const handleClickSubmitRefund = () =>{
                     border: solid 1px #f5f5f5;
 
                     :deep(.operation){
-                        position: absolute;
+                      width:0.26rem;
+                      height:0.26rem;
+                      background: #000000;
+                      border-radius: 50%;
+                      position: absolute;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
                         top: -5px;
                         right: -5px;
 
                         .iconfont {
-                            opacity: .5;
+                          color: #ffffff;
+                          font-size: 0.16rem;
                         }
                     }
                 }
