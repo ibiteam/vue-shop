@@ -64,7 +64,7 @@ axios.interceptors.request.use(
         }else {
             config.data = createParams(config.data)
             if(config.url == 'v1/sms-action'){
-                let phoneVerify = config.data.phone ? `${config.data.phone}${config.data.action}${config.data.timeStamp}` : `${config.data.action}${config.data.timeStamp}`
+                let phoneVerify = config.data.phone ? `${config.data.phone}${config.data.action}${config.data.timestamp}` : `${config.data.action}${config.data.timestamp}`
                 config.headers['phone-verify'] = md5(phoneVerify)
             }
         }
@@ -201,7 +201,7 @@ function doFile(url, param, method = 'post') {
 
     formData.append('file', params.file);
     formData.append('auth', params.auth ? 1 : 0);
-    formData.append('timeStamp', Math.floor(Date.now() / 1000));
+    formData.append('timestamp', Math.floor(Date.now() / 1000));
 
     return axios({
         method,
