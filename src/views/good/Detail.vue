@@ -180,7 +180,8 @@
 								<div class="users s-flex jc-bt ai-ct">
 									<div class="user-left s-flex ai-ct">
 										<div style="width:0.66rem;height:0.66rem;border-radius:100%;border:0.02rem solid #E5E5E5;overflow: hidden;margin-right: 0.14rem;" class="s-flex ai-ct jc-ct">
-											<img class="user-img" :src="item.avatar" alt="">
+											<img class="user-img" v-if="item.avatar" :src="item.avatar" alt="">
+											<img class="user-img" v-else src="@/assets/images/header-photo.png" alt="">
 										</div>
 										<div>
 											<span class="user-name fs28 co-333" style="margin-bottom: 0.06rem;display: inline-block;">{{item.nickname }}<i class="fs28 co-999" style="font-style: normal;" v-if="item.is_anonymous">(匿名）</i></span>
