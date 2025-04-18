@@ -863,7 +863,7 @@ onMounted(() => {
                 }
             }
             .to-buy{
-                width: 2.06rem;
+                width: 1.86rem;
                 height: 0.68rem;
                 line-height: 0.68rem;
                 text-align: center;
