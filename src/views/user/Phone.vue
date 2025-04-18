@@ -78,6 +78,7 @@ const sendPhoneCode = () => {
 			cns.$toast('短信已经发送')
 			countTime()
 		} else {
+			second.value = 0
 			cns.$toast(res.message)
 		}
 	}).catch(err => {
