@@ -65,7 +65,6 @@ axios.interceptors.request.use(
             config.data = createParams(config.data)
             if(config.url == 'v1/sms-action'){
                 let phoneVerify = config.data.phone ? `${config.data.phone}${config.data.action}${config.data.timeStamp}` : `${config.data.action}${config.data.timeStamp}`
-                console.log(phoneVerify)
                 config.headers['phone-verify'] = md5(phoneVerify)
             }
         }
