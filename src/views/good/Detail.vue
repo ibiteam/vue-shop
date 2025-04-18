@@ -95,9 +95,9 @@
 										<p style="padding: 0;">
 											<form-price :price="skuShopPrice.price ? skuShopPrice.price : goodsInfo.price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
 										</p>
-										<template v-if="skuShopPrice.integral || goodsInfo.integral">
+										<template v-if="skuId ? skuShopPrice.integral : goodsInfo.integral">
 											<p class="co-333 fs40" style="margin: 0 0.08rem;"> + </p>
-											<span class="co-red fs50 fw-b">{{ skuShopPrice.integral || goodsInfo.integral }}</span>
+											<span class="co-red fs50 fw-b">{{ skuId ? skuShopPrice.integral : goodsInfo.integral }}</span>
 											<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
 										</template>
 										<p class="fs24 co-red" style="margin-left: 0.3rem;">{{ goodsInfo.label }}</p>
