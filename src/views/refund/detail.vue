@@ -162,7 +162,7 @@
                     </div>
                 </div>
             </div>
-            <div class="btns btnas s-flex jc_ct">
+            <div class="btns btnas s-flex jc-ct">
                 <van-button @click="revoke()" :class="refund_data.type===1?'fsc':''" v-if="[0,2].includes(status)">撤 销 申 请</van-button>
                 <van-button @click="edit()" v-if="status == 1">修 改 申 请</van-button>
             </div>

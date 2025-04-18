@@ -96,3 +96,7 @@ export function refundVerifyAxios(params){
 export function refundShowAxios(params){
     return $http.doGet('v1/order/apply_refund/show',params || {})
 }
+
+export function refundStoreAxios(params){
+    return $http.doPost('v1/order/apply_refund/store',params || {})
+}

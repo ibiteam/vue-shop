@@ -21,10 +21,10 @@
                     <p>如遇订单拆分，部分订单退款后优惠券不返还。</p>
                 </div>
             </div>
-            <div class="reason s-flex jc-bt ai-ct" @click="popupShow=true">
+            <div class="reason s-flex jc-bt ai-ct" @click="showReason">
                 <div><span class="xing">*</span><span class="reason-title">退款原因</span></div>
                 <div class="reason-oper s-flex ai-ct">
-                    <span>{{ refundForm.reason === '' ? '请选择原因（必填）' : refundForm.reason }}</span>
+                    <span>{{ refundForm.reason_id === '' ? '请选择原因（必填）' : formatReason }}</span>
                     <em class="iconfont" style="font-size: 0.38rem;">&#xe60b;</em>
                 </div>
             </div>
@@ -33,11 +33,11 @@
                     <div class="alls s-flex jc-bt ai-ct">
                         <span class="alls-title">退款金额</span>
                         <div class="s-flex flex-v ai-fe">
-                            <span class="alls-money" @click.stop="refund_data.type === 1?moneyShow = true:''">¥{{ refundForm.refundMoney }}<em v-if="refund_data.type===1" style="font-size: 0.18rem;color: #333333;margin-left: 0.17rem;" class="iconfont">&#xe6eb;</em></span>
+                            <span class="alls-money" @click.stop="refund_data.type === 1?moneyShow = true:''">¥{{ refundForm.money }}<em v-if="refund_data.type===1" style="font-size: 0.18rem;color: #333333;margin-left: 0.17rem;" class="iconfont">&#xe6eb;</em></span>
                         </div>
                         <van-number-keyboard
                                 v-if="refund_data.type === 1"
-                                v-model="refundForm.refundMoney"
+                                v-model="refundForm.money"
                                 :show="moneyShow"
                                 theme="custom"
                                 :extra-key="['00', '.']"
@@ -53,11 +53,11 @@
                     <div class="alls s-flex jc-bt ai-ct">
                         <span class="alls-title">退款数量</span>
                         <div class="s-flex flex-v ai-fe">
-                            <span class="alls-money" @click.stop="refund_data.type === 1?refund_number_keyboard = true:''">{{ refundForm.refund_number }}<em v-if="refund_data.type===1" style="font-size: 0.18rem;color: #333333;margin-left: 0.17rem;" class="iconfont">&#xe6eb;</em></span>
+                            <span class="alls-money" @click.stop="refund_data.type === 1?refund_number_keyboard = true:''">{{ refundForm.number }}<em v-if="refund_data.type===1" style="font-size: 0.18rem;color: #333333;margin-left: 0.17rem;" class="iconfont">&#xe6eb;</em></span>
                         </div>
                         <van-number-keyboard
                                 v-if="refund_data.type === 1"
-                                v-model="refundForm.refund_number"
+                                v-model="refundForm.number"
                                 :show="refund_number_keyboard"
                                 theme="custom"
                                 :extra-key="['00', '.']"
@@ -65,13 +65,13 @@
                                 @blur="refundNumberBlur"
                         />
                     </div>
-                    <p>最多退{{ refund_data.order_detail.refund_max_number }}（{{ refund_data.order_detail.unit }}）</p>
+                    <p>最多退{{ refund_data.order_detail.refund_max_number }}<template v-if="refund_data.order_detail.goods_unit">（{{ refund_data.order_detail.goods_unit }}）</template></p>
                 </div>
             </div>
             <template v-if="refund_data.type === 1">
                 <div class="supplement">
                     <div class="title">补充描述</div>
-                    <van-field v-model="refundForm.apply_comment"
+                    <van-field v-model="refundForm.description"
                                type="textarea"
                                maxlength="200"
                                placeholder="请输入描述说明，有助于商家更好的处理售后问题"
@@ -90,7 +90,7 @@
                         <van-uploader multiple :before-read="beforeRead" v-if="refundForm.certificate && refundForm.certificate.length<3" :after-read="afterRead(index)">
                             <template #default>
                                 <div class="imgs">
-                                    <img :src="require('@/assets/images/refund/upload.png')" />
+                                    <img src="@/assets/images/refund/upload.png" />
                                 </div>
                             </template>
                         </van-uploader>
@@ -98,28 +98,30 @@
                     <div style="margin-top: 0.29rem;" class="upload-tips">请上传凭证，最多3张</div>
                 </div>
             </template>
-            <van-button  @click="doubleSubmit()">提 交</van-button>
+            <van-button  @click="handleClickSubmitRefund()">提 交</van-button>
         </div>
-        <van-popup v-model:show="popupShow" position="bottom" :style="{ height: '60%' }" @close="reasonNow = reason">
+        <van-popup v-model:show="popupShow" position="bottom" :style="{ height: '60%' }" @close-on-click-overlay="reason_id = refundForm.reason_id">
             <div class="title s-flex ai-ct jc-bt">
                 <span>请选择原因</span>
                 <div class="imgs" @click="popupShow=false">
-                    <img :src="require('@/assets/images/refund/closed.png')" alt="" class="noImg" />
+                    <img src="@/assets/images/refund/closed.png" alt="" class="noImg" />
                 </div>
             </div>
             <div class="reason-list">
-                <van-radio-group v-model="refundForm.reason">
-                    <van-cell-group>
-                        <van-cell :title="its.reason" :key="ids" v-for="(its,ids) in refund_data.reason" clickable @click="refundForm.reason = its.reason">
-                            <template #right-icon>
-                                <van-radio :name="its.reason" />
-                            </template>
+                <van-radio-group v-model="reason_id">
+                    <van-cell-group inset>
+                      <template v-for="(its,ids) in refund_data.reason" :key="ids">
+                        <van-cell :title="its.content" clickable @click="reason_id = its.id">
+                          <template #right-icon>
+                            <van-radio :name="its.id" />
+                          </template>
                         </van-cell>
+                      </template>
                     </van-cell-group>
                 </van-radio-group>
             </div>
             <div class="btns">
-                <van-button @click="reason = refundForm.reason;popupShow = false">确 定</van-button>
+                <van-button @click="refundForm.reason_id = reason_id;popupShow = false">确 定</van-button>
             </div>
         </van-popup>
     </div>
@@ -128,7 +130,8 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { useRoute } from 'vue-router'
-import {refundDetailAxios, refundShowAxios} from "@/api/order.js";
+import {refundDetailAxios, refundShowAxios, refundStoreAxios} from "@/api/order.js";
+import {uploadFileAxios} from "@/api/common.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 
@@ -142,25 +145,17 @@ const refund_data = ref({
 const is_loading = ref(true)
 const after_sales = ref(null)
 const refundForm = ref({
-    reason: '',
-    refund_number: '',
-    apply_comment: '',
+    reason_id: '',
+    number: '',
+    description: '',
     certificate: [],
-    refundMoney: '' //  退款金额
+    money: '' //  退款金额
 })
 const status = ref(null)
-const explain = ref('')
 const popupShow =ref(false)
-const money = ref('')
-const goods_money = ref('')
-const reason = ref('')
-const apply_comment = ref('')
-const reasonNow = ref('')
-const reasonList = ref([])
+const reason_id = ref('')
 const is_edit = ref(false)
 const moneyShow = ref(false)
-const refund_number = ref('')
-const refund_goods_number = ref('')
 const refund_number_keyboard = ref('')
 
 onMounted(()=>{
@@ -202,8 +197,8 @@ const operatePageData = (res) =>{
         if (after_sales.value == 1) {
             refundForm.value = {
                 ...refundForm.value,
-                refundMoney: refund_data.value.order_detail.refund_max_amount,
-                refund_number: refund_data.value.order_detail.refund_max_number,
+                money: refund_data.value.order_detail.refund_max_amount,
+                number: refund_data.value.order_detail.refund_max_number,
             }
             status.value = -1
         } else {
@@ -215,22 +210,128 @@ const operatePageData = (res) =>{
                 refund_data.value.reason = refund_data.value.from_init.reason
                 refundForm.value = {
                     ...refundForm.value,
-                    reason: refund_data.value.refund_info.reason,
-                    refundMoney: refund_data.value.refund_info.refund_money,
-                    refund_number: refund_data.value.refund_info.refund_number,
-                    apply_comment: refund_data.value.refund_info.apply_comment,
+                    reason_id: refund_data.value.refund_info.reason_id,
+                    money: refund_data.value.refund_info.refund_money,
+                    number: refund_data.value.refund_info.number,
+                    description: refund_data.value.refund_info.description,
                     certificate: refund_data.value.refund_info.certificate,
                 }
                 refund_data.value.order_detail.refund_max_amount = refund_data.value.from_init.refund_max_amount
                 refund_data.value.order_detail.refund_max_number = refund_data.value.from_init.refund_max_number
             }
         }
+      is_loading.value = false
     } else if (cns.$constant.isUnLoginCode(res)) {
-        cns.appRoute('login')
+      cns.appRoute('login')
     }else {
         cns.$toast(res.message)
     }
-    is_loading.value = false
+}
+
+const beforeRead = (file) =>{
+  if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/png") {
+    cns.$toast("请上传 jpg/jpeg/png 格式图片");
+    return false;
+  } else if (refundForm.value.certificate.length >= 3) {
+    cns.$toast("最多上传三张图片");
+    return false;
+  }
+  return true;
+}
+
+const afterRead = (index) =>{
+  return (file) => {
+    let info = {
+      file: file.file,
+    };
+    uploadFileAxios(info).then((res) => {
+      if (cns.$constant.isSuccessCode(res)) {
+        refundForm.value.certificate.push(res.data.url)
+      } else if(cns.$constant.isUnLoginCode(res)){
+        cns.appRoute('login')
+      } else {
+        cns.$toast(res.message);
+      }
+    });
+  };
+}
+
+const delPicture = (index) => {
+  refundForm.value.certificate.splice(index, 1)
+}
+
+const moneyBlur = () =>{
+  moneyShow.value = false
+  if (!refundForm.value.money || Number(refundForm.value.money) === 0 || Number(refundForm.value.money) > Number(refund_data.value.order_detail.refund_max_amount) || refundForm.value.money.split('.').length - 1 > 1) {
+    refundForm.value.money = refund_data.value.order_detail.refund_max_amount
+  }
+}
+
+const refundNumberBlur = () => {
+  refund_number_keyboard.value = false
+  if (!refundForm.value.number || Number(refundForm.value.number) === 0 || Number(refundForm.value.number) > Number(refund_data.value.order_detail.refund_max_number) || refundForm.value.number.split('.').length - 1 > 1) {
+    refundForm.value.number = refund_data.value.order_detail.refund_max_number
+  }
+}
+
+const showReason = () =>{
+  reason_id.value = refundForm.value.reason_id
+  popupShow.value = true
+}
+
+const formatReason = computed(() => {
+  let reasonSelect = refund_data.value.reason.filter(item => item.id == refundForm.value.reason_id)
+  return reasonSelect[0].content
+});
+
+const handleClickSubmitRefund = () =>{
+  if (refundForm.value.reason_id === '') {
+    cns.$toast('请选择退款原因!');
+  } else {
+    if (!refundForm.value.money || refundForm.value.money <= 0) {
+      cns.$toast('可退款金额为0，暂不支持申请')
+      return false
+    }
+    if (!refundForm.value.number || refundForm.value.number <= 0) {
+      cns.$toast('可退款数量为0，暂不支持申请')
+      return false
+    }
+    let info = {
+      apply_refund_id: route.query.apply_refund_id,
+      order_sn: route.query.order_sn,
+      order_detail_id: route.query.order_detail_id,
+      number:refundForm.value.number,
+      money: Number(refundForm.value.money),
+      type:Number(route.query.refundType),
+      reason_id: refundForm.value.reason_id,
+      description: refundForm.value.description,
+      certificate: refundForm.value.certificate.toString(),
+    }
+    refundStoreAxios(info).then(res => {
+      if (cns.$constant.isSuccessCode(res)) {
+        cns.$toast('申请成功');
+        const query_info = {
+          order_sn: info.order_sn,
+          order_detail_id: info.order_detail_id,
+          apply_refund_id: res.data.apply_refund_id,
+          after_sales: null
+        }
+        cns.appRoute('refundDetail', query_info, 'replace')
+      } else if (cns.$constant.isUnLoginCode(res)) {
+        cns.appRoute('login')
+      } else if(res.code === 4005) {
+        cns.appRoute('orderDetail',{order_sn:info.value.order_sn}, 'replace')
+      } else if(res.code === 4006) {
+        cns.appRoute('refundDetail', {
+          order_sn: info.value.order_sn,
+          order_detail_id: info.value.order_detail_id,
+          after_sales: after_sales.value
+        }, 'replace')
+      } else {
+        cns.$toast(res.message);
+      }
+    })
+  }
 }
 </script>
 

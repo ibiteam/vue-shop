@@ -102,15 +102,15 @@
                                         <em class="iconfont" style="margin-left: 0.07rem">&#xe604;</em>
                                     </div>
                                 </div>
-                                <!--物流模块-->
-                                <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click.stop="toWuliu(item)">
-                                    <div class="s-flex ai-ct flex-1">
-                                        <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
-                                        <div class="wuliu-type">{{ item.logistics.ship_info.status }}</div>
-                                        <div class="wuliu-desc flex-1">{{ item.logistics.ship_info.context }}</div>
-                                    </div>
-                                    <em class="iconfont">&#xe60b;</em>
+                              <!--物流模块-->
+                              <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click.stop="toWuliu(item)">
+                                <div class="s-flex ai-ct flex-1">
+                                  <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
+                                  <div class="wuliu-type">{{ item.logistics.title }}</div>
+                                  <div class="wuliu-desc flex-1">{{ item.logistics.description }}</div>
                                 </div>
+                                <em class="iconfont">&#xe60b;</em>
+                              </div>
                                 <!--评价模块-->
                                 <div class="evaluate-box s-flex jc-bt ai-ct" v-if="item.evaluate">
                                     <div class="fs28 co-333 fw-b">商品好不好，评价一下</div>
