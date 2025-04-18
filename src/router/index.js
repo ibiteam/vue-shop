@@ -63,7 +63,7 @@ const goWechatAuth = async (to, next) => {
 
     let appId = 'wxe1de40da38f00080' // shopConfig.wechat_app_id
     if(appId){
-        let redirectUrl = 'https://' + document.location.hostname + '/auth'
+        let redirectUrl = document.location.origin + '/auth'
         redirectUrl = encodeURIComponent(redirectUrl);
         window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUrl}&response_type=code&scope=snsapi_userinfo&state=STATE&connect_redirect=1#wechat_redirect`
     }else{
