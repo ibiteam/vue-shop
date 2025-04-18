@@ -274,6 +274,7 @@ const keywordBox =ref(null)
 
 watch(route, (value) => {
     orderInfo.value.keywords = value.query.keywords ? value.query.keywords : ''
+    resetParams()
     getOrderData()
 })
 

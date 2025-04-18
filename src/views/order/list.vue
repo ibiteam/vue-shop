@@ -244,6 +244,7 @@ const orderAddressBtn = ref(null)
 
 watch(route, (value) => {
     orderInfo.value.type = value.query.type ? value.query.type : 'all'
+    resetParams()
     getOrderData()
 })
 

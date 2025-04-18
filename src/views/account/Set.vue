@@ -58,7 +58,6 @@ onMounted(async () => {
       let shopConfig = await getShopConfig()
       shop_config.value = shopConfig
     }
-    console.log(shop_config.value)
     getUserInfo()
 })
 
