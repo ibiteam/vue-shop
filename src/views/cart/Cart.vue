@@ -154,7 +154,7 @@
 	                    </template>
 	                    <template v-if="total_integral">
 		                    <span class="fs22" style="margin: 0 0.02rem;">+</span>
-		                    <span class="fs22">{{total_integral}}</span>积分
+		                    <span class="fs28">{{total_integral}}</span>积分
 	                    </template>
                     </span>
                 </div>
@@ -376,6 +376,7 @@ const countTotal = () => {
     } else {
         total_price.value = totalPrice.toFixed(2)
     }
+	total_integral.value = totalIntegral
     goods_count.value = goodsCount
 }
 
@@ -412,6 +413,7 @@ const selectAllGoods = () => {
                     if(item.is_check === 1){
                         totalPrice += Number(item.buy_number) * Number(item.goods.price)
 	                    totalIntegral += Number(item.buy_number) * Number(item.goods.integral)
+	                    goodsCount += Number(item.buy_number)
                     }
                 })
 
@@ -420,6 +422,7 @@ const selectAllGoods = () => {
                 } else {
                     total_price.value = totalPrice.toFixed(2)
                 }
+	            total_integral.value = totalIntegral
                 goods_count.value = goodsCount
             } else if (isUnLoginCode(res)) {
                 // 去登录
