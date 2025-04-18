@@ -17,7 +17,7 @@
         <div class="ship-list">
           <div class="ship-item" v-for="(item, index) in shipList" :key="index" :class="{ dazong: item.type == 1 }" @click="appRoute('wuliuDetail', { delivery_no: item.delivery_no })">
             <div class="list-title s-flex">
-              <img src="@/assets/images/order/wuliu_car.png" alt="">
+              <img src="@/assets/images/order/wuliu/wuliu_car.png" alt="">
               <p class="van-ellipsis flex-1">{{item.ship_company_name}}：{{item.ship_no}}</p>
               <van-icon name="arrow" />
             </div>

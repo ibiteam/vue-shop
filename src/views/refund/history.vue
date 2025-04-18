@@ -57,7 +57,7 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { useRoute } from 'vue-router'
-import {refundHistoryAxios} from "@/api/refund.js";
+import {refundHistoryAxios} from "@/api/order.js";
 import {showImagePreview} from "vant";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
