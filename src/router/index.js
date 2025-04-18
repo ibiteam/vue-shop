@@ -8,6 +8,7 @@ import good from "./good";
 import property from "./property";
 import mine from "./mine";
 import order from "./order";
+import article from "./article";
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -51,6 +52,7 @@ const router = createRouter({
         ...property,
         ...mine,
         ...order,
+        ...article
     ],
 })
 

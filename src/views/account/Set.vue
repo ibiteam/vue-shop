@@ -23,6 +23,12 @@
             </ul>
             <van-cell-group style="border-radius: 0.2rem;overflow: hidden;">
                 <van-cell title="账户与安全" is-link @click="handleClickRouterLinkBefore({ name: 'security' })"/>
+              <van-cell title="用户协议" is-link
+                        @click="handleClickRouterLinkBefore({ name: 'articleAgreement', query: {article_id: shop_config.user_agreement} })"/>
+              <van-cell title="隐私政策" is-link
+                        @click="handleClickRouterLinkBefore({ name: 'articleAgreement',query: {article_id: shop_config.privacy_policy} })"/>
+              <van-cell title="关于我们" is-link
+                        @click="handleClickRouterLinkBefore({ name: 'articleAgreement', query: {article_id: shop_config.about_us} })"/>
             </van-cell-group>
             <div style="position: fixed;bottom: 0.94rem;left: 0;right: 0;margin: auto; width: 6.9rem;height: 0.88rem;" class="breathe" v-if="is_login">
                 <div class="botom" @click="logOut()">退出账号</div>
@@ -36,14 +42,23 @@ import {ref, reactive, onMounted, nextTick, getCurrentInstance} from 'vue'
 const cns = getCurrentInstance().appContext.config.globalProperties
 import {logOutAxios} from "@/api/user.js";
 import {getUserInfoAxios} from "@/api/account.js";
+import {getShopConfig} from "@/utils/public.js";
 const title = ref('用户设置')
 const page_loading = ref(false)
 const nickname = ref('')
 const portrait = ref('')
 const user_name = ref('')
 const is_login = ref(true)
+const shop_config = ref(null)
 
-onMounted(() => {
+onMounted(async () => {
+    if (JSON.parse(sessionStorage.getItem('shop-config'))){
+      shop_config.value = JSON.parse(sessionStorage.getItem('shop-config'))
+    }else{
+      let shopConfig = await getShopConfig()
+      shop_config.value = shopConfig
+    }
+    console.log(shop_config.value)
     getUserInfo()
 })
 
@@ -68,8 +83,8 @@ const getUserInfo = () => {
 const handleClickRouterLinkBefore = async(data) => {
     is_login.value = await cns.$public.requestLogin()
     if (is_login.value) {
-        const { name, query, params } = data
-        cns.appRoute(name, params, query)
+        const { name, query } = data
+        cns.appRoute(name, query)
     } else {
         cns.appRoute('login')
     }
