@@ -98,6 +98,8 @@ const toDetail = (data) => {
 			height: 0.32rem;
 			line-height: 0.32rem;
 			align-items: center;
+			position: relative;
+			top: -0.02rem;
 		}
 	}
 }
