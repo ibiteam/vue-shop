@@ -53,6 +53,7 @@ onMounted(() => {
 				appRoute('home', {}, 'replace')
 			}
 		}).catch(err => {
+			alert(err)
 			console.log(err)
 		})
 
