@@ -14,7 +14,7 @@
 			</div>
 			<div class="MT10" style="padding: 0 0.15rem;">
 				<div class="item-name fs26 co-333 elli-2">
-					<span class="goods-label">{{ item.label }}</span>{{ item.name }}
+					<van-tag color="linear-gradient(90deg, #5436D5 4%, #735CFF 99%)" v-if="item.label">{{item.label}}</van-tag>{{ item.name }}
 				</div>
 				<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct jc-bt">
 					<div class="s-flex ai-ct">
@@ -80,26 +80,10 @@ const toDetail = (data) => {
 			margin-bottom: 0.1rem;
 
 			span {
-				//line-height: 0.36rem;
-				//height: 0.36rem;
 				margin-right: 0.1rem;
-				min-width: auto;
 				font-size: 0.2rem;
 				padding: 0 0.1rem;
 			}
-		}
-		.goods-label{
-			font-size: 0.2rem;
-			color: #fff;
-			background: var(--red-color);
-			border-radius: 0.06rem;
-			padding: 0 0.14rem;
-			display: inline-block;
-			height: 0.32rem;
-			line-height: 0.32rem;
-			align-items: center;
-			position: relative;
-			top: -0.02rem;
 		}
 	}
 }
