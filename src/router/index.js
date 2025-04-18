@@ -61,7 +61,7 @@ const goWechatAuth = async (to, next) => {
      let shopConfig = await getShopConfig()
     // 请求微信授权,并跳转到 /WxAuth 路由
 
-    let appId = shopConfig.wechat_app_id
+    let appId = 'wxe1de40da38f00080' // shopConfig.wechat_app_id
     if(appId){
         let redirectUrl = document.location.origin + '/auth'
         redirectUrl = encodeURIComponent(redirectUrl);
