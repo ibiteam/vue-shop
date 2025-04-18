@@ -70,7 +70,7 @@ function by(name, minor) {
  */
 function sign(paras, api_key) {
     paras = filter(paras)
-    paras['timeStamp'] = Date.parse(new Date()) / 1000
+    paras['timestamp'] = Date.parse(new Date()) / 1000
     paras = sort(paras)
     let str = linkStr(paras).substr(1)
     let sign = md5(str + api_key)

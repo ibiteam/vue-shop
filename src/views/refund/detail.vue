@@ -162,7 +162,7 @@
                     </div>
                 </div>
             </div>
-            <div class="btns btnas s-flex jc_ct">
+            <div class="btns btnas s-flex jc-ct">
                 <van-button @click="revoke()" :class="refund_data.type===1?'fsc':''" v-if="[0,2].includes(status)">撤 销 申 请</van-button>
                 <van-button @click="edit()" v-if="status == 1">修 改 申 请</van-button>
             </div>
@@ -173,7 +173,7 @@
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { useRoute } from 'vue-router'
-import {refundInitAxios,refundDetailAxios, refundRevokeAxios} from "@/api/refund.js";
+import {refundInitAxios,refundDetailAxios, refundRevokeAxios} from "@/api/order.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 
@@ -265,9 +265,8 @@ const edit = () =>{
     min-height: 100%;
     .loading{
         margin-top: 0.32rem;
-        padding: 0 0.2rem;
+        padding: 0 0.2rem 0.9rem;
         box-sizing: border-box;
-        padding-bottom: 0.9rem;
         .process{
             width: 100%;
             height: 1.7rem;
@@ -573,7 +572,7 @@ const edit = () =>{
             .fsc{
                 background: #F2F2F2;
                 border: 1px solid #F71111;
-                .van-button__text{
+                :deep(.van-button__text){
                     color: #F71111;
                 }
             }

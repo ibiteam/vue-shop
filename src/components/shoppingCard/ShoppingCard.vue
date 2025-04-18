@@ -21,9 +21,9 @@
                             <template v-else-if="goodsInfo.price">
                                 <form-price :price="goodsInfo.price.toString().replace('￥','')" :sign_size="28" :DF_size="30" :INT_size="50" weight="bold"></form-price>
                             </template>
-	                        <template v-if="skuPrice.integral || goodsInfo.integral">
+	                        <template v-if="skuId ? skuPrice.integral : goodsInfo.integral">
 		                        <span class="co-333 fs40" style="margin: 0 0.08rem;"> + </span>
-		                        <span class="co-red fs50 fw-b">{{ skuPrice.integral || goodsInfo.integral }}</span>
+		                        <span class="co-red fs50 fw-b">{{ skuId ? skuPrice.integral : goodsInfo.integral }}</span>
 		                        <span class="co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
 	                        </template>
                         </p>

@@ -40,7 +40,7 @@
         </section>
         <div class="order-main" v-else>
 <!--            物流-->
-            <div class="orderDetail-module order-wuliu" v-if="orderDetailData.logistics" @click="appRoute('orderWuliu',{order_sn:orderDetailData.order.order_sn})">
+            <div class="orderDetail-module order-wuliu" v-if="orderDetailData.logistics" @click="toWuliu">
                 <div class="order-wuliu-head s-flex ai-ct jc-bt">
                     <div class="s-flex ai-ct">
                         <img src="@/assets/images/order/m-car.png">
@@ -172,7 +172,7 @@ import {getOrderDetail,} from "@/api/order.js";
 import { useRoute } from 'vue-router'
 import Clipboard from "clipboard"
 import {getShopConfig} from "@/utils/public.js";
-import {refundVerifyAxios} from "@/api/refund.js";
+import {refundVerifyAxios} from "@/api/order.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const title = ref('订单详情')
@@ -257,6 +257,14 @@ const afterSale = (item) =>{
         })
     }else {
         cns.appRoute('refundDetail', { order_sn:orderDetailData.value.order.order_sn, order_detail_id:item.id })
+    }
+}
+
+const toWuliu = () =>{
+    if(orderDetailData.value.logistics_number>1){
+      cns.appRoute('wuliuList', {order_sn: orderDetailData.value.order.order_sn})
+    }else{
+      cns.appRoute('wuliuDetail', {delivery_no: orderDetailData.value.logistics.delivery_no})
     }
 }
 

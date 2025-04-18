@@ -95,9 +95,9 @@
 										<p style="padding: 0;">
 											<form-price :price="skuShopPrice.price ? skuShopPrice.price : goodsInfo.price" weight="bold" :sign_size="24" :INT_size="50" :DF_size="28"></form-price>
 										</p>
-										<template v-if="skuShopPrice.integral || goodsInfo.integral">
+										<template v-if="skuId ? skuShopPrice.integral : goodsInfo.integral">
 											<p class="co-333 fs40" style="margin: 0 0.08rem;"> + </p>
-											<span class="co-red fs50 fw-b">{{ skuShopPrice.integral || goodsInfo.integral }}</span>
+											<span class="co-red fs50 fw-b">{{ skuId ? skuShopPrice.integral : goodsInfo.integral }}</span>
 											<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
 										</template>
 										<p class="fs24 co-red" style="margin-left: 0.3rem;">{{ goodsInfo.label }}</p>
@@ -180,7 +180,8 @@
 								<div class="users s-flex jc-bt ai-ct">
 									<div class="user-left s-flex ai-ct">
 										<div style="width:0.66rem;height:0.66rem;border-radius:100%;border:0.02rem solid #E5E5E5;overflow: hidden;margin-right: 0.14rem;" class="s-flex ai-ct jc-ct">
-											<img class="user-img" :src="item.avatar" alt="">
+											<img class="user-img" v-if="item.avatar" :src="item.avatar" alt="">
+											<img class="user-img" v-else src="@/assets/images/header-photo.png" alt="">
 										</div>
 										<div>
 											<span class="user-name fs28 co-333" style="margin-bottom: 0.06rem;display: inline-block;">{{item.nickname }}<i class="fs28 co-999" style="font-style: normal;" v-if="item.is_anonymous">(匿名）</i></span>

@@ -14,15 +14,18 @@
 			</div>
 			<div class="MT10" style="padding: 0 0.15rem;">
 				<div class="item-name fs26 co-333 elli-2">
-					{{ item.name }}
+					<span class="goods-label">{{ item.label }}</span>{{ item.name }}
 				</div>
-				<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct">
-					<form-price :price="item.price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
-					<template v-if="item.integral">
-						<p class="co-333 fs28" style="margin: 0 0.08rem;"> + </p>
-						<span class="co-red fs28 fw-b">{{ item.integral }}</span>
-						<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
-					</template>
+				<div style="margin-bottom: 0.14rem;" class="s-flex ai-ct jc-bt">
+					<div class="s-flex ai-ct">
+						<form-price :price="item.price" :unit="item.unit" unit_color="#333" weight="bold"></form-price>
+						<template v-if="item.integral">
+							<p class="co-333 fs28" style="margin: 0 0.08rem;"> + </p>
+							<span class="co-red fs28 fw-b">{{ item.integral }}</span>
+							<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
+						</template>
+					</div>
+					<div class="co-666"><span v-if="item.sales_volume">已售{{item.sales_volume}}+</span></div>
 				</div>
 			</div>
 		</div>
@@ -77,13 +80,26 @@ const toDetail = (data) => {
 			margin-bottom: 0.1rem;
 
 			span {
-				line-height: 0.36rem;
-				height: 0.36rem;
+				//line-height: 0.36rem;
+				//height: 0.36rem;
 				margin-right: 0.1rem;
 				min-width: auto;
 				font-size: 0.2rem;
 				padding: 0 0.1rem;
 			}
+		}
+		.goods-label{
+			font-size: 0.2rem;
+			color: #fff;
+			background: var(--red-color);
+			border-radius: 0.06rem;
+			padding: 0 0.14rem;
+			display: inline-block;
+			height: 0.32rem;
+			line-height: 0.32rem;
+			align-items: center;
+			position: relative;
+			top: -0.02rem;
 		}
 	}
 }

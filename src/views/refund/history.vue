@@ -48,22 +48,27 @@
                     <span>退款描述：</span>
                     <span>{{ its.apply_comment }}</span>
                 </div>
-
             </div>
         </div>
+      <!--没有数据-->
+      <div v-if="noData" class="no-Data">
+        <img src="@/assets/images/nodata.png" alt="" class="no-Img" />
+        <span>暂无数据</span>
+      </div>
     </div>
 </template>
 
 <script setup>
 import {ref, reactive, onMounted, nextTick, getCurrentInstance, watch, computed} from 'vue'
 import { useRoute } from 'vue-router'
-import {refundHistoryAxios} from "@/api/refund.js";
+import {refundHistoryAxios} from "@/api/order.js";
 import {showImagePreview} from "vant";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 
 const title = ref('协商历史')
 const list = ref([])
+const noData = ref(false)
 
 onMounted( () => {
     getData()
@@ -73,6 +78,9 @@ const getData = () => {
     refundHistoryAxios({apply_refund_id:route.query.apply_refund_id}).then((res) => {
         if (cns.$constant.isSuccessCode(res)) {
             list.value = [...res.data]
+          if(res.data.length == 0){
+            noData.value = true
+          }
         } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login')
         }else {
@@ -171,5 +179,22 @@ const preview = (arr,index) => {
             }
         }
     }
+  /*无数据*/
+  .no-Data {
+    width: 100%;
+    text-align: center;
+    font-size: 0.28rem;
+    padding: 1rem auto !important;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+  .no-Img {
+    width: 6.1rem;
+    height: 2.73rem;
+    margin-top: 3.17rem;
+    margin-bottom: 0.75rem;
+  }
 }
 </style>

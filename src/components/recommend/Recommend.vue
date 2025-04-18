@@ -68,7 +68,7 @@ onMounted(() => {
 .recommend {
 	.re-tit {
 		width: 100%;
-		padding: 0.1rem 0;
+		padding: 0.2rem 0 0.1rem;
 
 		.re-tit-img {
 			width: 0.36rem;

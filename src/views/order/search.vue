@@ -102,15 +102,15 @@
                                         <em class="iconfont" style="margin-left: 0.07rem">&#xe604;</em>
                                     </div>
                                 </div>
-                                <!--物流模块-->
-                                <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click.stop="appRoute('orderWuliu',{order_sn:item.order_sn})">
-                                    <div class="s-flex ai-ct flex-1">
-                                        <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
-                                        <div class="wuliu-type">{{ item.logistics.ship_info.status }}</div>
-                                        <div class="wuliu-desc flex-1">{{ item.logistics.ship_info.context }}</div>
-                                    </div>
-                                    <em class="iconfont">&#xe60b;</em>
+                              <!--物流模块-->
+                              <div class="wuliu-box s-flex jc-bt ai-ct" v-if="item.logistics" @click.stop="toWuliu(item)">
+                                <div class="s-flex ai-ct flex-1">
+                                  <img class="wuliu-icon" src="https://cdn.toodudu.com/uploads/2023/10/24/order_wuliu.png" alt="">
+                                  <div class="wuliu-type">{{ item.logistics.title }}</div>
+                                  <div class="wuliu-desc flex-1">{{ item.logistics.description }}</div>
                                 </div>
+                                <em class="iconfont">&#xe60b;</em>
+                              </div>
                                 <!--评价模块-->
                                 <div class="evaluate-box s-flex jc-bt ai-ct" v-if="item.evaluate">
                                     <div class="fs28 co-333 fw-b">商品好不好，评价一下</div>
@@ -230,7 +230,7 @@ import {
     updateOrderAddressAxios
 } from "@/api/order.js";
 import {getAddress} from "@/api/address.js";
-import {refundVerifyAxios} from "@/api/refund.js";
+import {refundVerifyAxios} from "@/api/order.js";
 const route = useRoute()
 const router = useRouter()
 const cns = getCurrentInstance().appContext.config.globalProperties
@@ -371,12 +371,20 @@ const btnOperate = (item,index,btnChild,btnIndex) => {
     }else if(btnChild.action == 'refund'){//申请售后
         afterSale(item)
     }else if(btnChild.action == 'logistics'){//查看物流
-        cns.appRoute('orderWuliu', {order_sn: item.order_sn})
+        toWuliu(item)
     }else if(btnChild.action == 'receive'){//确认收货
         confirmOrder(item)
     }else if(btnChild.action == 'evaluate'){//去评价
         cns.appRoute('orderComment', {order_sn: item.order_sn})
     }
+}
+
+const toWuliu = (item) => {
+  if(item.logistics_number>1){
+    cns.appRoute('wuliuList', {order_sn: item.order_sn})
+  }else{
+    cns.appRoute('wuliuDetail', {delivery_no: item.logistics.delivery_no})
+  }
 }
 
 const cancelOrder = (item) =>{//取消订单

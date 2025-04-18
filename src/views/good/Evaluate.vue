@@ -13,7 +13,7 @@
                             </div>
                             <div class="star" style="margin: 0;">
                                 <div>
-                                    <span class="user-name fs28 co-333" v-if="item.user_name">{{item.nickname}}</span>
+                                    <span class="user-name fs28 co-333" v-if="item.nickname">{{item.nickname}}</span>
                                     <span class="user-name fs28 co-333" v-else>未设置昵称</span>
                                 </div>
                                 <ShopRate :rank="item.rank"></ShopRate>
@@ -22,7 +22,7 @@
                         </div>
                         <div class="co-999 fs28">{{item.comment_at}}</div>
                     </div>
-                    <div class="star s-flex flex-wrap">
+                    <div class="star s-flex flex-wrap star-all">
                         <div class="s-flex ai-ct" v-if="item.goods_rank">
                             <span>产品服务：</span>
                             <ShopRate :rank="item.product_rank"></ShopRate>
@@ -41,7 +41,7 @@
                         </div>
                         <div class="s-flex ai-ct" v-if="item.service_rank">
                             <span>售后服务：</span>
-                            <ShopRate :rank="item.sales_rank"></ShopRate>
+                            <ShopRate :rank="item.service_rank"></ShopRate>
                         </div>
                     </div>
                     <div class="content fs28 co-333" style="word-break: break-all;">{{item.content}}</div>
@@ -142,6 +142,9 @@
 </script>
 
 <style scoped lang="scss">
+	.eval-box{
+		padding-top: 0.2rem;
+	}
     .give-good {
         padding: 0.1rem;
         background: var(--page-bg-color);
@@ -188,6 +191,11 @@
 	    }
 	    .star {
 		    margin: 0.2rem 0 0.24rem;
+	    }
+	    .star-all{
+		    >div{
+			    width: 50%;
+		    }
 	    }
 	    .content {
 		    width: 100%;
