@@ -34,6 +34,7 @@ onMounted(() => {
 		appRoute('home', {}, 'replace')
 	} else {
 		let code = route.query.code
+		alert(code)
 		if(localStorage.getItem('wxCode') && localStorage.getItem('wxCode') == code){
 			authSuccess()
 			return;
