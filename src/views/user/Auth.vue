@@ -29,7 +29,8 @@ onMounted(() => {
 		}, 2000)
 		return
 	}
-	if (!cns.$route.query.code) {
+	if (!route.query.code) {
+		alert('没有code')
 		appRoute('home', {}, 'replace')
 	} else {
 		let code = route.query.code
