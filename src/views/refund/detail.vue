@@ -265,9 +265,8 @@ const edit = () =>{
     min-height: 100%;
     .loading{
         margin-top: 0.32rem;
-        padding: 0 0.2rem;
+        padding: 0 0.2rem 0.9rem;
         box-sizing: border-box;
-        padding-bottom: 0.9rem;
         .process{
             width: 100%;
             height: 1.7rem;
@@ -573,7 +572,7 @@ const edit = () =>{
             .fsc{
                 background: #F2F2F2;
                 border: 1px solid #F71111;
-                .van-button__text{
+                :deep(.van-button__text){
                     color: #F71111;
                 }
             }
