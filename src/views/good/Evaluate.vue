@@ -13,7 +13,7 @@
                             </div>
                             <div class="star" style="margin: 0;">
                                 <div>
-                                    <span class="user-name fs28 co-333" v-if="item.user_name">{{item.nickname}}</span>
+                                    <span class="user-name fs28 co-333" v-if="item.nickname">{{item.nickname}}</span>
                                     <span class="user-name fs28 co-333" v-else>未设置昵称</span>
                                 </div>
                                 <ShopRate :rank="item.rank"></ShopRate>
