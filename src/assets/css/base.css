@@ -101,6 +101,12 @@ input:-moz-placeholder {
 .flex-wrap {
   flex-wrap: wrap;
 }
+.flex-v {
+  -webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
 
 .jc-ct {
   justify-content: center;
