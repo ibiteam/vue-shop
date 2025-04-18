@@ -33,12 +33,12 @@ onMounted(() => {
 		appRoute('home', {}, 'replace')
 	} else {
 		let code = route.query.code
-		alert(code)
 		//if(localStorage.getItem('wxCode') && localStorage.getItem('wxCode') == code){
 		//	authSuccess()
 		//	return;
 		//}
 		wechatAuth(code).then(res => {
+			alert(res.code)
 			if (isSuccessCode(res)) {
 				localStorage.setItem('wxCode',code)
 				localStorage.setItem('wxUserInfo', JSON.stringify(res.data))
