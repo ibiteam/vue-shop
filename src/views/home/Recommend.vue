@@ -164,6 +164,7 @@ onMounted(() => {
                 padding: 0.2rem;
                 box-sizing: border-box;
                 .goods-name {
+                    height: .72rem;
                     margin-bottom: 0.16rem;
                 }
             }
