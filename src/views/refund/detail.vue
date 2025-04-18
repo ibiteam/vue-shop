@@ -61,7 +61,7 @@
                     <p class="detail-P">您可以修改申请后再次发起，商家会重新处理</p><p class="detail-P">如果您逾期未处理，本次申请将自动关闭，关闭后若超出售后时效，将无法再次发起售后申请。</p>
                 </template>
                 <template v-if="[0,2,3,4].includes(status)">
-                    <van-steps direction="vertical" :active="stepIndex">
+                    <van-steps direction="vertical" :active="stepIndex" active-color="#f71111">
                         <van-step v-for="(its,ids) in step" :key="ids"  :class="stepIndex===ids?'active':stepIndex>ids?'pass':''">
                             <div class="s-flex ai-ct">
                                 <h3>{{ its }}</h3>
@@ -82,30 +82,13 @@
                                 <template v-if="status === 2">未与卖家协商一致，请勿使用邮寄到付，以免卖家拒收请填写真实退货物流信息，逾期未填写，退货申请将关闭，关闭后将无法再次申请售后</template>
                                 <template v-if="status === 3">待商家确认收货</template>
                             </p>
-                            <template #active-icon>
-                                <em class="iconfont icon-sdraw"></em>
-                            </template>
-                            <template #inactive-icon>
-                                <em v-if="stepIndex>ids" class="iconfont icon-icon-radio"></em>
-                                <em v-else class="iconfont icon-sdraw"></em>
-                            </template>
                         </van-step>
                     </van-steps>
                 </template>
             </div>
             <div class="receiving" v-if="status === 2">
                 <div class="s-flex jc-bt">
-                    <div class="imgs">
-                        <img :src="require('@/assets/images/refund/address.png')" alt="">
-                    </div>
                     <div class="right">
-                        <div class="information s-flex">
-                            <div class="name">收货人：{{ refund_data.address?refund_data.address.shop_address.consignee:'' }}</div>
-                            <div class="tel">{{ refund_data.address?refund_data.address.shop_address.phone:'' }}</div>
-                        </div>
-                        <div class="address">
-                            地址：{{ refund_data.address?refund_data.address.shop_address.address:'' }}
-                        </div>
                         <div class="fill" @click="appRoute('refundShip', {id: refund_data.refund_info.id})">
                             <span>填写单号</span>
                         </div>
@@ -341,13 +324,6 @@ const edit = () =>{
 
             }
             :deep(.van-steps){
-                em{
-                    font-size: 0.16rem;
-                    color: #ccc;
-                    &.active{
-                        color: #F71111;
-                    }
-                }
                 .van-step__circle-container{
                     padding: 0.1rem 0;
                     background: #fff;

@@ -100,3 +100,11 @@ export function refundShowAxios(params){
 export function refundStoreAxios(params){
     return $http.doPost('v1/order/apply_refund/store',params || {})
 }
+
+export function refundShipInfoAxios(params){
+    return $http.doGet('v1/order/apply_refund/ship_info',params || {})
+}
+
+export function refundShipAddAxios(params){
+    return $http.doPost('v1/order/apply_refund/ship_add',params || {})
+}
