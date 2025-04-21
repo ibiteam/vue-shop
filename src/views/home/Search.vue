@@ -52,7 +52,7 @@ const onSwiper = (swiper) => {
 const handleSearch = () => {
     if (swiperRef.value) {
         const {activeIndex} = swiperRef.value
-        if (!props.content.items[activeIndex].url.value) {
+        if (props.content.items[activeIndex].url.value) {
             cns.$bus.emit('homeOpenLink', props.content.items[activeIndex].url?.value)
             return
         }
