@@ -372,11 +372,11 @@ const to_detail = (its, itas) => {
         if (its.type === 'is_hot_brands') {
             query = { 'keywords': itas.name,  };
         } else {
-            query = { 'cat_id': itas.id, 'keywords': itas.name, };
+            query = { 'cat_id': itas.id };
         }
     } else {
         // 分类名称
-        query = { 'cat_id': its.id, 'keywords': its.name };
+        query = { 'cat_id': its.id};
     }
 	appRoute('search', query);
 };

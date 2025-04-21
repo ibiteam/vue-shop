@@ -114,7 +114,7 @@ const keywords = ref(route.query.keywords);
 const rank = ref(false)
 const searchType = ref('')
 const info = reactive({
-    cat_id: route.query.cat_id,
+    category_id: route.query.cat_id,
     keywords: route.query.keywords,
     page: 1,
     sort_type: null,
@@ -155,10 +155,10 @@ const searchData = () => {
         if (isSuccessCode(res)) {
             listNoData.value = !res.data.list.length
             keywords.value = res.data.keywords
-            if ((route.query.cat_id && params.cat_id && route.query.cat_id==params.cat_id) && route.query.keywords != res.data.keywords) {
+            if ((route.query.cat_id && params.category_id && route.query.cat_id==params.category_id) && route.query.keywords != res.data.keywords) {
                 Object.assign(info,{
                     ...info,
-                    cat_id:'',
+	                category_id:'',
                 })
             }
             // 如果购物车找相似进来，则获取到cat_id返回的kewwords时，清除cat_id
@@ -182,10 +182,10 @@ const loadMore = () => {
         setTimeout(() => {
             let ids = []
             let params = JSON.parse(JSON.stringify(info))
-            if ((route.query.cat_id && params.cat_id && route.query.cat_id==params.cat_id) && route.query.keywords == params.keywords) {
+            if ((route.query.cat_id && params.category_id && route.query.cat_id==params.category_id) && route.query.keywords == params.keywords) {
                 params.keywords = ''
             }else {
-                params.cat_id = ''
+                params.category_id = ''
             }
 
             params['number'] = 15
@@ -243,12 +243,12 @@ const scrolls = () => {
 };
 
 watch(route, (value) => {
-    if(value.query.keywords !== info.keywords || value.query.cat_id !== info.cat_id){
+    if(value.query.keywords !== info.keywords || value.query.cat_id !== info.category_id){
         keywords.value = value.query.keywords
         Object.assign(info,{
             ...info,
             keywords:value.query.keywords,
-            cat_id:value.query.cat_id,
+	        category_id:value.query.cat_id,
         })
         rank.value = false
         listNoData.value = false
