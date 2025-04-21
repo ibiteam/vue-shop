@@ -1,6 +1,6 @@
 <template>
     <div class="fullscreen-advertising-wrapper" v-if="content.items.image">
-        <div class="s-flex ai-ct jc-ct" style="width: 100%; height: 100%;">
+        <div class="s-flex ai-ct jc-ct flex-dir image-wrapper">
             <common-image v-bind="{ src: content.items.image, width: 'auto', height: 'auto', radius: '0' }" @click.stop="handleOpenLink(content.items.url)"></common-image>
             <em class="iconfont icon-guanbi" @click="handleClose"></em>
         </div>
@@ -43,12 +43,18 @@ const handleClose = () => {
     margin: auto;
     z-index: 9999;
     overflow: hidden;
+    .image-wrapper {
+        width: 100%;
+        height: 100%;
+        padding: 0.2rem;
+        box-sizing: border-box;
+    }
     em.icon-guanbi{
-        position: absolute;
-        right: 0;
-        left: 0;
-        bottom: 1rem;
-        margin: 0 auto;
+        // position: absolute;
+        // right: 0;
+        // left: 0;
+        // bottom: 1rem;
+        margin-top: .1rem;
         color: #fff;
         font-size: .5rem;
         height: .44rem;
