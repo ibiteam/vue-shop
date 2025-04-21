@@ -58,7 +58,7 @@
 									</div>
 									<div class="address-btn-contrl s-flex jc-fe" style="line-height: 0.78rem;">
 										<span @click="clickDeleteAddress(item,index)">删除</span>
-										<span @click="router.push({ name: 'addressForm', params: { id: item.id } })">修改</span>
+										<span @click="router.push({ name: 'addressForm', params: { id: item.id } , query:{back: 1} })">修改</span>
 									</div>
 								</div>
 							</div>
@@ -68,7 +68,7 @@
 							<p>您还没有地址，快来添加吧～</p>
 						</div>
 						<div class="address-btn">
-							<router-link :to="{ name: 'addressForm', params: { id: 0 } }" class="address-add s-flex jc-ct">新增收货地址</router-link>
+							<router-link :to="{ name: 'addressForm', params: { id: 0 }, query:{back: 1} }" class="address-add s-flex jc-ct">新增收货地址</router-link>
 						</div>
 					</template>
 				</div>

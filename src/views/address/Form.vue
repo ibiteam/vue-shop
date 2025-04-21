@@ -25,12 +25,13 @@
 
 <script setup>
 import { ref, reactive, getCurrentInstance, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import AddressSelect from '@/components/common/AddressSelect'
 import { updateAddress, getAddressDetail } from "@/api/address.js";
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute();
+const router = useRouter()
 
 const form = reactive({
     id: 0,
@@ -48,6 +49,7 @@ const form = reactive({
 })
 const formDisabled = ref(false)
 const addressSelectShow = ref(false)
+const isBack = ref(route.query.back)
 
 
 const handleAddressSelectOpen = () => {
@@ -90,7 +92,11 @@ const handleSubmit = () => {
     }).then(res => {
         if (cns.$constant.isSuccessCode(res)) {
             cns.$toast('保存成功')
-            cns.appRoute('address', {}, 'replace')
+	        if(!!isBack){
+		        router.back()
+	        }else {
+		        cns.appRoute('address', {}, 'replace')
+	        }
         } else if (cns.$constant.isUnLoginCode(res)) {
             // 去登录
             cns.appRoute('login')
