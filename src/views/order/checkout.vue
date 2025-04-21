@@ -258,8 +258,8 @@ const done = () => {
 	})
 }
 
-const getData = () => {
-	getCheckoutData(Object.keys(routeQuery.value).length ? routeQuery.value : null).then((res) => {
+const getData = (user_address_id) => {
+	getCheckoutData(Object.keys(routeQuery.value).length ? {...routeQuery.value, user_address_id} : { user_address_id }).then((res) => {
 		if (isSuccessCode(res)) {
 			placeholder.value = false
 
@@ -301,7 +301,7 @@ const clickAddressBack = (item) => {
 	address.value = item
 	formData.user_address_id = item.id
 	showAddress.value = false
-	getData()
+	getData(item.id)
 }
 
 onMounted(() => {
