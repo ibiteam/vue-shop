@@ -3,11 +3,11 @@
         <div class="search-logo" v-if="content.logo">
             <common-image v-bind="{ src: content.logo, width: '1.6rem', height: '0.6rem', radius: '0' }"></common-image>
         </div>
-        <div class="search-input s-flex ai-ct jc-bt flex-1">
+        <div class="search-input s-flex ai-ct jc-bt flex-1" @click="handleSearch">
             <swiper v-if="content.items?.length" v-bind="{
                 direction: 'vertical',
                 autoplay: {
-                    'delay': (content.interval || 3) * 1000,
+                    'delay': (content.interval || 3) * 1000,    
                 },
                 loop: content.items.length >= 3 ? true : false,
                 modules: swiperModules,
@@ -19,7 +19,7 @@
                 </swiper-slide>
             </swiper>
             <div class="search-placeholder" v-else> {{ content.keywords }} </div>
-            <div class="search-btn" :style="{color: '#fff', backgroundColor: content.button_color}" @click="handleSearch">搜索</div>
+            <div class="search-btn" :style="{color: '#fff', backgroundColor: content.button_color}">搜索</div>
         </div>
     </div>
 </template>
@@ -52,10 +52,13 @@ const onSwiper = (swiper) => {
 const handleSearch = () => {
     if (swiperRef.value) {
         const {activeIndex} = swiperRef.value
-        props.content.items[activeIndex].url?.value && cns.$bus.emit('homeOpenLink', props.content.items[activeIndex].url?.value)
-    } else {
-        appRoute('search')
+        if (!props.content.items[activeIndex].url.value) {
+            cns.$bus.emit('homeOpenLink', props.content.items[activeIndex].url?.value)
+            return
+        }
+        // props.content.items[activeIndex].url?.value && cns.$bus.emit('homeOpenLink', props.content.items[activeIndex].url?.value)
     }
+    appRoute('search')
 }
 </script>
 
