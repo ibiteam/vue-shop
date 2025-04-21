@@ -13,3 +13,6 @@ export function searchKeywords(){
   return $http.doGet("v1/search", {})
 }
 
+export function searchKeywordsPull(keywords){
+  return $http.doGet("v1/search/keywords", {keywords})
+}

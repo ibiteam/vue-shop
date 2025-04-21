@@ -18,7 +18,7 @@
         </div>
         <!--搜索关键词下拉数据-->
         <div class="search-history-options" v-if="searchKeywordsOptiosn.length">
-            <van-cell v-for="(item, index) in searchKeywordsOptiosn" :key="index" :title="item.title" @click="handleSearchConfirm(item.title)" />
+            <van-cell v-for="(item, index) in searchKeywordsOptiosn" :key="index" :title="item" @click="handleSearchConfirm(item)" />
         </div>
         <template v-else>
             <!--搜索历史列表-->
@@ -46,7 +46,7 @@
 import {ref, reactive, watch, computed, onMounted, onBeforeMount, onActivated} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import $public from '@/utils/public'
-import {searchKeywords} from '@/api/search'
+import {searchKeywordsPull} from '@/api/search'
 import { isSuccessCode } from "@/utils/constant.js";
 
 const router = useRouter();
@@ -97,9 +97,13 @@ const handleSearchConfirm = (value) => {
 };
 
 const handleInputSearchOptions = $public.debounce(() => {
-	searchKeywords().then(res => {
+	if(!info.keywords){
+		searchKeywordsOptiosn.value = []
+		return
+	}
+	searchKeywordsPull(info.keywords).then(res => {
         if (isSuccessCode(res)) {
-            searchKeywordsOptiosn.value = res.data.items;
+            searchKeywordsOptiosn.value = res.data;
         }
     });
 },300);
