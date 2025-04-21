@@ -18,14 +18,14 @@
         </div>
         <!--搜索关键词下拉数据-->
         <div class="search-history-options" v-if="searchKeywordsOptiosn.length">
-            <van-cell v-for="(item, index) in searchKeywordsOptiosn" :key="index" :title="item.title" @click="handleSearchConfirm(item.title)" />
+            <van-cell v-for="(item, index) in searchKeywordsOptiosn" :key="index" :title="item" @click="handleSearchConfirm(item)" />
         </div>
         <template v-else>
             <!--搜索历史列表-->
             <div class="search-history-keywords" v-if="search_keywords_list && search_keywords_list.length">
                 <div class="title s-flex" ref="keywordTitle">
                     <label class="flex-1">搜索历史</label>
-                    <em class="iconfont" @click="handleClickClearKeywords">&#xe666;</em>
+                    <em class="iconfont co-666" @click="handleClickClearKeywords">&#xe79b;</em>
                 </div>
                 <div class="keywords-list s-flex" ref="keywordBox">
                     <div class="keywords-item van-ellipsis"
@@ -46,7 +46,7 @@
 import {ref, reactive, watch, computed, onMounted, onBeforeMount, onActivated} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import $public from '@/utils/public'
-import {searchKeywords} from '@/api/search'
+import {searchKeywordsPull} from '@/api/search'
 import { isSuccessCode } from "@/utils/constant.js";
 
 const router = useRouter();
@@ -97,9 +97,13 @@ const handleSearchConfirm = (value) => {
 };
 
 const handleInputSearchOptions = $public.debounce(() => {
-	searchKeywords().then(res => {
+	if(!info.keywords){
+		searchKeywordsOptiosn.value = []
+		return
+	}
+	searchKeywordsPull(info.keywords).then(res => {
         if (isSuccessCode(res)) {
-            searchKeywordsOptiosn.value = res.data.items;
+            searchKeywordsOptiosn.value = res.data;
         }
     });
 },300);
@@ -144,8 +148,8 @@ onBeforeMount(() => {
     /*搜索历史*/
     .search-history-keywords { padding: 0 0.30rem; }
     .search-history-keywords .title { padding-top: 0.15rem; }
-    .search-history-keywords .title em,
     .search-history-keywords .title label { font-size: 0.28rem; font-weight: 600; color: #343434; position: relative; }
+	.search-history-keywords .title em{ font-weight: normal; color: #666;}
     .search-history-keywords .keywords-list { flex-flow: row wrap; padding: 0.10rem 0; }
     .search-history-keywords .keywords-list .keywords-item { height: 0.44rem; line-height: 0.44rem; padding: 0 0.20rem; margin-top: 10px; margin-right: 0.10rem; text-align: right; font-size: 0.20rem; color: #343434; background-color: var(--page-bg-color); border-radius: 0.60rem; float: left; }
     .search-history-keywords .keywords-list .history-more { padding: 0 4px !important;; margin: 10px 0.20rem 0 0; }
