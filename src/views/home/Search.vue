@@ -58,7 +58,7 @@ const handleSearch = () => {
         }
         // props.content.items[activeIndex].url?.value && cns.$bus.emit('homeOpenLink', props.content.items[activeIndex].url?.value)
     }
-    appRoute('search')
+    appRoute('search_history', {keywords: props.content.keywords})
 }
 </script>
 

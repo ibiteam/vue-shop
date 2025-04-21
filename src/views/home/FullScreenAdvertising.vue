@@ -56,7 +56,7 @@ const handleClose = () => {
         // bottom: 1rem;
         margin-top: .1rem;
         color: #fff;
-        font-size: .5rem;
+        font-size: .7rem;
         height: .44rem;
         width: .44rem;
     }
