@@ -86,7 +86,7 @@
 											<span class="co-red fs50 fw-b">{{ skuId ? skuShopPrice.integral : goodsInfo.integral }}</span>
 											<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
 										</template>
-										<p class="fs24 co-red" style="margin-left: 0.3rem;">{{ goodsInfo.label }}</p>
+										<p class="fs24 co-red" style="margin-left: 0.3rem;" v-if="goodsInfo.label">{{ goodsInfo.label }}</p>
 									</div>
 								</div>
 							</div>
