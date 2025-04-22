@@ -44,3 +44,7 @@ export function changeNumberAxios(param){
 export function addGoodsToCart(param){
   return $http.doPost('v1/cart/store',param)
 }
+
+export function getCartNumber() {
+    return $http.doGet('v1/cart/number')
+}
