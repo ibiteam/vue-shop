@@ -358,6 +358,7 @@
 			</div>
 		</van-popup>
 		<AddressListPopup v-model:show="selectAddressPopup" :addressId="addressId" @changeAddress="changeAddress"></AddressListPopup>
+		<BackTop></BackTop>
 	</div>
 </template>
 
@@ -375,6 +376,7 @@ import AddressListPopup from "@/components/common/AddressListPopup.vue";
 import Recommend from "@/components/recommend/Recommend.vue";
 import skuSelect from './SkuSelect.vue'
 import shopRate from './ShopRate.vue'
+import BackTop from "@/components/common/BackTop.vue";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const router = useRouter()
