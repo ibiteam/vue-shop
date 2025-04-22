@@ -29,7 +29,7 @@
 					<a href="javascript:" :class="{'active': active=='goods'}" @click="onScrollGoods">
 						<span>商品</span>
 					</a>
-					<a href="javascript:" :class="{'active': active=='comment'}" @click="onScrollComment" v-if="goodsInfo.status==1">
+					<a href="javascript:" :class="{'active': active=='comment'}" @click="onScrollComment" v-if="goodsInfo.status==1 && evaluate">
 						<span>评价</span>
 					</a>
 					<a href="javascript:" :class="{'active': active=='detail'}" @click="onScrollDetail" v-if="goodsInfo.status==1">
@@ -46,22 +46,12 @@
 				<div class="goods">
 					<!--轮播图-->
 					<div class="swiper-box">
-						<template v-if="banner.video&&banner.video.url&&goodTab == 0">
-							<div class="play-btn">
-								<img src="@/assets/images/good/good-video-play.png" @click="router.push({name:'goodPlay',query:{url:banner.video.url}})">
-							</div>
-							<van-image :src="banner.images[0]" v-if="banner&&banner.images.length">
-								<template v-slot:loading>
-									<img src="@/assets/images/common/no-pic.png" alt="">
-								</template>
-								<template v-slot:error>
-									<img src="@/assets/images/common/no-pic.png" alt="">
-								</template>
-							</van-image>
-						</template>
-						<van-swipe :autoplay="3000" indicator-color="black" @change="onChangeSwiper" v-else ref="swiperRef">
-							<van-swipe-item v-for="(item, index) in banner.images" :key="index" @click="lookBig(item)">
-								<van-image :src="item">
+						<van-swipe :autoplay="3000" indicator-color="black" @change="onChangeSwiper" ref="swiperRef">
+							<van-swipe-item v-for="(item, index) in bannerImgVideo" :key="index" @click="lookBig(item)">
+								<div class="play-btn" v-if="item.type == 'video'">
+									<img src="@/assets/images/good/good-video-play.png" @click="router.push({name:'goodPlay',query:{url:item.video_url}})">
+								</div>
+								<van-image :src="item.url">
 									<template v-slot:loading>
 										<img src="@/assets/images/common/no-pic.png" alt="">
 									</template>
@@ -71,15 +61,11 @@
 								</van-image>
 							</van-swipe-item>
 							<template #indicator>
-								<div class="indicator-wrap" v-if="banner.images&&banner.images.length>1">
-									<div class="custom-indicator" :class="{'indicator-active':swiperIndex == index}" v-for="(item, index) in banner.images" :key="`swiperIndex-${index}`"></div>
+								<div class="indicator-wrap" v-if="bannerImgVideo.length">
+									<div class="custom-indicator" :class="{'indicator-active':swiperIndex == index}" v-for="(item, index) in bannerImgVideo" :key="`swiperIndex-${index}`"></div>
 								</div>
 							</template>
 						</van-swipe>
-						<div class="main-btn-wrap">
-							<div :class="{active:goodTab == 0}" v-if="banner.video.url" @click="goodTab = 0">视频</div>
-							<div :class="{active:goodTab == 1}" @click="changeToImg">图集</div>
-						</div>
 					</div>
 					<div style="position: relative;top: -0.4rem;border-radius: 0.34rem 0.34rem 0 0;overflow: hidden;margin-bottom: -0.4rem;">
 						<!--        已删除/已下架        -->
@@ -160,9 +146,9 @@
 						</div>
 					</section>
 				</div>
-				<div style="padding: 0 0.2rem;" class="border-wrap">
+				<div style="padding: 0 0.2rem;" class="border-wrap" ref="commentRef" id="comment">
 					<!--评价-->
-					<div class="comment MT10 bg-fff" ref="commentRef" id="comment">
+					<div class="comment MT10 bg-fff" v-if="evaluate">
 						<!--商品评价-->
 						<div class="item-tit2 s-flex ai-ct jc-bt" @click="toEvaluate('good')">
 							<div class="s-flex ai-ct">
@@ -401,6 +387,7 @@ const detailRef = ref(null)
 const commentRef = ref(null)
 // 响应式数据
 const banner = ref({})
+const bannerImgVideo = ref([])
 const evaluate = ref({
 	items: [],
 	tag_data: []
@@ -414,13 +401,12 @@ const changeAddress = (item) => {
 	addressId.value = item.id
 	selectAddress.value = `${item.province} ${item.city} ${item.district}`
 }
-const goodTab = ref(1)
+
 const swiperIndex = ref(0)
 const fromPath = ref('')
 const goodsNo = ref('')
 const opacity = ref(0)
 const active = ref('good')
-const nodata = ref(false)
 const goodsInfo = ref({})
 const isAttention = ref(false)
 const shoppingType = ref(-1)
@@ -442,7 +428,8 @@ const specId = ref([])
 const specName = ref([])
 const skuShopPrice = ref({
 	price:'',
-	integral:''
+	integral:'',
+	number: 0
 })
 const skuId = ref('')
 const isSkuIng = ref(false)
@@ -465,6 +452,7 @@ const updateSkuFirst = (item, skuParamListProp, specNameProp, specIdProp) => {
 	specId.value = [...specIdProp]
 	skuShopPrice.value.price = item.price
 	skuShopPrice.value.integral = item.integral
+	skuShopPrice.value.number = item.number
 }
 
 const selectSkuFirst = (item)=>{
@@ -485,6 +473,7 @@ const selectSkuFirst = (item)=>{
 		if (isSuccessCode(res)) {
 			skuShopPrice.value.price = res.data.price
 			skuShopPrice.value.integral = res.data.integral
+			skuShopPrice.value.number = res.data.number
 			skuId.value = res.data.id
 		} else {
 			cns.$toast(res.message)
@@ -506,14 +495,6 @@ const lookBigImg = (item, idx) => {
 	showPreviewer.value = true
 }
 
-const changeToImg = () => {
-	goodTab.value = 1
-	nextTick(() => {
-		swiperRef.value.swipeTo({index: 0})
-		swiperIndex.value = 0
-	})
-}
-
 const onChangeSwiper = (index) => {
 	swiperIndex.value = index
 }
@@ -522,9 +503,11 @@ const handleBack = () => {
 	router.back(-1)
 }
 
-const lookBig = (url) => {
+const lookBig = (imgItem) => {
+	if(imgItem.type == 'video') return
 	imgUrlBig.value = banner.value.images
-	startIndex.value = imgUrlBig.value.findIndex(item => item === url)
+	startIndex.value = imgUrlBig.value.findIndex(item => item === imgItem.url)
+	startIndex.value ++
 	showIndex.value = true
 	showPreviewer.value = true
 }
@@ -543,7 +526,6 @@ const handleScroll = () => {
 	let commentTop = commentRef.value && commentRef.value.offsetTop - 44
 	let detailTop = detailRef.value && detailRef.value.offsetTop - 44
 	let recommendTop = recommendRef.value && recommendRef.value.offsetTop - 44
-	let recommendHeight = recommendRef.value && recommendRef.value.offsetHeight
 
 	// 计算滚动距离在哪个区间，修改active.value对应的样式名
 	if (scrollTopVal < commentTop) {
@@ -668,6 +650,11 @@ const getData = () => {
 		if (isSuccessCode(res)) {
 			placeholder.value = false
 			banner.value = res.data.banner
+			bannerImgVideo.value = []
+			banner.value.images.length && banner.value.images.forEach((item, index) => {
+				bannerImgVideo.value.push({url: item, type: 'img'})
+			})
+			banner.value.video.url && bannerImgVideo.value.unshift({url: bannerImgVideo.value[0].url, type: 'video', video_url: banner.value.video.url})
 			/**商品信息**/
 			goodsInfo.value = res.data.center
 			evaluate.value = res.data.center.evaluate
@@ -679,6 +666,7 @@ const getData = () => {
 				skuId.value = res.data.center.sku_params.sku_item.id
 				skuShopPrice.value.price = res.data.center.sku_params.sku_item.price || ''
 				skuShopPrice.value.integral = res.data.center.sku_params.sku_item.integral || ''
+				skuShopPrice.value.number = res.data.center.sku_params.sku_item.number
 				skuParamList.value.forEach((d, i) => {
 					d.values.forEach(s => {
 						if (s.selected) {
@@ -692,9 +680,6 @@ const getData = () => {
 				})
 			}
 
-			if (res.data.banner.video.url) {
-				goodTab.value = 0
-			}
 			/**规格参数**/
 			goodsAttr.value = res.data.center.parameters
 			/**购物车数量**/
@@ -1101,19 +1086,16 @@ router.beforeEach((to, from, next) => {
 			}
 			.play-btn {
 				position: absolute;
-				width: 1.6rem;
-				height: 1.6rem;
+				width: 1.1rem;
+				height: 1.1rem;
 
 				img {
 					width: 100%;
 					height: 100%;
 				}
 
-				left: 0;
-				top: 0;
-				bottom: 0;
-				right: 0;
-				margin: auto;
+				left: 0.3rem;
+				bottom: 1.2rem;
 				z-index: 2;
 			}
 			.indicator-wrap {

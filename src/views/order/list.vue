@@ -271,11 +271,12 @@ const getOrderData = () => {
                 noData.value = false
             }
             if (res.data.meta.current_page * res.data.meta.per_page > res.data.meta.total){
-                loading.value = false
                 finished.value = true
             }else{
                 orderInfo.value.page++
+                finished.value = false
             }
+            loading.value = false
             page_load.value = false
             order_load.value = false
         } else if (cns.$constant.isUnLoginCode(res)) {
