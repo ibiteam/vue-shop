@@ -29,7 +29,7 @@
 					<a href="javascript:" :class="{'active': active=='goods'}" @click="onScrollGoods">
 						<span>商品</span>
 					</a>
-					<a href="javascript:" :class="{'active': active=='comment'}" @click="onScrollComment" v-if="goodsInfo.status==1">
+					<a href="javascript:" :class="{'active': active=='comment'}" @click="onScrollComment" v-if="goodsInfo.status==1 && evaluate">
 						<span>评价</span>
 					</a>
 					<a href="javascript:" :class="{'active': active=='detail'}" @click="onScrollDetail" v-if="goodsInfo.status==1">
