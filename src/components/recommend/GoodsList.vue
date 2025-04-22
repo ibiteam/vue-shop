@@ -25,7 +25,7 @@
 							<span class="co-333 co-red" style="margin-left: 0.05rem;">{{ shopConfig.integral_name || '积分' }}</span>
 						</template>
 					</div>
-					<div class="co-666"><span v-if="item.sales_volume">已售{{item.sales_volume}}+</span></div>
+					<div class="co-666"><span v-if="item.sales_volume">已售{{item.sales_volume}}</span></div>
 				</div>
 			</div>
 		</div>
