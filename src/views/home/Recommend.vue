@@ -85,6 +85,10 @@ const handleOpenLink = (res) => {
 watch(() => props.content, (val) => {
     if (val) {
         recommend.value = val.items.list
+        if (val.items.meta.total == val.items.list.length && props.paging) {
+            pageInfo.finished = true
+            pageInfo.loading = false
+        }
     }
 },{
     immediate: true,
