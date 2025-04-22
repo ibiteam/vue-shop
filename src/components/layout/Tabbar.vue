@@ -11,23 +11,40 @@
             :key="tab.alias"
             :name="tab.alias"
             :icon="active == tab.alias ? tab.selection_image : tab.default_image"
-            :badge="tab.alias == 'cart' && configStore.shopConfig?.cart_count ? configStore.shopConfig.cart_count : ''"
+            :badge="tab.alias == 'cart' && cartNumber ? cartNumber : ''"
             :to="{name:tab.alias}"
         >{{ active == tab.alias ? tab.check_title : tab.title }}</van-tabbar-item>
     </van-tabbar>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, getCurrentInstance } from 'vue'
 import { useTabbarStore } from '@/stores/modules/tabbar';
-import { useConfigStore } from '@/stores/modules/config';
+import { getCartNumber } from '@/api/cart'
+import { useRoute } from 'vue-router'
 
+const cns = getCurrentInstance().appContext.config.globalProperties
+const route = useRoute();
 const tabbarStore = useTabbarStore();
-const configStore = useConfigStore();
 const active = ref(0);
+const cartNumber = ref(0)
 const handleBeforChange = (name) => {
     return true
 }
+
+watch(() => route.name, (newVal) => {
+    if (newVal) {
+        const index = tabbarStore.tabs.findIndex(item => item.alias == newVal)
+        if (index < 0) return
+        getCartNumber().then(res => {
+            if (cns.$constant.isSuccessCode(res)) {
+                cartNumber.value = res.data.number
+            }
+        })
+    }
+}, {
+    immediate: true,
+})
 
 </script>
 

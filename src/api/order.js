@@ -2,7 +2,7 @@ import $http from '@/utils/http.js'
 
 export function getCheckoutData(params) {
 
-    const URL = params ? 'v1/order/direct/init' : 'v1/order/cart/init'
+    const URL = params && params.no ? 'v1/order/direct/init' : 'v1/order/cart/init'
     return $http.doGet(URL, params || {})
 }
 

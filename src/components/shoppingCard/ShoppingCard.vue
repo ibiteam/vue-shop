@@ -155,7 +155,8 @@
     const isSkuIng = ref(false)
     const skuPrice = ref({
 	    price: '',
-	    integral: ''
+	    integral: '',
+	    number: ''
     })
     const thumbUrl = ref('')
     const numinputRef = ref(null)
@@ -168,6 +169,7 @@
     watch(() => props.skuShopPrice, (newVal) => {
         skuPrice.value.price = newVal.price
         skuPrice.value.integral = newVal.integral
+        skuPrice.value.number = newVal.number
     }, {deep : true})
 
     watch(() => props.sku_id, (newVal) => {
@@ -185,15 +187,9 @@
             return false
         }
 
-        // 库存
-        goodsNumber.value = props.goodsInfo.total // 总库存
-        maxNumber.value = props.goodsInfo.can_quota ? props.goodsInfo.quota_number : goodsNumber.value ? goodsNumber.value : 0 // 当前可用库存
-
-	    if (props.initFlag == 1) {
-		    goodStore.setBuyNumber(props.goodsInfo.min_number)
-	    }
         // 商品规格
         if (props.initFlag == 1) {
+	        goodStore.setBuyNumber(props.goodsInfo.min_number)
             skuParamList.value = JSON.parse(JSON.stringify(props.skuParamList))
             specName.value = []
             skuId.value = props.sku_id
@@ -211,10 +207,15 @@
         }
         // 计算最终价
         if (props.skuParamList.length && skuId.value) {
+	        // 库存
+	        goodsNumber.value = skuPrice.value.number // 总库存
             count(skuPrice.value.price)
         } else {
+	        // 库存
+	        goodsNumber.value = props.goodsInfo.total // 总库存
             count()
         }
+	    maxNumber.value = props.goodsInfo.can_quota ? props.goodsInfo.quota_number : goodsNumber.value ? goodsNumber.value : 0 // 当前可用库存
     })
 
     watch(() => props.skuParamList, (newVal) => {
@@ -287,7 +288,8 @@
 	            count(res.data.price)
 	            skuPrice.value = {
                     price: res.data.price,
-		            integral: res.data.integral
+		            integral: res.data.integral,
+		            number: res.data.number
                 }
 				skuId.value = res.data.id
                 nextTick(() => {

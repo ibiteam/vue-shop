@@ -14,12 +14,11 @@
     </van-sticky>
     <van-list
         v-model="loading"
-        :finished="bottomline"
+        :finished="finished"
         :finished-text="good_list.length > 10?'没有更多了~':''"
         :immediate-check="false"
         :offset="offsetLoad"
-        @load="loadMore"
-        v-if="listFlag"
+        @load="loadData"
     >
       <div class="main">
         <van-checkbox-group
@@ -98,13 +97,12 @@ const checkGoodsAllFlag =ref(false)
 const checkGoodsResult = ref([])
 const good_list =ref([])
 const pagination = ref({
-  current_page:0
+  current_page:1
 })
 const loading = ref(false)
-const bottomline =ref(false)
+const finished =ref(false)
 const offsetLoad =ref(1)
 const noData = ref(true)
-const listFlag =ref(true)
 const checkboxGoodsGroup = ref(null)
 
 onMounted(() => {
@@ -112,59 +110,35 @@ onMounted(() => {
 })
 
 const loadData = () => {
-  loading.value = false;
-  noData.value = false;
   let info = {
-    page: pagination.current_page,
+    page: pagination.value.current_page,
   };
   viewsHistoryAxios(info).then((res) => {
     if (cns.$constant.isSuccessCode(res)) {
-      good_list.value = res.data.list
-      pagination.value = res.data.meta;
-      pagination.current_page++
-      if (res.data.meta.total == 0) {
-        noData.value = true;
-        bottomline.value = true;
-      }
-      if (res.data.meta.total < 10) {
-        bottomline.value = true;
-      }
+        if (pagination.value.current_page == 1){
+            good_list.value = res.data.list
+        }else{
+            good_list.value.push(...res.data.list)
+        }
+        pagination.value = res.data.meta;
+        if (res.data.meta.total == 0){
+            noData.value = true
+        }else{
+            noData.value = false
+        }
+        if (res.data.meta.current_page * res.data.meta.per_page > res.data.meta.total){
+            finished.value = true
+        }else{
+            pagination.value.current_page++
+            finished.value = false
+        }
+        loading.value = false
     } else if (cns.$constant.isUnLoginCode(res)) {
       cns.appRoute('login')
     } else {
       cns.$toast(res.message)
     }
   });
-}
-
-const loadMore = () =>{
-  let info = {
-    page: pagination.current_page,
-    type:0
-  }
-  if (good_list.value.length >= 10) {
-    loading.value = true;
-    viewsHistoryAxios(info).then((res) => {
-      if (cns.$constant.isSuccessCode(res)) {
-        bottomline.value = res.data.meta.total < 10 ? true : false;
-        pagination.value = res.data.meta;
-        if (pagination.current_page == 1) {
-          good_list.value = res.data
-        } else {
-          good_list.value =  [...good_list.value, ...res.data]
-        }
-        checkGoodsChange()
-        pagination.current_page++;
-        loading.value = false;
-      } else {
-        cns.$toast(res.message);
-        good_list.value = [];
-      }
-    });
-  } else {
-    loading.value = false;
-    bottomline.value = true;
-  }
 }
 
 const deleteViews = () => {
