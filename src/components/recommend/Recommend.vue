@@ -33,7 +33,6 @@ const pageInfo = ref({
 	per_page: 6,
 	current_page: 1
 })
-
 const countLastPage = () => {
 	return (pageInfo.value.total % pageInfo.value.per_page ? 1 : 0) + Math.floor(pageInfo.value.total / pageInfo.value.per_page)
 }
@@ -46,7 +45,7 @@ const loadRecommend = () => {
 		if (isSuccessCode(res)) {
 			recommend.value = recommend.value.concat(res.data.list)
 			pageInfo.value = res.data.meta
-			if (res.data.meta.current_page == countLastPage()) {
+			if (res.data.meta.current_page == countLastPage() || res.data.list.length == 0) {
 				finished.value = true
 			} else {
 				pageInfo.value.current_page++
