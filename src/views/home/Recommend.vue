@@ -85,6 +85,8 @@ const handleOpenLink = (res) => {
 watch(() => props.content, (val) => {
     if (val) {
         recommend.value = val.items.list
+        pageInfo.total = val.items.meta.total
+        pageInfo.per_page = val.items.meta.per_page
         if (val.items.meta.total == val.items.list.length && props.paging) {
             pageInfo.finished = true
             pageInfo.loading = false
