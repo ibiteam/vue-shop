@@ -146,9 +146,9 @@
 						</div>
 					</section>
 				</div>
-				<div style="padding: 0 0.2rem;" class="border-wrap">
+				<div style="padding: 0 0.2rem;" class="border-wrap" ref="commentRef" id="comment">
 					<!--评价-->
-					<div class="comment MT10 bg-fff" ref="commentRef" id="comment">
+					<div class="comment MT10 bg-fff" v-if="evaluate">
 						<!--商品评价-->
 						<div class="item-tit2 s-flex ai-ct jc-bt" @click="toEvaluate('good')">
 							<div class="s-flex ai-ct">
@@ -428,7 +428,8 @@ const specId = ref([])
 const specName = ref([])
 const skuShopPrice = ref({
 	price:'',
-	integral:''
+	integral:'',
+	number: 0
 })
 const skuId = ref('')
 const isSkuIng = ref(false)
@@ -451,6 +452,7 @@ const updateSkuFirst = (item, skuParamListProp, specNameProp, specIdProp) => {
 	specId.value = [...specIdProp]
 	skuShopPrice.value.price = item.price
 	skuShopPrice.value.integral = item.integral
+	skuShopPrice.value.number = item.number
 }
 
 const selectSkuFirst = (item)=>{
@@ -471,6 +473,7 @@ const selectSkuFirst = (item)=>{
 		if (isSuccessCode(res)) {
 			skuShopPrice.value.price = res.data.price
 			skuShopPrice.value.integral = res.data.integral
+			skuShopPrice.value.number = res.data.number
 			skuId.value = res.data.id
 		} else {
 			cns.$toast(res.message)
@@ -663,6 +666,7 @@ const getData = () => {
 				skuId.value = res.data.center.sku_params.sku_item.id
 				skuShopPrice.value.price = res.data.center.sku_params.sku_item.price || ''
 				skuShopPrice.value.integral = res.data.center.sku_params.sku_item.integral || ''
+				skuShopPrice.value.number = res.data.center.sku_params.sku_item.number
 				skuParamList.value.forEach((d, i) => {
 					d.values.forEach(s => {
 						if (s.selected) {
