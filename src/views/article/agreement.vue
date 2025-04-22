@@ -41,17 +41,17 @@ const getPageData = () => {
 }
 .agreement-content { line-height: 2; padding: 0.2rem 0.2rem 0 0.2rem; background-color: #ffffff; color: #000; font-size: 14px; overflow-x: hidden; }
 .agreement-content p { line-height: 2; font-size: 14px;}
-.agreement-content ::v-deep b { font-weight: 900;}
-.agreement-content ::v-deep b u{ font-weight: 900;}
-.agreement-content ::v-deep table {
+:deep(.agreement-content b) { font-weight: 900;}
+:deep(.agreement-content b u){ font-weight: 900;}
+:deep(.agreement-content table) {
   width: 100% !important;
   display: block !important;
   overflow: auto !important;
 }
-.agreement-content ::v-deep table span{
+:deep(.agreement-content table span){
   word-break: keep-all;
 }
-.agreement-content ::v-deep td{
+:deep(.agreement-content td){
   word-break: keep-all;
 }
 </style>
