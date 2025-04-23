@@ -243,21 +243,19 @@ const beforeRead = (file) =>{
   return isLt5M;
 }
 
-const afterRead = () =>{
-  return (file) => {
+const afterRead = (file) => {
     let info = {
-      file: file.file,
+        file: file.file,
     };
     uploadFileAxios(info).then((res) => {
-      if (cns.$constant.isSuccessCode(res)) {
-        refundForm.value.certificate.push(res.data.url)
-      } else if(cns.$constant.isUnLoginCode(res)){
-        cns.appRoute('login')
-      } else {
-        cns.$toast(res.message);
-      }
+        if (cns.$constant.isSuccessCode(res)) {
+            refundForm.value.certificate.push(res.data.url)
+        } else if(cns.$constant.isUnLoginCode(res)){
+            cns.appRoute('login')
+        } else {
+            cns.$toast(res.message);
+        }
     });
-  };
 }
 
 const delPicture = (index) => {
