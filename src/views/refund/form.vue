@@ -199,6 +199,7 @@ const operatePageData = (res) =>{
                 ...refundForm.value,
                 money: refund_data.value.order_detail.refund_max_amount,
                 number: refund_data.value.order_detail.refund_max_number,
+                type:Number(route.query.refundType)
             }
             status.value = -1
         } else {
@@ -213,6 +214,7 @@ const operatePageData = (res) =>{
                     number: refund_data.value.refund_info.number,
                     description: refund_data.value.refund_info.description,
                     certificate: refund_data.value.refund_info.certificate,
+                    type:refund_data.value.type
                 }
                 refund_data.value.order_detail.refund_max_amount = refund_data.value.from_init.refund_max_amount
                 refund_data.value.order_detail.refund_max_number = refund_data.value.from_init.refund_max_number
@@ -304,7 +306,7 @@ const handleClickSubmitRefund = () =>{
       order_detail_id: route.query.order_detail_id,
       number:refundForm.value.number,
       money: Number(refundForm.value.money),
-      type:Number(route.query.refundType),
+      type:refundForm.value.type,
       reason_id: refundForm.value.reason_id,
       description: refundForm.value.description,
       certificate: refundForm.value.certificate.toString(),
@@ -343,7 +345,7 @@ const handleClickSubmitRefund = () =>{
     background: #fff;
 
     .content {
-        padding: 0 0.2rem;
+        padding: 0 0.2rem 0.2rem;
         box-sizing: border-box;
 
         .explain {
