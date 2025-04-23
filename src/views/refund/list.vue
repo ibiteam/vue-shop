@@ -20,7 +20,7 @@
             >
                 <div class="order-item" v-for="(item,index) in orderListData" :key="index">
                     <div class="order-info s-flex jc-bt act-border">
-                        <div class="fs22 co-333">退款编号：{{item.flow_sn}}</div>
+                        <div class="fs22 co-333">退款编号：{{item.no}}</div>
                         <div class="fs22 co-333">{{item.created_at}}</div>
                     </div>
                     <!--商品-->
@@ -122,6 +122,9 @@ const getData = () =>{
             }
         } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login')
+        }else if (res.code == 400){
+            loading.value = false
+            noData.value = true
         }else {
             cns.$toast(res.message)
         }
