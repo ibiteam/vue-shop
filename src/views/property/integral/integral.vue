@@ -9,15 +9,14 @@
         </div>
         <!--tab部分-->
         <van-sticky offset-top="46px">
-            <van-tabs
-                v-model="tabIndex"
+            <van-tabs v-model:active="tabIndex"
                 class="integral-tabs"
                 line-width="2em"
                 @click="handleChangeTabs"
             >
-                <van-tab title="全部"></van-tab>
-                <van-tab title="获取"></van-tab>
-                <van-tab title="兑换"></van-tab>
+                <van-tab title="全部" :name="0"></van-tab>
+                <van-tab title="获取" :name="1"></van-tab>
+                <van-tab title="兑换" :name="2"></van-tab>
             </van-tabs>
         </van-sticky>
         <!--积分列表-->
@@ -87,7 +86,7 @@ const getPageData = () => {
                     noData.value = true;
                 }
                 integralMeta.value = res.data.meta
-                info.page = 2;
+                info.value.page = 2;
             });
         } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login', {}, 'replace')
@@ -100,8 +99,8 @@ const getPageData = () => {
 const handleChangeTabs = () => {
     noData.value = false;
     finished.value = false
-    info.type = tabIndex.value;
-    info.page = 1;
+    info.value.type = tabIndex.value;
+    info.value.page = 1;
     integralList.value = []
     getPageData()
 }
@@ -117,7 +116,7 @@ const loadMore = () =>{
                     finished.value = true;
                 }
               integralMeta.value = res.data.meta
-                info.page++;
+                info.value.page++;
             } else if (cns.$constant.isUnLoginCode(res)) {
                 cns.appRoute('login', {}, 'replace')
             } else {

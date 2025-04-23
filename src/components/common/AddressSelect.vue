@@ -49,7 +49,6 @@
 
 <script setup>
 import { ref, reactive, getCurrentInstance, watch, nextTick, onMounted } from 'vue';
-import {addressGroup, addressAll} from './Address.js'
 import { getRegionGroup, getRegion } from '@/api/address.js'
 
 const cns = getCurrentInstance().appContext.config.globalProperties

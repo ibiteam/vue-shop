@@ -87,7 +87,7 @@
                                 </template>
                             </van-image>
                         </div>
-                        <van-uploader multiple :before-read="beforeRead" v-if="refundForm.certificate && refundForm.certificate.length<3" :after-read="afterRead(index)">
+                        <van-uploader multiple :before-read="beforeRead" v-if="refundForm.certificate && refundForm.certificate.length<3" :after-read="afterRead">
                             <template #default>
                                 <div class="imgs">
                                     <img src="@/assets/images/refund/upload.png" />
@@ -199,22 +199,22 @@ const operatePageData = (res) =>{
                 ...refundForm.value,
                 money: refund_data.value.order_detail.refund_max_amount,
                 number: refund_data.value.order_detail.refund_max_number,
+                type:Number(route.query.refundType)
             }
             status.value = -1
         } else {
             status.value = refund_data.value.refund_info.status
-            time.value = (refund_data.value.refund_info.job_time - refund_data.value.refund_info.system_time) * 1000
-            formatL.value = 86400 < (refund_data.value.refund_info.job_time - refund_data.value.refund_info.system_time) ? '还剩 DD 天 HH 时 mm 分 ss 秒':'还剩 HH 时 mm 分 ss 秒'
             //  如果申请退款被拒绝使用
             if (refund_data.value.from_init) {
                 refund_data.value.reason = refund_data.value.from_init.reason
                 refundForm.value = {
                     ...refundForm.value,
                     reason_id: refund_data.value.refund_info.reason_id,
-                    money: refund_data.value.refund_info.refund_money,
+                    money: refund_data.value.refund_info.money,
                     number: refund_data.value.refund_info.number,
                     description: refund_data.value.refund_info.description,
                     certificate: refund_data.value.refund_info.certificate,
+                    type:refund_data.value.type
                 }
                 refund_data.value.order_detail.refund_max_amount = refund_data.value.from_init.refund_max_amount
                 refund_data.value.order_detail.refund_max_number = refund_data.value.from_init.refund_max_number
@@ -243,7 +243,7 @@ const beforeRead = (file) =>{
   return isLt5M;
 }
 
-const afterRead = (index) =>{
+const afterRead = () =>{
   return (file) => {
     let info = {
       file: file.file,
@@ -306,7 +306,7 @@ const handleClickSubmitRefund = () =>{
       order_detail_id: route.query.order_detail_id,
       number:refundForm.value.number,
       money: Number(refundForm.value.money),
-      type:Number(route.query.refundType),
+      type:refundForm.value.type,
       reason_id: refundForm.value.reason_id,
       description: refundForm.value.description,
       certificate: refundForm.value.certificate.toString(),
@@ -345,7 +345,7 @@ const handleClickSubmitRefund = () =>{
     background: #fff;
 
     .content {
-        padding: 0 0.2rem;
+        padding: 0 0.2rem 0.2rem;
         box-sizing: border-box;
 
         .explain {
