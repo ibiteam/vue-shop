@@ -759,6 +759,21 @@ router.beforeEach((to, from, next) => {
 	margin: 0 auto;
 	background: #F8F8F8;
 	//overflow-x: hidden;
+	.goods-popup-title {
+		text-align: center;
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 7.5rem;
+		padding: 0.4rem 0;
+		background: #fff;
+
+		h3 {
+			font-size: 0.32rem;
+			font-weight: bold;
+		}
+	}
+
 	.nav {
 		position: fixed;
 		top: 0.98rem;
