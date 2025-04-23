@@ -18,11 +18,11 @@
             }" class="cards-swiper">
                 <template v-if="content.items.length <= 3">
                     <swiper-slide class="scroll-item" v-slot="{ isActive }" v-for="(item, index) in [...content.items, ...content.items]" :key="index">
-                        <common-image v-bind="{fit: isActive ? 'fill' : 'cover', src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0'}" />
+                        <common-image v-bind="{fit: isActive ? 'fill' : 'cover', src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0'}" @click.stop="handleOpenLink(item.url)"/>
                     </swiper-slide>
                 </template>
                 <swiper-slide v-else class="scroll-item" v-slot="{ isActive }" v-for="(item, index) in content.items" :key="index">
-                    <common-image v-bind="{fit: isActive ? 'fill' : 'cover', src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0'}" />
+                    <common-image v-bind="{fit: isActive ? 'fill' : 'cover', src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0'}" @click.stop="handleOpenLink(item.url)"/>
                 </swiper-slide>
             </swiper>
             <!-- 平铺 -->
