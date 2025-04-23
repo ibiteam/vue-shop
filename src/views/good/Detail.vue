@@ -651,7 +651,7 @@ const detailBig = () => {
 const processedContent = computed(() => {
 	return goodsInfo.value.content?.replace(
 		/<img(.*?)src="(.*?)"(.*?)>/gi,
-		'<img$1data-src="$2"$3 src="加载中的图片URL" class="lazy-image">'
+		'<img$1data-src="$2"$3 class="lazy-image">'
 	)
 })
 
