@@ -58,4 +58,9 @@ watch(() => route.name, (newVal) => {
 	right: 0;
 	margin: 0 auto;
 }
+@media screen and (min-width: 480px) {
+	:deep(.van-tabbar-item__text){
+		font-size: 16px;
+	}
+}
 </style>

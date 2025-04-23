@@ -83,6 +83,7 @@ const toDetail = (data) => {
 				margin-right: 0.1rem;
 				font-size: 0.2rem;
 				padding: 0 0.1rem;
+				line-height: 0.32rem;
 			}
 		}
 	}
