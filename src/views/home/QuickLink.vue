@@ -27,12 +27,13 @@
 <script setup>
 import { ref, getCurrentInstance } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Pagination } from 'swiper/modules';
+import { Pagination, Grid } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import 'swiper/css/grid';
 
 const cns = getCurrentInstance().appContext.config.globalProperties
-const swiperModules = [Pagination]
+const swiperModules = [Pagination, Grid]
 const props = defineProps({
     content: {
         type: Object,
