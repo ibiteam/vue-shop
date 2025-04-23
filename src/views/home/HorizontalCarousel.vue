@@ -10,14 +10,14 @@
                     'disableOnInteraction': false,
                     'waitForTransition': true,
                 },
-                loop: content.items.length >= 3 ? true : false,
+                loop: false,
                 pagination: {
                     'clickable': true,
                 },
                 modules: swiperModules
             }" class="cards-swiper">
                 <template v-if="content.items.length <= 3">
-                    <swiper-slide class="scroll-item" v-slot="{ isActive }" v-for="(item, index) in [...content.items, ...content.items]" :key="index">
+                    <swiper-slide class="scroll-item" v-slot="{ isActive }" v-for="(item, index) in content.items" :key="index">
                         <common-image v-bind="{fit: isActive ? 'fill' : 'cover', src: item.image, width: '100%', height: (content.height / 100) + 'rem', radius: '0'}" @click.stop="handleOpenLink(item.url)"/>
                     </swiper-slide>
                 </template>
@@ -32,7 +32,7 @@
                 autoplay: {
                     'delay': (content.interval || 3) * 1000,
                 },
-                loop: content.items.length >= 3 ? true : false,
+                loop: true,
                 pagination: {
                     'clickable': true,
                 },
