@@ -20,7 +20,7 @@
                 <div v-for="(item, index) in content.items" :key="index" 
                     :style="{
                         width: (content.width - (content.background ? '10' : 0)) / 100 + 'rem',
-                        marginBottom: (content.background ? '0.2rem' : 0)
+                        marginBottom: '0.2rem'
                     }"
                 >
                     <common-image 
