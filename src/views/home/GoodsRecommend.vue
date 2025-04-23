@@ -40,7 +40,7 @@
                     </div>
                 </div>
             </div>
-            <div class="goods-wrapper3 s-flex ai-ct jc-bt flex-wrap" v-if="content.layout == 3 && content.items.goods_data">
+            <div class="goods-wrapper3 s-flex ai-ct flex-wrap" v-if="content.layout == 3 && content.items.goods_data">
                 <div class="goods-item" v-for="item in content.items.goods_data" :key="item.no" @click.stop="appRoute('good', {goods_no: item.no})">
                     <common-image v-bind="{ src: item.image, width: '100%', height: wrapper3OffsetWidth + 'px', radius: '0.2rem 0.2rem 0 0' }"/>
                     <div class="goods-info s-flex jc-bt flex-dir">
@@ -151,7 +151,7 @@ onMounted(() => {
     .goods-wrapper3 {
         .goods-item {
             margin-bottom: 0.1rem;
-            flex: 0 0 calc(33.33% - 0.1rem);
+            flex: 0 0 calc(33.33% - 0.15rem);
             border-radius: 0.2rem 0.2rem 0 0;
             overflow: hidden;
             .goods-info {
@@ -163,6 +163,10 @@ onMounted(() => {
                     margin-bottom: 0.08rem;
                 }
             }
+        }
+        .goods-item:nth-child(2n) {
+            margin-left: 0.075rem;
+            margin-right: 0.075rem;
         }
     }
 }
