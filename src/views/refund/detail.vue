@@ -70,7 +70,7 @@
                             <p v-if="stepIndex===ids">
                                 <template v-if="status === 0">
                                     <template v-if="refund_data.type == 0">
-                                        卖家统一或者超时未处理，系统将退款给您<br />
+                                        卖家同意或者超时未处理，系统将退款给您<br />
                                         如卖家拒绝，您可以修改退款申请后再次发起，卖家会重新处理
                                     </template>
                                     <template v-else>

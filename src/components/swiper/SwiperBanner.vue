@@ -13,7 +13,7 @@
                 modules: swiperModules
             }" class="scroll-wrapper">
 			<swiper-slide class="scroll-item" v-for="(item, index) in list" :key="index" style="width: 100%;">
-				<common-image v-bind="{src: item.image, width: '100%', height: '2rem', radius: '0.2rem'}" @click.stop="linkUrl(item.url)"/>
+				<common-image v-bind="{src: item.image, width: '100%', height: '2rem', radius: '0.2rem'}" @click.stop="linkUrl(item.link)"/>
 			</swiper-slide>
 		</swiper>
 	</div>

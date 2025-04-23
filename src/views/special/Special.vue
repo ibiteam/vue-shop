@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, inject} from "vue";
+import {ref, onMounted, watch} from "vue";
 import { useRoute } from "vue-router";
 import SwiperBanner from "@/components/swiper/SwiperBanner.vue";
 import GoodsList from "@/components/recommend/GoodsList.vue";
@@ -55,18 +55,25 @@ const banner = ref([
 
 const goodsList = ref([])
 
-onMounted(()=>{
-	const id = route.query.id
-	getSpecialData(id).then(res=>{
+const getPageData = () => {
+	getSpecialData(route.query).then(res=>{
 		if(isSuccessCode(res)){
 			title.value = res.data.title
 			goodsList.value = res.data.goods_list
-			banner.value = res.data.banner
+			banner.value = res.data.banner_list
 		}else {
 			toast(res.message)
 		}
 	})
+}
+
+onMounted(()=>{
+	getPageData()
 })
+
+watch(route, ()=>{
+	getPageData()
+}, {deep: true})
 
 </script>
 

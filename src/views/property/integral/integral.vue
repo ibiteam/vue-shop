@@ -59,7 +59,7 @@ import {getIntegralListAxios} from "@/api/property.js";
 const cns = getCurrentInstance().appContext.config.globalProperties
 const info = ref({
     page: 1,
-    flag: 0,
+    type: 0,
 })
 const title = ref('积分明细')
 const tabIndex = ref(0)
@@ -100,7 +100,7 @@ const getPageData = () => {
 const handleChangeTabs = () => {
     noData.value = false;
     finished.value = false
-    info.flag = tabIndex.value;
+    info.type = tabIndex.value;
     info.page = 1;
     integralList.value = []
     getPageData()

@@ -4,9 +4,14 @@
         <div class="content">
             <div class="list" v-for="its in list" :key="its.id">
                 <div class="user s-flex">
-                    <div class="imgs">
-                        <img :src="its.img" alt="">
-                    </div>
+                    <van-image :src="its.img" class="imgs">
+                        <template v-slot:loading>
+                            <img src="@/assets/images/ucenter/portait.jpeg" alt="">
+                        </template>
+                        <template v-slot:error>
+                            <img src="@/assets/images/ucenter/portait.jpeg" alt="">
+                        </template>
+                    </van-image>
                     <div class="right s-flex flex-dir jc-bt">
                         <div class="name">{{ its.name }}</div>
                         <div class="date">{{ its.created_at }}</div>
@@ -14,7 +19,7 @@
                 </div>
                 <div class="msg s-flex ai-ct flex-wrap">
                     <span>{{ its.action }}</span>
-                    <span v-if="its.reason !== ''">{{ its.type === 0 ? '退款原因：' : '拒绝原因：' }}{{ its.reason }}</span>
+                    <span v-if="its.reason !== ''">原因：{{ its.reason }}</span>
                     <span v-if="its.refund_money !== ''">金额：¥{{ its.refund_money }}</span>
                     <span v-if="its.refund_number > 0">退款数量：{{ its.refund_number }} <template v-if="its.unit">{{ its.unit }}</template></span>
                 </div>
@@ -25,7 +30,7 @@
                     </div>
                     <div class="alls">
                         <span>物流单号：</span>
-                        <span>{{ its.apply_refund_shipping.sn }}</span>
+                        <span>{{ its.apply_refund_shipping.no }}</span>
                     </div>
                     <div class="alls">
 
@@ -38,7 +43,7 @@
                     </div>
                     <div class="alls">
                         <span>补充描述：</span>
-                        <span>{{ its.apply_refund_shipping.commit }}</span>
+                        <span>{{ its.apply_refund_shipping.description }}</span>
                     </div>
                 </template>
                 <div class="picture" v-if="its.certificate && its.certificate.length>0">
@@ -110,9 +115,11 @@ const preview = (arr,index) => {
             padding: 0.31rem 0.2rem;
             box-sizing: border-box;
             .user{
-                .imgs{
+                :deep(.imgs){
                     width: 0.66rem;
                     height: 0.66rem;
+                    border-radius: 50%;
+                    overflow: hidden;
                     img{
                         width: 100%;
                         height: 100%;
