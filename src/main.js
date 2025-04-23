@@ -4,7 +4,7 @@ import 'vant/lib/index.css';
 import { createApp } from 'vue'
 import pinia from '@/stores/index'
 import mitt from 'mitt'
-import Vant from 'vant'
+import Vant, {Lazyload} from 'vant'
 import VConsole from "vconsole";
 import $http from '@/utils/http'
 import $public from '@/utils/public'
@@ -30,6 +30,12 @@ app.use(router)
 app.use(Vant)
 app.use(VueCookies)
 app.use(FormPrice)
+app.use(Lazyload, {
+    lazyComponent: true,
+    loading: '@/assets/images/common/no-pic.png',
+    error: '@/assets/images/common/no-pic.png',
+    observer: true
+})
 app.config.globalProperties.$bus = mitt()
 app.config.globalProperties.$public = $public
 app.config.globalProperties.$http = $http

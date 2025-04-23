@@ -193,7 +193,7 @@
 						<p class="fs24 co-666 text-center" v-else style="padding: 5px 0 20px;">暂无评价</p>
 					</div>
 				</div>
-				<div style="padding: 0 0.2rem;" class="border-wrap">
+				<div style="padding: 0 0.2rem;" class="border-wrap" ref="detailRef">
 					<template v-if="goodsInfo.status">
 						<div class="good-attr attr-title">
 							<p>商品详情</p>
@@ -209,9 +209,9 @@
 								<div class="fs28 co-333" @click="openPopup('propPopup')">更多详细参数<em class="iconfont co-999" style="font-size: 0.26rem;">&#xe773;</em></div>
 							</div>
 						</div>
-						<div class="detail MT10 bg-fff" ref="detailRef" id="detail">
+						<div class="detail MT10 bg-fff" id="detail">
 							<div class="content">
-								<div class="goods-attr-last vhtml" v-html="goodsInfo.content" style="padding: 0.3rem 0;"></div>
+								<div class="goods-attr-last vhtml" v-html="processedContent" style="padding: 0.3rem 0;" ref="contentRef"></div>
 							</div>
 						</div>
 					</template>
@@ -363,7 +363,7 @@
 </template>
 
 <script setup>
-import {ref, watch, onMounted, onBeforeUnmount, nextTick, getCurrentInstance, inject} from 'vue'
+import {ref, watch, onMounted, onBeforeUnmount, nextTick, getCurrentInstance, inject, computed} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 
 import {useGoodStore} from "@/stores";
@@ -386,6 +386,7 @@ const shopConfig = inject('shopConfig')
 const swiperRef = ref(null)
 const recommendRef = ref(null)
 const detailRef = ref(null)
+const contentRef = ref(null)
 const commentRef = ref(null)
 // 响应式数据
 const banner = ref({})
@@ -647,6 +648,49 @@ const detailBig = () => {
 	})
 }
 
+const processedContent = computed(() => {
+	return goodsInfo.value.content?.replace(
+		/<img(.*?)src="(.*?)"(.*?)>/gi,
+		'<img$1data-src="$2"$3 src="加载中的图片URL" class="lazy-image">'
+	)
+})
+
+// 初始化懒加载
+const initLazyLoad = () => {
+	if (!contentRef.value) return
+
+	const images = contentRef.value.querySelectorAll('img')
+	images.forEach(img => {
+		const dataSrc = img.getAttribute('data-src')
+		if (dataSrc) {
+			// 创建观察者
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach(entry => {
+						if (entry.isIntersecting) {
+							img.src = dataSrc
+							img.removeAttribute('data-src')
+							observer.unobserve(img)
+						}
+					})
+				},
+				{
+					rootMargin: '50px 0px',
+					threshold: 0.01
+				}
+			)
+			observer.observe(img)
+		}
+	})
+}
+
+// 监听内容变化
+watch(() => goodsInfo.value.content, () => {
+	nextTick(() => {
+		initLazyLoad()
+	})
+})
+
 const getData = () => {
 	getGoodData(goodsNo.value, skuId.value).then((res) => {
 		if (isSuccessCode(res)) {
@@ -758,6 +802,13 @@ router.beforeEach((to, from, next) => {
 	width: 7.5rem;
 	margin: 0 auto;
 	background: #F8F8F8;
+	.lazy-image {
+		transition: opacity 0.3s;
+	}
+
+	.lazy-image[src] {
+		opacity: 1;
+	}
 	//overflow-x: hidden;
 	.goods-popup-title {
 		text-align: center;
