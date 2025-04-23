@@ -25,7 +25,7 @@
                     </div>
                     <div class="alls">
                         <span>物流单号：</span>
-                        <span>{{ its.apply_refund_shipping.sn }}</span>
+                        <span>{{ its.apply_refund_shipping.no }}</span>
                     </div>
                     <div class="alls">
 
@@ -38,7 +38,7 @@
                     </div>
                     <div class="alls">
                         <span>补充描述：</span>
-                        <span>{{ its.apply_refund_shipping.commit }}</span>
+                        <span>{{ its.apply_refund_shipping.description }}</span>
                     </div>
                 </template>
                 <div class="picture" v-if="its.certificate && its.certificate.length>0">
