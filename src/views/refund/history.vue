@@ -118,6 +118,8 @@ const preview = (arr,index) => {
                 :deep(.imgs){
                     width: 0.66rem;
                     height: 0.66rem;
+                    border-radius: 50%;
+                    overflow: hidden;
                     img{
                         width: 100%;
                         height: 100%;
