@@ -70,7 +70,7 @@ onMounted(() => {
         if (isSuccessCode(res)) {
             if (res.data.is_gray == 1) {
                 const element = document.querySelector('.shop-layout-container')
-                element.style.filter = 'grayscale(1)'
+                if(element) element.style.filter = 'grayscale(1)'
             }
         }
     })
@@ -100,7 +100,7 @@ onUnmounted(() => {
     cns.$bus.off('homeOpenLink')
     cns.$bus.off('homeCloseScreenImage')
     const element = document.querySelector('.shop-layout-container')
-    element.style.filter = 'none'
+    if (element) element.style.filter = 'none'
 })
 
 </script>
