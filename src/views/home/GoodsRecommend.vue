@@ -164,7 +164,7 @@ onMounted(() => {
                 }
             }
         }
-        .goods-item:nth-child(2n) {
+        .goods-item:nth-child(3n+2) {
             margin-left: 0.075rem;
             margin-right: 0.075rem;
         }
