@@ -46,6 +46,7 @@
 import {ref, reactive, watch, computed, onMounted, onBeforeMount, onActivated} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import $public from '@/utils/public'
+import { toast } from "@/utils/toast.js";
 import {searchKeywordsPull} from '@/api/search'
 import { isSuccessCode } from "@/utils/constant.js";
 
@@ -75,6 +76,10 @@ const handleClickRouterBack = () => {
 };
 
 const handleSearchConfirm = (value) => {
+	if(!value) {
+		toast('请输入搜索关键词')
+		return
+	}
     const value_type = Object.prototype.toString.call(value).slice(8, -1);
     if (value != '' && value_type == 'String') {
         info.keywords = value;
