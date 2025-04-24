@@ -48,6 +48,17 @@
                     <p>最多退￥{{ refund_data.order_detail.refund_max_amount }}</p>
                 </div>
             </div>
+            <div class="money" v-if="refund_data.order_detail.refund_max_integral">
+                <div class="setMoney">
+                    <div class="alls s-flex jc-bt ai-ct">
+                        <span class="alls-title">退款积分</span>
+                        <div class="s-flex flex-v ai-fe">
+                            <span class="alls-money">{{ refundForm.integral }}</span>
+                        </div>
+                    </div>
+                    <p>可退{{ refund_data.order_detail.refund_max_integral }}积分</p>
+                </div>
+            </div>
             <div class="refund-number">
                 <div class="setMoney">
                     <div class="alls s-flex jc-bt ai-ct">
@@ -149,7 +160,8 @@ const refundForm = ref({
     number: '',
     description: '',
     certificate: [],
-    money: '' //  退款金额
+    money: '' ,//  退款金额
+    integral:''//退款积分
 })
 const status = ref(null)
 const popupShow =ref(false)
@@ -199,6 +211,7 @@ const operatePageData = (res) =>{
                 ...refundForm.value,
                 money: refund_data.value.order_detail.refund_max_amount,
                 number: refund_data.value.order_detail.refund_max_number,
+                integral: refund_data.value.order_detail.refund_max_integral,
                 type:Number(route.query.refundType)
             }
             status.value = -1
@@ -290,7 +303,7 @@ const handleClickSubmitRefund = () =>{
   if (refundForm.value.reason_id === '') {
     cns.$toast('请选择退款原因!');
   } else {
-    if (!refundForm.value.money || refundForm.value.money <= 0) {
+    if ((!refundForm.value.money || refundForm.value.money <= 0) && !refundForm.value.integral) {
       cns.$toast('可退款金额为0，暂不支持申请')
       return false
     }
@@ -303,7 +316,8 @@ const handleClickSubmitRefund = () =>{
       order_sn: route.query.order_sn,
       order_detail_id: route.query.order_detail_id,
       number:refundForm.value.number,
-      money: Number(refundForm.value.money),
+      money:Number(refundForm.value.money),
+      integral:Number(refundForm.value.integral),
       type:refundForm.value.type,
       reason_id: refundForm.value.reason_id,
       description: refundForm.value.description,
