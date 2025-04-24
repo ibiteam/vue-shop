@@ -338,7 +338,7 @@ const toWuliu = () =>{
         .order-goods{
             .goods-wrap{
                 .goods-box{
-                    margin-top: 0.2rem;
+                    margin-top: 0.4rem;
                     .goods-img{
                         width: 1.76rem;
                         height: 1.76rem;
