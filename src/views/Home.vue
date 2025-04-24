@@ -28,6 +28,7 @@ import Recommend from '@/views/home/Recommend'
 import { getHomeData, getHomePreviewData } from '@/api/home'
 import {isSuccessCode} from "@/utils/constant.js";
 import { useRoute } from 'vue-router'
+import { shopCommonConfig } from '@/api/common'
 
 const cns = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
@@ -36,6 +37,7 @@ const decoration = reactive({
     not_for_data: [],
     temp_index: ''
 })
+const is_gray = ref(0)
 
 const screenImageSession = ref(sessionStorage.getItem('screen_img_session'))
 
@@ -64,6 +66,14 @@ const init = (res) => {
 }
 
 onMounted(() => {
+    shopCommonConfig().then(res => {
+        if (isSuccessCode(res)) {
+            if (res.data.is_gray == 1) {
+                const element = document.querySelector('.shop-layout-container')
+                if(element) element.style.filter = 'grayscale(1)'
+            }
+        }
+    })
     if (route.params.id) {
         getHomePreviewData({id: route.params.id}).then(res => {
             init(res)
@@ -89,6 +99,8 @@ onMounted(() => {
 onUnmounted(() => {
     cns.$bus.off('homeOpenLink')
     cns.$bus.off('homeCloseScreenImage')
+    const element = document.querySelector('.shop-layout-container')
+    if (element) element.style.filter = 'none'
 })
 
 </script>
