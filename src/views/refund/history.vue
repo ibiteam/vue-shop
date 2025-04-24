@@ -19,7 +19,8 @@
                 </div>
                 <div class="msg s-flex ai-ct flex-wrap">
                     <span>{{ its.action }}</span>
-                    <span v-if="its.reason !== ''">原因：{{ its.reason }}</span>
+                    <span v-if="its.type == 0 && its.reason">退款原因：{{ its.reason }}</span>
+                    <span v-if="its.type == 1 && its.result">拒绝原因：{{ its.result }}</span>
                     <span v-if="its.refund_money !== ''">金额：¥{{ its.refund_money }}</span>
                     <span v-if="its.refund_number > 0">退款数量：{{ its.refund_number }} <template v-if="its.unit">{{ its.unit }}</template></span>
                 </div>
@@ -33,7 +34,6 @@
                         <span>{{ its.apply_refund_shipping.no }}</span>
                     </div>
                     <div class="alls">
-
                         <span>联系电话：</span>
                         <span>{{ its.apply_refund_shipping.phone }}</span>
                     </div>
@@ -49,9 +49,9 @@
                 <div class="picture" v-if="its.certificate && its.certificate.length>0">
                     <van-image v-for="(ims,imdx) in its.certificate" :key="imdx" :src="ims" @click="preview({images:[...its.certificate],startPosition:imdx})" />
                 </div>
-                <div class="alls" v-if="its.apply_comment">
+                <div class="alls" v-if="its.description">
                     <span>退款描述：</span>
-                    <span>{{ its.apply_comment }}</span>
+                    <span>{{ its.description }}</span>
                 </div>
             </div>
         </div>
