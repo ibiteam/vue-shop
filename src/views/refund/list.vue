@@ -90,7 +90,7 @@ const info = ref({
 const orderListData =ref([])
 const noData = ref(false)
 const loading = ref(false)
-const finished = ref(false)
+const finished = ref(true)
 
 
 onMounted( () => {
@@ -119,6 +119,8 @@ const getData = () =>{
                 finished.value = true
             }else{
                 info.value.page++
+                loading.value = false
+                finished.value = false
             }
         } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login')
