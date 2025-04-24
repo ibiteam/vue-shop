@@ -338,6 +338,7 @@ const toWuliu = () =>{
         .order-goods{
             .goods-wrap{
                 .goods-box{
+                    margin-top: 0.4rem;
                     .goods-img{
                         width: 1.76rem;
                         height: 1.76rem;
@@ -379,6 +380,9 @@ const toWuliu = () =>{
                             font-size: 0.24rem;
                         }
                     }
+                }
+                .goods-box:first-child{
+                    margin-top: 0;
                 }
                 .goods-after-sale{
                     padding: 0.2rem 0;

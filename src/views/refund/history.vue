@@ -22,6 +22,7 @@
                     <span v-if="its.type == 0 && its.reason">退款原因：{{ its.reason }}</span>
                     <span v-if="its.type == 1 && its.result">拒绝原因：{{ its.result }}</span>
                     <span v-if="its.refund_money !== ''">金额：¥{{ its.refund_money }}</span>
+                    <span v-if="its.refund_integral !== ''">积分：{{ its.refund_integral }}积分</span>
                     <span v-if="its.refund_number > 0">退款数量：{{ its.refund_number }} <template v-if="its.unit">{{ its.unit }}</template></span>
                 </div>
                 <template v-if="its.apply_refund_shipping">

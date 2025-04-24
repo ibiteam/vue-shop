@@ -100,7 +100,7 @@
                             </div>
                         </div>
                         <div class="company s-flex jc-bt ai-ct">
-                            <div class="left">{{ refund_data.order_detail.goods_price }}<span v-if="refund_data.order_detail.goods_unit">/{{ refund_data.order_detail.goods_unit }}</span></div>
+                            <div class="left">{{ refund_data.order_detail.goods_price }}<template v-if="refund_data.order_detail.goods_integral">+{{refund_data.order_detail.goods_integral}}积分</template><span v-if="refund_data.order_detail.goods_unit">/{{ refund_data.order_detail.goods_unit }}</span></div>
                             <div class="right">x {{ refund_data.order_detail.goods_number }}</div>
                         </div>
                     </div>
@@ -114,6 +114,10 @@
                     <div class="list s-flex">
                         <div class="left">退款金额：</div>
                         <div class="right">{{ refund_data.refund_info.money_format }}</div>
+                    </div>
+                    <div class="list s-flex" v-if="refund_data.refund_info.integral">
+                        <div class="left">退款积分：</div>
+                        <div class="right">{{ refund_data.refund_info.integral }}积分</div>
                     </div>
                     <div class="list s-flex" v-if="refund_data.refund_info.number > 0">
                         <div class="left">退款数量：</div>

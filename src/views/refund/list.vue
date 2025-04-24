@@ -90,7 +90,7 @@ const info = ref({
 const orderListData =ref([])
 const noData = ref(false)
 const loading = ref(false)
-const finished = ref(false)
+const finished = ref(true)
 
 
 onMounted( () => {
@@ -119,6 +119,8 @@ const getData = () =>{
                 finished.value = true
             }else{
                 info.value.page++
+                loading.value = false
+                finished.value = false
             }
         } else if (cns.$constant.isUnLoginCode(res)) {
             cns.appRoute('login')
@@ -156,12 +158,10 @@ const onCancel = () =>{
     line-height: 1rem;
     margin: 0.2rem 0.2rem 0;
 }
-body {
-    background-color: #f4f4fa;
-}
 /*搜索*/
 .integral-search {
-    padding: 0.2rem 0.2rem 0;
+    padding: 0.2rem;
+    background: #f2f2f2;
 }
 .integral-search .van-search {
     padding: 0;

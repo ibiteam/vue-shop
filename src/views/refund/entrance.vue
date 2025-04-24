@@ -41,7 +41,7 @@
 
                         <div class="info s-flex jc-bt ai-ct">
                             <div class="price">
-                                <span>{{ goods_info.goods_price_format }}</span>
+                                <span>{{ goods_info.goods_price_format }}<template v-if="goods_info.goods_integral">+{{goods_info.goods_integral}}积分</template></span>
                                 <span style="color: rgba(51, 51, 51, 1);" v-if="goods_info.goods_unit">/{{ goods_info.goods_unit }}</span>
                             </div>
                             <div class="number">
