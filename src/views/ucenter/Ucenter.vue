@@ -131,6 +131,8 @@
                 <div class="order-model" @click="toPage('refundList')">
                   <img src="@/assets/images/ucenter/order_5.png" alt="">
                   <div>退款/售后</div>
+                  <div class="order-model-num" v-if="userInfo.refund_after_sale_count && userInfo.refund_after_sale_count < 100">{{userInfo.refund_after_sale_count}}</div>
+                  <div class="order-model-num" v-if="userInfo.refund_after_sale_count && userInfo.refund_after_sale_count >= 100">99+</div>
                 </div>
               </div>
             </div>

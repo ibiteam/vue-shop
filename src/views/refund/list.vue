@@ -156,12 +156,10 @@ const onCancel = () =>{
     line-height: 1rem;
     margin: 0.2rem 0.2rem 0;
 }
-body {
-    background-color: #f4f4fa;
-}
 /*搜索*/
 .integral-search {
-    padding: 0.2rem 0.2rem 0;
+    padding: 0.2rem;
+    background: #f2f2f2;
 }
 .integral-search .van-search {
     padding: 0;
