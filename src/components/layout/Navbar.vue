@@ -76,6 +76,9 @@ const toSearch = () =>{
 </script>
 
 <style lang='scss'>
+.van-nav-bar--fixed{
+    z-index: 1000;
+}
 .van-nav-bar .van-icon,
 .van-nav-bar__text{
     color: #333;

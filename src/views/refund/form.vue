@@ -225,12 +225,14 @@ const operatePageData = (res) =>{
                     reason_id: refund_data.value.refund_info.reason_id,
                     money: refund_data.value.refund_info.money,
                     number: refund_data.value.refund_info.number,
+                    integral: refund_data.value.refund_info.integral,
                     description: refund_data.value.refund_info.description,
                     certificate: refund_data.value.refund_info.certificate,
                     type:refund_data.value.type
                 }
                 refund_data.value.order_detail.refund_max_amount = refund_data.value.from_init.refund_max_amount
                 refund_data.value.order_detail.refund_max_number = refund_data.value.from_init.refund_max_number
+                refund_data.value.order_detail.refund_max_integral = refund_data.value.from_init.refund_max_integral
             }
         }
       is_loading.value = false
